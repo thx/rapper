@@ -1,0 +1,18 @@
+{
+  "name": "pang",
+  "version": "1.0.0",
+  "description": "pang, use http api as a function",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.alibaba-inc.com:chibing.fy/pang.git"
+  },
+  "keywords": [
+    "api"
+  ],
+  "author": "chibing.fy",
+  "license": "ISC"
+}
