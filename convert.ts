@@ -1,7 +1,6 @@
 import { compile, Options, DEFAULT_OPTIONS } from 'json-schema-to-typescript';
 import { JSONSchema4 } from 'json-schema';
 import * as _ from 'lodash';
-import { type } from 'os';
 
 function rapSchema2JSONSchema(rapSchema): JSONSchema4 {
   if (!rapSchema.properties) {
@@ -22,7 +21,6 @@ type Scope = 'request' | 'response';
 
 function interfaceToJSONSchema(itf, scope: Scope): JSONSchema4 {
   const properties: Array<any> = itf.properties.filter(p => p.scope === scope);
-  // null 代表是自己是根节点
   function findChildren(parentId: number) {
     return _.chain(properties)
       .filter(p => p.parentId === parentId)
@@ -54,7 +52,8 @@ function interfaceToJSONSchema(itf, scope: Scope): JSONSchema4 {
           ];
         } else {
           throw `type: ${type}
-
+          parentID: ${parentId}
+          itf.url: ${itf.url}
           ${JSON.stringify(children)}`;
         }
       })
