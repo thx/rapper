@@ -14,5 +14,14 @@
     "api"
   ],
   "author": "chibing.fy",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@types/angular": "^1.6.51",
+    "@types/react": "^16.4.18",
+    "axios": "^0.18.0",
+    "camelcase": "^5.0.0",
+    "json-schema-to-typescript": "^6.0.1",
+    "lodash": "^4.17.11",
+    "mkdirp": "^0.5.1"
+  }
 }
