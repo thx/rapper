@@ -1,12 +1,13 @@
-import { compile } from 'json-schema-to-typescript';
-import { JSONSchema4 } from 'json-schema'
+import { compile, Options, DEFAULT_OPTIONS } from 'json-schema-to-typescript';
+import { JSONSchema4 } from 'json-schema';
 import * as _ from 'lodash';
+import { type } from 'os';
 
-function rapSchema2JSONSchema(rapSchema) : JSONSchema4 {
-  if(!rapSchema.properties) {
+function rapSchema2JSONSchema(rapSchema): JSONSchema4 {
+  if (!rapSchema.properties) {
     return {
       type: rapSchema.type
-    }
+    };
   }
   return {
     type: rapSchema.type,
@@ -17,7 +18,73 @@ function rapSchema2JSONSchema(rapSchema) : JSONSchema4 {
   };
 }
 
-export default function convert(schema: string, name: string) : Promise<string> {
-  const jsonSchema = rapSchema2JSONSchema(JSON.parse(schema));
-  return compile(jsonSchema, name);
+type Scope = 'request' | 'response';
+
+function interfaceToJSONSchema(itf, scope: Scope): JSONSchema4 {
+  const properties: Array<any> = itf.properties.filter(p => p.scope === scope);
+  // null 代表是自己是根节点
+  function findChildren(parentId: number) {
+    return _.chain(properties)
+      .filter(p => p.parentId === parentId)
+      .map(p => {
+        const type = p.type.toLowerCase().replace(/regexp|function/, 'string');
+        const children = findChildren(p.id);
+        if (['string', 'number', 'integer', 'boolean', 'null'].includes(type)) {
+          return [
+            p.name,
+            {
+              type
+            }
+          ];
+        } else if (type === 'object') {
+          return [
+            p.name,
+            {
+              type,
+              properties: children
+            }
+          ];
+        } else if (type === 'array') {
+          return [
+            p.name,
+            {
+              type,
+              items: { type: 'object', properties: children }
+            }
+          ];
+        } else {
+          throw `type: ${type}
+
+          ${JSON.stringify(children)}`;
+        }
+      })
+      .fromPairs()
+      .value();
+  }
+
+  const propertyChildren = findChildren(-1);
+  if (_.isEmpty(properties)) {
+    return {
+      type: 'object'
+    };
+  } else {
+    return {
+      type: 'object',
+      properties: propertyChildren
+    };
+  }
+}
+
+export default function convert(itf): Promise<Array<string>> {
+  const reqJSONSchema = interfaceToJSONSchema(itf, 'request');
+  const resJSONSchema = interfaceToJSONSchema(itf, 'response');
+
+  const options: Options = {
+    ...DEFAULT_OPTIONS,
+    bannerComment: ''
+  };
+  return Promise.all([
+    compile(reqJSONSchema, 'Req', options),
+    compile(resJSONSchema, 'Res', options)
+  ]);
 }
