@@ -27,11 +27,14 @@ function interfaceToJSONSchema(itf, scope: Scope): JSONSchema4 {
       .map(p => {
         const type = p.type.toLowerCase().replace(/regexp|function/, 'string');
         const children = findChildren(p.id);
+        const common: { description?: string } = {};
+        if (p.description) common.description = p.description;
         if (['string', 'number', 'integer', 'boolean', 'null'].includes(type)) {
           return [
             p.name,
             {
-              type
+              type,
+              ...common
             }
           ];
         } else if (type === 'object') {
@@ -39,7 +42,8 @@ function interfaceToJSONSchema(itf, scope: Scope): JSONSchema4 {
             p.name,
             {
               type,
-              properties: children
+              properties: children,
+              ...common
             }
           ];
         } else if (type === 'array') {
@@ -47,7 +51,8 @@ function interfaceToJSONSchema(itf, scope: Scope): JSONSchema4 {
             p.name,
             {
               type,
-              items: { type: 'object', properties: children }
+              items: { type: 'object', properties: children },
+              ...common
             }
           ];
         } else {

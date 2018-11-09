@@ -7,7 +7,7 @@ import * as fs from 'fs';
 import * as mkdirp from 'mkdirp';
 import { format } from 'json-schema-to-typescript/dist/src/formatter';
 import { DEFAULT_OPTIONS } from 'json-schema-to-typescript';
-const projectId = '2025';
+const projectId = '1092';
 const folder = path.resolve(__dirname, 'api');
 
 function urlToName(url: string, namePrefix: string = ''): string {

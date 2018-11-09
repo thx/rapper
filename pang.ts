@@ -1,13 +1,12 @@
-import getTargetingEstimateInfo from './api/overnight/getTargetingEstimateInfo';
-import findTaskList from './api/overnight/findTaskList';
-import addTask from './api/overnight/addTask';
+// import paylos from './api/item/paylos';
+// import { Req, Res, method, url } from "./api/item/paylosGo-itf";
+import paylosGo from "./api/item/paylosGo";
 
-getTargetingEstimateInfo({
-  good: 1
-}).then(res => {
-  const info = res.data;
-  info.adzoneInfoList.map(adzone => {
-    adzone.conflictDetailinfos.forEach(e => {});
-  });
-});
-
+// paylosGo({
+//     itemId: 123
+// }).then(res => {
+//     res.data.forEach(e => {
+//         e.payAmtIndex
+//         e.
+//     })
+// })
