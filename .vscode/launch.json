@@ -13,7 +13,7 @@
                 "ts-node/register"
             ],
             "args": [
-                "${workspaceFolder}/api.ts"
+                "${workspaceFolder}/src/pang.ts"
             ]
         }
     ]
