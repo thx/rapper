@@ -33,7 +33,7 @@ function writeFile(filepath: string, contents: string) {
   });
 }
 
-async function createApi(projectId: number, folder: string) {
+function createApi(projectId: number, folder: string) {
   return axios
     .get(`http://rap2api.alibaba-inc.com/repository/get?id=${projectId}`)
     .then(response => {
