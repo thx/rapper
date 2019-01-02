@@ -52,13 +52,13 @@ async function createApi({
     .get(`http://rap2api.alibaba-inc.com/repository/get?id=${projectId}`)
     .then(response => {
       const modules: Array<any> = response.data.data.modules;
-      const interfaces: Array<any> = _(modules)
+      const interfaces: Array<Interface.Root> = _(modules)
         .map(m => m.interfaces)
         .flatten()
         .value();
 
       return Promise.all(
-        interfaces.map(itf => {
+        interfaces.map(async (itf) => {
           const url = urlMapper(itf.url);
           const writeItf = ([reqItf, resItf]: [string, string]) => {
             const itfFileName = urlToPath(folder, url, '-itf');
@@ -106,7 +106,7 @@ async function createApi({
               )
             ]);
           };
-          return convert(itf).then(writeItf);
+          return convert(itf).then(writeItf).catch((err) => `${url}+${err}`)
         })
       );
     });
