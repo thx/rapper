@@ -6,6 +6,7 @@ import * as fs from 'fs';
 import * as mkdirp from 'mkdirp';
 import { format } from 'json-schema-to-typescript/dist/src/formatter';
 import { DEFAULT_OPTIONS } from 'json-schema-to-typescript';
+import { Interface } from "./itf";
 
 function urlToName(url: string, namePrefix: string = ''): string {
   url = url.trim();
@@ -33,10 +34,11 @@ function writeFile(filepath: string, contents: string) {
   });
 }
 
+
 interface CreateApiParams {
   projectId: number;
   folder: string;
-  requestFactory: () => string;
+  requestFactory: (itf: Interface.Root, ReqType: string, ResType: string) => string;
   urlMapper?: (url: string) => string;
 }
 
@@ -96,7 +98,7 @@ async function createApi({
                   path.extname(itfFileName)
                 )}';
                 /* 自定义请求代码开始 */
-                ${requestFactory()}
+                ${requestFactory(itf,'Req','Res')}
                 /* 自定义请求代码结束 */
                 `,
                   DEFAULT_OPTIONS
