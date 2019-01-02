@@ -66,9 +66,10 @@ function writeFile(filepath, contents) {
         });
     });
 }
-function createApi(projectId, folder) {
+function createApi(_a) {
+    var projectId = _a.projectId, folder = _a.folder, requestFactory = _a.requestFactory, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (s) { return s; } : _b;
     return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
+        return __generator(this, function (_c) {
             return [2 /*return*/, axios_1["default"]
                     .get("http://rap2api.alibaba-inc.com/repository/get?id=" + projectId)
                     .then(function (response) {
@@ -78,16 +79,16 @@ function createApi(projectId, folder) {
                         .flatten()
                         .value();
                     return Promise.all(interfaces.map(function (itf) {
+                        var url = urlMapper(itf.url);
                         var writeItf = function (_a) {
                             var reqItf = _a[0], resItf = _a[1];
-                            var itfFileName = urlToPath(folder, itf.url, '-itf');
+                            var itfFileName = urlToPath(folder, url, '-itf');
                             return Promise.all([
                                 writeFile(itfFileName, formatter_1.format("/**\n                * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n                * \u63A5\u53E3\u540D\uFF1A" + itf.name + "\n                * Rap: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "&itf=" + itf.id + "\n                */\n              const url: string = '" + itf.url + "';\n              const method: string = '" + itf.method + "'\n              export { url, method };\n    \n              " + reqItf + "\n    \n              " + resItf, json_schema_to_typescript_1.DEFAULT_OPTIONS)),
-                                writeFile(urlToPath(folder, itf.url), formatter_1.format("/**\n                * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n                * \u63A5\u53E3\u540D\uFF1A" + itf.name + "\n                * Rap: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "&itf=" + itf.id + "\n                */\n                import axios, { AxiosRequestConfig } from 'axios';\n                import { Req, Res, url, method } from './" + path.basename(itfFileName, path.extname(itfFileName)) + "';\n                export default function(req: Req, cfg?: AxiosRequestConfig): Promise<Res> {\n                  return new Promise<Res>((resolve, reject) => {\n                    axios({\n                      url,\n                      method,\n                      ...cfg\n                    })\n                      .then(res => {\n                        const data: Res = res.data;\n                        resolve(data);\n                      })\n                      .catch(reject);\n                  });\n                }\n                ", json_schema_to_typescript_1.DEFAULT_OPTIONS))
+                                writeFile(urlToPath(folder, url), formatter_1.format("/**\n                * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n                * \u63A5\u53E3\u540D\uFF1A" + itf.name + "\n                * Rap: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "&itf=" + itf.id + "\n                */\n                import { Req, Res, url, method } from './" + path.basename(itfFileName, path.extname(itfFileName)) + "';\n                /* \u81EA\u5B9A\u4E49\u8BF7\u6C42\u4EE3\u7801\u5F00\u59CB */\n                " + requestFactory() + "\n                /* \u81EA\u5B9A\u4E49\u8BF7\u6C42\u4EE3\u7801\u7ED3\u675F */\n                ", json_schema_to_typescript_1.DEFAULT_OPTIONS))
                             ]);
                         };
-                        return convert_1["default"](itf)
-                            .then(writeItf);
+                        return convert_1["default"](itf).then(writeItf);
                     }));
                 })];
         });

@@ -33,7 +33,19 @@ function writeFile(filepath: string, contents: string) {
   });
 }
 
-function createApi(projectId: number, folder: string) {
+interface CreateApiParams {
+  projectId: number;
+  folder: string;
+  requestFactory: () => string;
+  urlMapper?: (url: string) => string;
+}
+
+async function createApi({
+  projectId,
+  folder,
+  requestFactory,
+  urlMapper = s => s
+}: CreateApiParams) {
   return axios
     .get(`http://rap2api.alibaba-inc.com/repository/get?id=${projectId}`)
     .then(response => {
@@ -43,19 +55,21 @@ function createApi(projectId: number, folder: string) {
         .flatten()
         .value();
 
-      return Promise.all(interfaces.map(itf => {
-        const writeItf = ([reqItf, resItf]) => {
-          const itfFileName = urlToPath(folder, itf.url, '-itf');
-          return Promise.all([
-            writeFile(
-              itfFileName,
-              format(
-                `/**
+      return Promise.all(
+        interfaces.map(itf => {
+          const url = urlMapper(itf.url);
+          const writeItf = ([reqItf, resItf]: [string, string]) => {
+            const itfFileName = urlToPath(folder, url, '-itf');
+            return Promise.all([
+              writeFile(
+                itfFileName,
+                format(
+                  `/**
                 * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
                 * 接口名：${itf.name}
                 * Rap: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}&itf=${
-                  itf.id
-                }
+                    itf.id
+                  }
                 */
               const url: string = '${itf.url}';
               const method: string = '${itf.method}'
@@ -64,47 +78,35 @@ function createApi(projectId: number, folder: string) {
               ${reqItf}
     
               ${resItf}`,
-                DEFAULT_OPTIONS
-              )
-            ),
-            writeFile(
-              urlToPath(folder, itf.url),
-              format(
-                `/**
+                  DEFAULT_OPTIONS
+                )
+              ),
+              writeFile(
+                urlToPath(folder, url),
+                format(
+                  `/**
                 * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
                 * 接口名：${itf.name}
                 * Rap: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}&itf=${
-                  itf.id
-                }
+                    itf.id
+                  }
                 */
-                import axios, { AxiosRequestConfig } from 'axios';
                 import { Req, Res, url, method } from './${path.basename(
                   itfFileName,
                   path.extname(itfFileName)
                 )}';
-                export default function(req: Req, cfg?: AxiosRequestConfig): Promise<Res> {
-                  return new Promise<Res>((resolve, reject) => {
-                    axios({
-                      url,
-                      method,
-                      ...cfg
-                    })
-                      .then(res => {
-                        const data: Res = res.data;
-                        resolve(data);
-                      })
-                      .catch(reject);
-                  });
-                }
+                /* 自定义请求代码开始 */
+                ${requestFactory()}
+                /* 自定义请求代码结束 */
                 `,
-                DEFAULT_OPTIONS
+                  DEFAULT_OPTIONS
+                )
               )
-            )
-          ]);
-        };
-        return convert(itf)
-          .then(writeItf);
-      }));
+            ]);
+          };
+          return convert(itf).then(writeItf);
+        })
+      );
     });
 }
 
