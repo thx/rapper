@@ -73,10 +73,6 @@ async function createApi({
                     itf.id
                   }
                 */
-              const url: string = '${itf.url}';
-              const method: string = '${itf.method}'
-              export { url, method };
-    
               ${reqItf}
     
               ${resItf}`,
@@ -93,7 +89,7 @@ async function createApi({
                     itf.id
                   }
                 */
-                import { Req, Res, url, method } from './${path.basename(
+                import { Req, Res } from './${path.basename(
                   itfFileName,
                   path.extname(itfFileName)
                 )}';

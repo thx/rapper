@@ -11,8 +11,8 @@ createApi({
     const Manager = BaseManager.create(BaseModel);
     Manager.registerModels([{
       name: 'request',
-      url: url,
-      type: method
+      url: '${itf.url}',
+      type: '${itf.method}'
     }])
     function request(req: ${ReqType}, alertError: boolean = true): Promise<${ResType}['data']> {
       return new Promise<${ResType}['data']>((resolve, reject) => {
