@@ -69,7 +69,7 @@ async function createApi({
                   `/**
                 * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
                 * 接口名：${itf.name}
-                * Rap: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}&itf=${
+                * Rap: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}&mod=${itf.moduleId}&itf=${
                     itf.id
                   }
                 */
@@ -85,7 +85,7 @@ async function createApi({
                   `/**
                 * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
                 * 接口名：${itf.name}
-                * Rap: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}&itf=${
+                * Rap: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}&mod=${itf.moduleId}&itf=${
                     itf.id
                   }
                 */
