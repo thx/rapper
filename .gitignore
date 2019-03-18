@@ -1,4 +1,5 @@
 api
+model
 # Logs
 logs
 *.log

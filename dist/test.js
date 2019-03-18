@@ -12,9 +12,9 @@ api_1.createApi({
     urlMapper: function (url) { return url.replace('https://brandsearch.taobao.com', 'brandsearch'); }
 })
     .then(function () {
-    console.log('success');
+    console.log('api success');
 })["catch"](function (err) {
-    console.log(err);
+    console.log('api', err);
 });
 api_1.createModel({
     projectId: 2025,
@@ -26,9 +26,9 @@ api_1.createModel({
     }
 })
     .then(function () {
-    console.log('success');
+    console.log('model success');
 })["catch"](function (err) {
-    console.log(err);
+    console.log('model', err);
 });
 // namespace A {
 //   export namespace api_solutionComponent_userTemplate_list_get {

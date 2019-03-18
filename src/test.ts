@@ -1,5 +1,6 @@
-import createApi = require('./api');
+import { createApi, createModel } from './api';
 import { resolve } from 'path';
+import { parse as parseUrl } from 'url';
 
 createApi({
   projectId: 2025,
@@ -31,11 +32,42 @@ createApi({
     export default request;
     `;
   },
-  urlMapper: (url) => url.replace('https://brandsearch.taobao.com', 'brandsearch')
+  urlMapper: url => url.replace('https://brandsearch.taobao.com', 'brandsearch')
 })
   .then(() => {
-    console.log('success');
+    console.log('api success');
   })
   .catch(err => {
-    console.log(err);
+    console.log('api', err);
   });
+
+createModel({
+  projectId: 2025,
+  modelPath: resolve(__dirname, '../model/model.ts'),
+  urlMapper: url =>
+    parseUrl(url)
+      .pathname.replace(/^\//, '')
+      .replace(/.json$/, '')
+})
+  .then(() => {
+    console.log('model success');
+  })
+  .catch(err => {
+    console.log('model', err);
+  });
+
+// namespace A {
+//   export namespace api_solutionComponent_userTemplate_list_get {
+//     export interface Req {
+
+//     }
+//   }
+
+//   export namespace api_campaign_page_get {
+//     export interface Req {
+
+//     }
+//   }
+// }
+
+// const a: A.

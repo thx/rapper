@@ -34,6 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+exports.__esModule = true;
 var convert_1 = require("./convert");
 var axios_1 = require("axios");
 var _ = require("lodash");
@@ -42,6 +43,9 @@ var fs = require("fs");
 var mkdirp = require("mkdirp");
 var formatter_1 = require("json-schema-to-typescript/dist/src/formatter");
 var json_schema_to_typescript_1 = require("json-schema-to-typescript");
+function formatCode(code) {
+    return formatter_1.format(code, json_schema_to_typescript_1.DEFAULT_OPTIONS);
+}
 function urlToName(url, namePrefix) {
     if (namePrefix === void 0) { namePrefix = ''; }
     url = url.trim();
@@ -52,6 +56,10 @@ function urlToPath(folder, url, suffix) {
     var relativePath = url.trim().replace(/^\/+/g, '');
     var newFileName = path.join(path.dirname(relativePath), "" + urlToName(relativePath) + suffix + ".ts");
     return path.resolve(folder, newFileName);
+}
+function itfToModelName(itf, urlMapper) {
+    var url = urlMapper(itf.url.trim());
+    return url.split('/').concat([itf.method.toLowerCase()]).join('_');
 }
 function writeFile(filepath, contents) {
     return new Promise(function (resolve, reject) {
@@ -66,11 +74,9 @@ function writeFile(filepath, contents) {
         });
     });
 }
-function createApi(_a) {
-    var projectId = _a.projectId, folder = _a.folder, requestFactory = _a.requestFactory, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (s) { return s; } : _b;
+function getInterfaces(projectId) {
     return __awaiter(this, void 0, void 0, function () {
-        var _this = this;
-        return __generator(this, function (_c) {
+        return __generator(this, function (_a) {
             return [2 /*return*/, axios_1["default"]
                     .get("http://rap2api.alibaba-inc.com/repository/get?id=" + projectId)
                     .then(function (response) {
@@ -79,6 +85,17 @@ function createApi(_a) {
                         .map(function (m) { return m.interfaces; })
                         .flatten()
                         .value();
+                    return interfaces;
+                })];
+        });
+    });
+}
+function createApi(_a) {
+    var projectId = _a.projectId, folder = _a.folder, requestFactory = _a.requestFactory, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (s) { return s; } : _b;
+    return __awaiter(this, void 0, void 0, function () {
+        var _this = this;
+        return __generator(this, function (_c) {
+            return [2 /*return*/, getInterfaces(projectId).then(function (interfaces) {
                     return Promise.all(interfaces.map(function (itf) { return __awaiter(_this, void 0, void 0, function () {
                         var url, writeItf;
                         return __generator(this, function (_a) {
@@ -87,15 +104,40 @@ function createApi(_a) {
                                 var reqItf = _a[0], resItf = _a[1];
                                 var itfFileName = urlToPath(folder, url, '-itf');
                                 return Promise.all([
-                                    writeFile(itfFileName, formatter_1.format("/**\n                * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n                * \u63A5\u53E3\u540D\uFF1A" + itf.name + "\n                * Rap: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "&mod=" + itf.moduleId + "&itf=" + itf.id + "\n                */\n              " + reqItf + "\n    \n              " + resItf, json_schema_to_typescript_1.DEFAULT_OPTIONS)),
-                                    writeFile(urlToPath(folder, url), formatter_1.format("/**\n                * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n                * \u63A5\u53E3\u540D\uFF1A" + itf.name + "\n                * Rap: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "&mod=" + itf.moduleId + "&itf=" + itf.id + "\n                */\n                import { Req, Res } from './" + path.basename(itfFileName, path.extname(itfFileName)) + "';\n                /* \u81EA\u5B9A\u4E49\u8BF7\u6C42\u4EE3\u7801\u5F00\u59CB */\n                " + requestFactory(itf, 'Req', 'Res') + "\n                /* \u81EA\u5B9A\u4E49\u8BF7\u6C42\u4EE3\u7801\u7ED3\u675F */\n                ", json_schema_to_typescript_1.DEFAULT_OPTIONS))
+                                    writeFile(itfFileName, formatCode("/**\n              * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n              * \u63A5\u53E3\u540D\uFF1A" + itf.name + "\n              * Rap: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "&mod=" + itf.moduleId + "&itf=" + itf.id + "\n              */\n            " + reqItf + "\n  \n            " + resItf)),
+                                    writeFile(urlToPath(folder, url), formatCode("/**\n              * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n              * \u63A5\u53E3\u540D\uFF1A" + itf.name + "\n              * Rap: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "&mod=" + itf.moduleId + "&itf=" + itf.id + "\n              */\n              import { Req, Res } from './" + path.basename(itfFileName, path.extname(itfFileName)) + "';\n              /* \u81EA\u5B9A\u4E49\u8BF7\u6C42\u4EE3\u7801\u5F00\u59CB */\n              " + requestFactory(itf, 'Req', 'Res') + "\n              /* \u81EA\u5B9A\u4E49\u8BF7\u6C42\u4EE3\u7801\u7ED3\u675F */\n              "))
                                 ]);
                             };
-                            return [2 /*return*/, convert_1["default"](itf).then(writeItf)["catch"](function (err) { return url + "+" + err; })];
+                            return [2 /*return*/, convert_1["default"](itf)
+                                    .then(writeItf)["catch"](function (err) { return url + "+" + err; })];
                         });
                     }); }));
                 })];
         });
     });
 }
-module.exports = createApi;
+exports.createApi = createApi;
+function createModel(_a) {
+    var projectId = _a.projectId, modelPath = _a.modelPath, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (t) { return t; } : _b;
+    return __awaiter(this, void 0, void 0, function () {
+        var interfaces, itfStrs, modelItf;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0: return [4 /*yield*/, getInterfaces(projectId)];
+                case 1:
+                    interfaces = _c.sent();
+                    return [4 /*yield*/, Promise.all(interfaces.map(function (itf) {
+                            return convert_1["default"](itf).then(function (_a) {
+                                var reqItf = _a[0], resItf = _a[1];
+                                return "\n        /**\n         * \u63A5\u53E3\u540D\uFF1A" + itf.name + "\n         * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "&mod=" + itf.moduleId + "&itf=" + itf.id + "\n         */\n        export namespace " + itfToModelName(itf, urlMapper) + " {\n          " + reqItf + "\n\n          " + resItf + "\n        }\n      ";
+                            });
+                        }))];
+                case 2:
+                    itfStrs = _c.sent();
+                    modelItf = formatCode("\n    /**\n     * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n     * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "\n     */\n    export namespace ModelItf {\n      " + itfStrs.join('\n\n') + "\n    }\n  ");
+                    return [2 /*return*/, writeFile(modelPath, modelItf)];
+            }
+        });
+    });
+}
+exports.createModel = createModel;
