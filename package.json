@@ -5,7 +5,7 @@
   "main": "./dist/api.js",
   "scripts": {
     "build": "./node_modules/typescript/bin/tsc -p tsconfig.json",
-    "clean": "rm -rf api model",
+    "clean": "rm -rf test_data/model test_data/api",
     "api": "node ./dist/test",
     "test": "npm run clean && npm run build && npm run api"
   },

@@ -4,7 +4,7 @@ import { parse as parseUrl } from 'url';
 
 createApi({
   projectId: 2025,
-  folder: resolve(__dirname, '../api'),
+  folder: resolve(__dirname, '../test_data/api'),
   requestFactory: (itf, ReqType, ResType) => {
     return `
     import BaseManager = require('mxext/mmanager');
@@ -43,7 +43,9 @@ createApi({
 
 createModel({
   projectId: 2025,
-  modelPath: resolve(__dirname, '../model/model.ts'),
+  modelPath: resolve(__dirname, '../test_data/model/model.ts'),
+  requesterPath: resolve(__dirname, '../test_data/model/fetch.ts'),
+  baseFetchPath: resolve(__dirname, './basefetch.ts'),
   urlMapper: url =>
     parseUrl(url)
       .pathname.replace(/^\//, '')
@@ -56,18 +58,4 @@ createModel({
     console.log('model', err);
   });
 
-// namespace A {
-//   export namespace api_solutionComponent_userTemplate_list_get {
-//     export interface Req {
 
-//     }
-//   }
-
-//   export namespace api_campaign_page_get {
-//     export interface Req {
-
-//     }
-//   }
-// }
-
-// const a: A.

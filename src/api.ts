@@ -17,6 +17,14 @@ function urlToName(url: string, namePrefix: string = ''): string {
   return namePrefix + path.basename(url, path.extname(url));
 }
 
+function withoutExt(p: string) {
+  return p.replace(/\.[^/.]+$/, '');
+}
+
+function relativeImport(from: string, to: string) {
+  return withoutExt('./' + path.relative(path.dirname(from), to));
+}
+
 function urlToPath(folder: string, url: string, suffix: string = ''): string {
   const relativePath = url.trim().replace(/^\/+/g, '');
   const newFileName = path.join(
@@ -132,10 +140,14 @@ export async function createApi({
 export async function createModel({
   projectId,
   modelPath,
+  requesterPath: fetcherPath,
+  baseFetchPath,
   urlMapper = t => t
 }: {
   projectId: number;
   modelPath: string;
+  requesterPath?: string;
+  baseFetchPath?: string;
   urlMapper?: UrlMapper;
 }) {
   const interfaces = await getInterfaces(projectId);
@@ -146,8 +158,8 @@ export async function createModel({
         /**
          * 接口名：${itf.name}
          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}&mod=${
-             itf.moduleId
-           }&itf=${itf.id}
+          itf.moduleId
+        }&itf=${itf.id}
          */
         export namespace ${itfToModelName(itf, urlMapper)} {
           ${reqItf}
@@ -165,7 +177,37 @@ export async function createModel({
      */
     export namespace ModelItf {
       ${itfStrs.join('\n\n')}
-    }
+    };
   `);
-  return writeFile(modelPath, modelItf);
+  if (fetcherPath) {
+    const relModelPath = relativeImport(fetcherPath, modelPath);
+    const relBaseFetchPath = relativeImport(fetcherPath, baseFetchPath);
+
+    const fetcher = formatCode(`
+    /**
+     * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
+     * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
+     */
+    import fetch from '${relBaseFetchPath}';
+    import { ModelItf } from '${relModelPath}';
+    const request = {
+      ${interfaces
+        .map(itf => {
+          const modelName = itfToModelName(itf, urlMapper);
+          return `
+        '${modelName}': (req: ModelItf.${modelName}.Req | object = {}): Promise<ModelItf.${modelName}.Res> => {
+          return fetch('${itf.url}', req) as Promise<ModelItf.${modelName}.Res>;
+        }`;
+        })
+        .join(',\n\n')}
+    };
+    export default request;
+  `);
+    return Promise.all([
+      writeFile(modelPath, modelItf),
+      writeFile(fetcherPath, fetcher)
+    ]);
+  } else {
+    return writeFile(modelPath, modelItf);
+  }
 }

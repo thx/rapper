@@ -51,6 +51,12 @@ function urlToName(url, namePrefix) {
     url = url.trim();
     return namePrefix + path.basename(url, path.extname(url));
 }
+function withoutExt(p) {
+    return p.replace(/\.[^/.]+$/, '');
+}
+function relativeImport(from, to) {
+    return withoutExt('./' + path.relative(path.dirname(from), to));
+}
 function urlToPath(folder, url, suffix) {
     if (suffix === void 0) { suffix = ''; }
     var relativePath = url.trim().replace(/^\/+/g, '');
@@ -118,9 +124,9 @@ function createApi(_a) {
 }
 exports.createApi = createApi;
 function createModel(_a) {
-    var projectId = _a.projectId, modelPath = _a.modelPath, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (t) { return t; } : _b;
+    var projectId = _a.projectId, modelPath = _a.modelPath, fetcherPath = _a.fetcherPath, baseFetchPath = _a.baseFetchPath, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (t) { return t; } : _b;
     return __awaiter(this, void 0, void 0, function () {
-        var interfaces, itfStrs, modelItf;
+        var interfaces, itfStrs, modelItf, relModelPath, relBaseFetchPath, fetcher;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0: return [4 /*yield*/, getInterfaces(projectId)];
@@ -134,8 +140,25 @@ function createModel(_a) {
                         }))];
                 case 2:
                     itfStrs = _c.sent();
-                    modelItf = formatCode("\n    /**\n     * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n     * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "\n     */\n    export namespace ModelItf {\n      " + itfStrs.join('\n\n') + "\n    }\n  ");
-                    return [2 /*return*/, writeFile(modelPath, modelItf)];
+                    modelItf = formatCode("\n    /**\n     * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n     * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "\n     */\n    export namespace ModelItf {\n      " + itfStrs.join('\n\n') + "\n    };\n  ");
+                    if (fetcherPath) {
+                        relModelPath = relativeImport(fetcherPath, modelPath);
+                        relBaseFetchPath = relativeImport(fetcherPath, baseFetchPath);
+                        fetcher = formatCode("\n    /**\n     * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n     * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "\n     */\n    import fetch from '" + relBaseFetchPath + "';\n    import { ModelItf } from '" + relModelPath + "';\n    const request = {\n      " + interfaces
+                            .map(function (itf) {
+                            var modelName = itfToModelName(itf, urlMapper);
+                            return "\n        '" + modelName + "': (req: ModelItf." + modelName + ".Req | object = {}): Promise<ModelItf." + modelName + ".Res> => {\n          return fetch('" + itf.url + "', req) as Promise<ModelItf." + modelName + ".Res>;\n        }";
+                        })
+                            .join(',\n\n') + "\n    };\n    export default request;\n  ");
+                        return [2 /*return*/, Promise.all([
+                                writeFile(modelPath, modelItf),
+                                writeFile(fetcherPath, fetcher)
+                            ])];
+                    }
+                    else {
+                        return [2 /*return*/, writeFile(modelPath, modelItf)];
+                    }
+                    return [2 /*return*/];
             }
         });
     });
