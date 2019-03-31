@@ -147,7 +147,7 @@ function createModel(_a) {
                         fetcher = formatCode("\n    /**\n     * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n     * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "\n     */\n    import fetch from '" + relBaseFetchPath + "';\n    import { ModelItf } from '" + relModelPath + "';\n    const request = {\n      " + interfaces
                             .map(function (itf) {
                             var modelName = itfToModelName(itf, urlMapper);
-                            return "\n        '" + modelName + "': (req: ModelItf." + modelName + ".Req | object = {}): Promise<ModelItf." + modelName + ".Res> => {\n          return fetch('" + itf.url + "', req) as Promise<ModelItf." + modelName + ".Res>;\n        }";
+                            return "\n        '" + modelName + "': (req: ModelItf." + modelName + ".Req): Promise<ModelItf." + modelName + ".Res> => {\n          return fetch('" + itf.url + "','" + itf.method.toUpperCase() + "', req) as Promise<ModelItf." + modelName + ".Res>;\n        }";
                         })
                             .join(',\n\n') + "\n    };\n    export default request;\n  ");
                         return [2 /*return*/, Promise.all([
