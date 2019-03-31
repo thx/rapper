@@ -34,12 +34,12 @@ createApi({
   },
   urlMapper: url => url.replace('https://brandsearch.taobao.com', 'brandsearch')
 })
-  .then(() => {
-    console.log('api success');
-  })
-  .catch(err => {
-    console.log('api', err);
-  });
+.then(() => {
+  console.log('rapper:generate api success');
+})
+.catch(err => {
+  console.log('rapper:generate api failed', err);
+});
 
 createModel({
   projectId: 2025,
@@ -52,10 +52,8 @@ createModel({
       .replace(/.json$/, '')
 })
   .then(() => {
-    console.log('model success');
+    console.log('rapper:generate model success');
   })
   .catch(err => {
-    console.log('model', err);
+    console.log('rapper:generate model failed', err);
   });
-
-
