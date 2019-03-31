@@ -140,7 +140,7 @@ export async function createApi({
 export async function createModel({
   projectId,
   modelPath,
-  requesterPath: fetcherPath,
+  requesterPath,
   baseFetchPath,
   urlMapper = t => t
 }: {
@@ -179,9 +179,9 @@ export async function createModel({
       ${itfStrs.join('\n\n')}
     };
   `);
-  if (fetcherPath) {
-    const relModelPath = relativeImport(fetcherPath, modelPath);
-    const relBaseFetchPath = relativeImport(fetcherPath, baseFetchPath);
+  if (requesterPath) {
+    const relModelPath = relativeImport(requesterPath, modelPath);
+    const relBaseFetchPath = relativeImport(requesterPath, baseFetchPath);
 
     const fetcher = formatCode(`
     /**
@@ -205,7 +205,7 @@ export async function createModel({
   `);
     return Promise.all([
       writeFile(modelPath, modelItf),
-      writeFile(fetcherPath, fetcher)
+      writeFile(requesterPath, fetcher)
     ]);
   } else {
     return writeFile(modelPath, modelItf);

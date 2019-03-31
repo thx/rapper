@@ -12,14 +12,14 @@ api_1.createApi({
     urlMapper: function (url) { return url.replace('https://brandsearch.taobao.com', 'brandsearch'); }
 })
     .then(function () {
-    console.log('api success');
+    console.log('rapper:generate api success');
 })["catch"](function (err) {
-    console.log('api', err);
+    console.log('rapper:generate api failed', err);
 });
 api_1.createModel({
     projectId: 2025,
     modelPath: path_1.resolve(__dirname, '../test_data/model/model.ts'),
-    fetcherPath: path_1.resolve(__dirname, '../test_data/model/fetch.ts'),
+    requesterPath: path_1.resolve(__dirname, '../test_data/model/fetch.ts'),
     baseFetchPath: path_1.resolve(__dirname, './basefetch.ts'),
     urlMapper: function (url) {
         return url_1.parse(url)
@@ -28,7 +28,7 @@ api_1.createModel({
     }
 })
     .then(function () {
-    console.log('model success');
+    console.log('rapper:generate model success');
 })["catch"](function (err) {
-    console.log('model', err);
+    console.log('rapper:generate model failed', err);
 });
