@@ -85,7 +85,7 @@ export async function createApi({
   folder,
   requestFactory,
   urlMapper = s => s,
-  additionalProperties = true
+  additionalProperties = false
 }: CreateApiParams) {
   return getInterfaces(projectId).then(interfaces => {
     return Promise.all(
@@ -145,7 +145,7 @@ export async function createModel({
   requesterPath,
   baseFetchPath,
   urlMapper = t => t,
-  additionalProperties = true
+  additionalProperties = false
 }: {
   projectId: number;
   modelPath: string;

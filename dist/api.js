@@ -97,7 +97,7 @@ function getInterfaces(projectId) {
     });
 }
 function createApi(_a) {
-    var projectId = _a.projectId, folder = _a.folder, requestFactory = _a.requestFactory, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (s) { return s; } : _b, _c = _a.additionalProperties, additionalProperties = _c === void 0 ? true : _c;
+    var projectId = _a.projectId, folder = _a.folder, requestFactory = _a.requestFactory, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (s) { return s; } : _b, _c = _a.additionalProperties, additionalProperties = _c === void 0 ? false : _c;
     return __awaiter(this, void 0, void 0, function () {
         var _this = this;
         return __generator(this, function (_d) {
@@ -124,7 +124,7 @@ function createApi(_a) {
 }
 exports.createApi = createApi;
 function createModel(_a) {
-    var projectId = _a.projectId, modelPath = _a.modelPath, requesterPath = _a.requesterPath, baseFetchPath = _a.baseFetchPath, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (t) { return t; } : _b, _c = _a.additionalProperties, additionalProperties = _c === void 0 ? true : _c;
+    var projectId = _a.projectId, modelPath = _a.modelPath, requesterPath = _a.requesterPath, baseFetchPath = _a.baseFetchPath, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (t) { return t; } : _b, _c = _a.additionalProperties, additionalProperties = _c === void 0 ? false : _c;
     return __awaiter(this, void 0, void 0, function () {
         var interfaces, itfStrs, modelItf, relModelPath, relBaseFetchPath, fetcher;
         return __generator(this, function (_d) {
