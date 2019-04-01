@@ -21,6 +21,7 @@ api_1.createModel({
     modelPath: path_1.resolve(__dirname, '../test_data/model/model.ts'),
     requesterPath: path_1.resolve(__dirname, '../test_data/model/fetch.ts'),
     baseFetchPath: path_1.resolve(__dirname, './basefetch.ts'),
+    additionalProperties: false,
     urlMapper: function (url) {
         return url_1.parse(url)
             .pathname.replace(/^\//, '')

@@ -27,7 +27,7 @@ function rapSchema2JSONSchema(rapSchema) {
             .value()
     };
 }
-function interfaceToJSONSchema(itf, scope) {
+function interfaceToJSONSchema(itf, scope, additionalProperties) {
     var properties = itf.properties.filter(function (p) { return p.scope === scope; });
     function findChildren(parentId) {
         return _.chain(properties)
@@ -47,13 +47,17 @@ function interfaceToJSONSchema(itf, scope) {
             else if (type === 'object') {
                 return [
                     p.name,
-                    __assign({ type: type, properties: children }, common)
+                    __assign({ type: type, properties: children, additionalProperties: additionalProperties }, common)
                 ];
             }
             else if (type === 'array') {
                 return [
                     p.name,
-                    __assign({ type: type, items: { type: 'object', properties: children } }, common)
+                    __assign({ type: type, items: {
+                            type: 'object',
+                            properties: children,
+                            additionalProperties: additionalProperties
+                        } }, common)
                 ];
             }
             else {
@@ -66,19 +70,21 @@ function interfaceToJSONSchema(itf, scope) {
     var propertyChildren = findChildren(-1);
     if (_.isEmpty(properties)) {
         return {
-            type: 'object'
+            type: 'object',
+            additionalProperties: additionalProperties
         };
     }
     else {
         return {
             type: 'object',
-            properties: propertyChildren
+            properties: propertyChildren,
+            additionalProperties: additionalProperties
         };
     }
 }
-function convert(itf) {
-    var reqJSONSchema = interfaceToJSONSchema(itf, 'request');
-    var resJSONSchema = interfaceToJSONSchema(itf, 'response');
+function convert(itf, additionalProperties) {
+    var reqJSONSchema = interfaceToJSONSchema(itf, 'request', additionalProperties);
+    var resJSONSchema = interfaceToJSONSchema(itf, 'response', additionalProperties);
     var options = __assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS, { bannerComment: '' });
     return Promise.all([
         json_schema_to_typescript_1.compile(reqJSONSchema, 'Req', options),

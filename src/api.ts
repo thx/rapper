@@ -77,13 +77,15 @@ interface CreateApiParams {
   folder: string;
   requestFactory: RequestFactory;
   urlMapper?: UrlMapper;
+  additionalProperties?: boolean
 }
 
 export async function createApi({
   projectId,
   folder,
   requestFactory,
-  urlMapper = s => s
+  urlMapper = s => s,
+  additionalProperties = true
 }: CreateApiParams) {
   return getInterfaces(projectId).then(interfaces => {
     return Promise.all(
@@ -129,7 +131,7 @@ export async function createApi({
             )
           ]);
         };
-        return convert(itf)
+        return convert(itf, additionalProperties)
           .then(writeItf)
           .catch(err => `${url}+${err}`);
       })
@@ -142,18 +144,20 @@ export async function createModel({
   modelPath,
   requesterPath,
   baseFetchPath,
-  urlMapper = t => t
+  urlMapper = t => t,
+  additionalProperties = true
 }: {
   projectId: number;
   modelPath: string;
   requesterPath?: string;
   baseFetchPath?: string;
   urlMapper?: UrlMapper;
+  additionalProperties?: boolean;
 }) {
   const interfaces = await getInterfaces(projectId);
   const itfStrs = await Promise.all(
     interfaces.map(itf => {
-      return convert(itf).then(([reqItf, resItf]) => {
+      return convert(itf, additionalProperties).then(([reqItf, resItf]) => {
         return `
         /**
          * 接口名：${itf.name}

@@ -19,7 +19,11 @@ function rapSchema2JSONSchema(rapSchema): JSONSchema4 {
 
 type Scope = 'request' | 'response';
 
-function interfaceToJSONSchema(itf, scope: Scope): JSONSchema4 {
+function interfaceToJSONSchema(
+  itf,
+  scope: Scope,
+  additionalProperties: boolean
+): JSONSchema4 {
   const properties: Array<any> = itf.properties.filter(p => p.scope === scope);
   function findChildren(parentId: number) {
     return _.chain(properties)
@@ -43,6 +47,7 @@ function interfaceToJSONSchema(itf, scope: Scope): JSONSchema4 {
             {
               type,
               properties: children,
+              additionalProperties,
               ...common
             }
           ];
@@ -51,7 +56,11 @@ function interfaceToJSONSchema(itf, scope: Scope): JSONSchema4 {
             p.name,
             {
               type,
-              items: { type: 'object', properties: children },
+              items: {
+                type: 'object',
+                properties: children,
+                additionalProperties
+              },
               ...common
             }
           ];
@@ -69,19 +78,32 @@ function interfaceToJSONSchema(itf, scope: Scope): JSONSchema4 {
   const propertyChildren = findChildren(-1);
   if (_.isEmpty(properties)) {
     return {
-      type: 'object'
+      type: 'object',
+      additionalProperties
     };
   } else {
     return {
       type: 'object',
-      properties: propertyChildren
+      properties: propertyChildren,
+      additionalProperties
     };
   }
 }
 
-export default function convert(itf): Promise<Array<string>> {
-  const reqJSONSchema = interfaceToJSONSchema(itf, 'request');
-  const resJSONSchema = interfaceToJSONSchema(itf, 'response');
+export default function convert(
+  itf,
+  additionalProperties: boolean
+): Promise<Array<string>> {
+  const reqJSONSchema = interfaceToJSONSchema(
+    itf,
+    'request',
+    additionalProperties
+  );
+  const resJSONSchema = interfaceToJSONSchema(
+    itf,
+    'response',
+    additionalProperties
+  );
 
   const options: Options = {
     ...DEFAULT_OPTIONS,
