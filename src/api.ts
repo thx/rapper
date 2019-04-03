@@ -149,6 +149,7 @@ export async function createModel({
   requesterPath,
   baseFetchPath,
   urlMapper = t => t,
+  useCommonJsModule = false,
   additionalProperties = false
 }: {
   projectId: number;
@@ -156,6 +157,7 @@ export async function createModel({
   requesterPath?: string;
   baseFetchPath?: string;
   urlMapper?: UrlMapper;
+  useCommonJsModule?: boolean;
   additionalProperties?: boolean;
 }) {
   const interfaces = await getInterfaces(projectId);
@@ -196,8 +198,17 @@ export async function createModel({
      * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
      * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
      */
+    ${
+      useCommonJsModule
+        ? `
+      import fetch =  require('${relBaseFetchPath}');
+      import { ModelItf } from '${relModelPath}';
+      `
+        : `
     import fetch from '${relBaseFetchPath}';
     import { ModelItf } from '${relModelPath}';
+    `
+    }
     const request = {
       ${interfaces
         .map(itf => {
@@ -211,7 +222,16 @@ export async function createModel({
         })
         .join(',\n\n')}
     };
-    export default request;
+
+    ${
+      useCommonJsModule
+        ? `
+      export = request;
+      `
+        : `
+      export default request;
+      `
+    }
   `);
     return Promise.all([
       writeFile(modelPath, modelItf),

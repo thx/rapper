@@ -109,7 +109,6 @@ function createApi(_a) {
                         var url, writeItf;
                         return __generator(this, function (_a) {
                             url = urlMapper(itf.url);
-                            console.log('url ' + url);
                             writeItf = function (_a) {
                                 var reqItf = _a[0], resItf = _a[1];
                                 var itfFileName = urlToPath(folder, url, '-itf');
@@ -128,14 +127,14 @@ function createApi(_a) {
 }
 exports.createApi = createApi;
 function createModel(_a) {
-    var projectId = _a.projectId, modelPath = _a.modelPath, requesterPath = _a.requesterPath, baseFetchPath = _a.baseFetchPath, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (t) { return t; } : _b, _c = _a.additionalProperties, additionalProperties = _c === void 0 ? false : _c;
+    var projectId = _a.projectId, modelPath = _a.modelPath, requesterPath = _a.requesterPath, baseFetchPath = _a.baseFetchPath, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (t) { return t; } : _b, _c = _a.useCommonJsModule, useCommonJsModule = _c === void 0 ? false : _c, _d = _a.additionalProperties, additionalProperties = _d === void 0 ? false : _d;
     return __awaiter(this, void 0, void 0, function () {
         var interfaces, itfStrs, modelItf, relModelPath, relBaseFetchPath, fetcher;
-        return __generator(this, function (_d) {
-            switch (_d.label) {
+        return __generator(this, function (_e) {
+            switch (_e.label) {
                 case 0: return [4 /*yield*/, getInterfaces(projectId)];
                 case 1:
-                    interfaces = _d.sent();
+                    interfaces = _e.sent();
                     return [4 /*yield*/, Promise.all(interfaces.map(function (itf) {
                             return convert_1["default"](itf, additionalProperties).then(function (_a) {
                                 var reqItf = _a[0], resItf = _a[1];
@@ -143,17 +142,21 @@ function createModel(_a) {
                             });
                         }))];
                 case 2:
-                    itfStrs = _d.sent();
+                    itfStrs = _e.sent();
                     modelItf = formatCode("\n    /**\n     * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n     * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "\n     */\n    export namespace ModelItf {\n      " + itfStrs.join('\n\n') + "\n    };\n  ");
                     if (requesterPath) {
                         relModelPath = relativeImport(requesterPath, modelPath);
                         relBaseFetchPath = relativeImport(requesterPath, baseFetchPath);
-                        fetcher = formatCode("\n    /**\n     * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n     * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "\n     */\n    import fetch from '" + relBaseFetchPath + "';\n    import { ModelItf } from '" + relModelPath + "';\n    const request = {\n      " + interfaces
+                        fetcher = formatCode("\n    /**\n     * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n     * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "\n     */\n    " + (useCommonJsModule
+                            ? "\n      import fetch =  require('" + relBaseFetchPath + "');\n      import { ModelItf } from '" + relModelPath + "';\n      "
+                            : "\n    import fetch from '" + relBaseFetchPath + "';\n    import { ModelItf } from '" + relModelPath + "';\n    ") + "\n    const request = {\n      " + interfaces
                             .map(function (itf) {
                             var modelName = itfToModelName(itf, urlMapper);
                             return "\n        '" + modelName + "': (req: ModelItf." + modelName + ".Req): Promise<ModelItf." + modelName + ".Res> => {\n          return fetch('" + itf.url + "','" + itf.method.toUpperCase() + "', req) as Promise<ModelItf." + modelName + ".Res>;\n        }";
                         })
-                            .join(',\n\n') + "\n    };\n    export default request;\n  ");
+                            .join(',\n\n') + "\n    };\n\n    " + (useCommonJsModule
+                            ? "\n      export = request;\n      "
+                            : "\n      export default request;\n      ") + "\n  ");
                         return [2 /*return*/, Promise.all([
                                 writeFile(modelPath, modelItf),
                                 writeFile(requesterPath, fetcher)

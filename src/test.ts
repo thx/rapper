@@ -47,6 +47,7 @@ createModel({
   requesterPath: resolve(__dirname, '../test_data/model/fetch.ts'),
   baseFetchPath: resolve(__dirname, './basefetch.ts'),
   additionalProperties: false,
+  useCommonJsModule: true,
   // urlMapper: url =>
   // parseUrl(url)
   //   .pathname.replace(/^\//, '')
