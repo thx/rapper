@@ -34,8 +34,12 @@ function urlToPath(folder: string, url: string, suffix: string = ''): string {
   return path.resolve(folder, newFileName);
 }
 
-function itfToModelName(itf: Interface.Root, urlMapper: UrlMapper) {
-  const url = urlMapper(itf.url.trim());
+function itfToModelName(itf: Interface.Root, urlMapper: UrlMapper = t => t) {
+  const url = withoutExt(
+    urlMapper(itf.url)
+      .trim()
+      .replace(/^\/+/g, '')
+  );
   return [...url.split('/'), itf.method.toLowerCase()].join('_');
 }
 
@@ -77,7 +81,7 @@ interface CreateApiParams {
   folder: string;
   requestFactory: RequestFactory;
   urlMapper?: UrlMapper;
-  additionalProperties?: boolean
+  additionalProperties?: boolean;
 }
 
 export async function createApi({
@@ -200,7 +204,9 @@ export async function createModel({
           const modelName = itfToModelName(itf, urlMapper);
           return `
         '${modelName}': (req: ModelItf.${modelName}.Req): Promise<ModelItf.${modelName}.Res> => {
-          return fetch('${itf.url}','${itf.method.toUpperCase()}', req) as Promise<ModelItf.${modelName}.Res>;
+          return fetch('${
+            itf.url
+          }','${itf.method.toUpperCase()}', req) as Promise<ModelItf.${modelName}.Res>;
         }`;
         })
         .join(',\n\n')}

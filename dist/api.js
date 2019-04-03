@@ -64,7 +64,10 @@ function urlToPath(folder, url, suffix) {
     return path.resolve(folder, newFileName);
 }
 function itfToModelName(itf, urlMapper) {
-    var url = urlMapper(itf.url.trim());
+    if (urlMapper === void 0) { urlMapper = function (t) { return t; }; }
+    var url = withoutExt(urlMapper(itf.url)
+        .trim()
+        .replace(/^\/+/g, ''));
     return url.split('/').concat([itf.method.toLowerCase()]).join('_');
 }
 function writeFile(filepath, contents) {
@@ -106,6 +109,7 @@ function createApi(_a) {
                         var url, writeItf;
                         return __generator(this, function (_a) {
                             url = urlMapper(itf.url);
+                            console.log('url ' + url);
                             writeItf = function (_a) {
                                 var reqItf = _a[0], resItf = _a[1];
                                 var itfFileName = urlToPath(folder, url, '-itf');

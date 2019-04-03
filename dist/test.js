@@ -2,7 +2,6 @@
 exports.__esModule = true;
 var api_1 = require("./api");
 var path_1 = require("path");
-var url_1 = require("url");
 api_1.createApi({
     projectId: 2025,
     folder: path_1.resolve(__dirname, '../test_data/api'),
@@ -22,11 +21,7 @@ api_1.createModel({
     requesterPath: path_1.resolve(__dirname, '../test_data/model/fetch.ts'),
     baseFetchPath: path_1.resolve(__dirname, './basefetch.ts'),
     additionalProperties: false,
-    urlMapper: function (url) {
-        return url_1.parse(url)
-            .pathname.replace(/^\//, '')
-            .replace(/.json$/, '');
-    }
+    urlMapper: function (url) { return url.replace('https://brandsearch.taobao.com', 'brandsearch'); }
 })
     .then(function () {
     console.log('rapper:generate model success');
