@@ -209,15 +209,16 @@ export async function createModel({
     import { ModelItf } from '${relModelPath}';
     `
     }
+    type Extra = Parameters<typeof fetch>[3];
     const request = {
       ${interfaces
         .map(itf => {
           const modelName = itfToModelName(itf, urlMapper);
           return `
-        '${modelName}': (req: ModelItf.${modelName}.Req): Promise<ModelItf.${modelName}.Res> => {
+        '${modelName}': (req: ModelItf.${modelName}.Req, extra: Extra): Promise<ModelItf.${modelName}.Res> => {
           return fetch('${
             itf.url
-          }','${itf.method.toUpperCase()}', req) as Promise<ModelItf.${modelName}.Res>;
+          }','${itf.method.toUpperCase()}', req, extra) as Promise<ModelItf.${modelName}.Res>;
         }`;
         })
         .join(',\n\n')}
