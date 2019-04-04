@@ -215,7 +215,7 @@ export async function createModel({
         .map(itf => {
           const modelName = itfToModelName(itf, urlMapper);
           return `
-        '${modelName}': (req: ModelItf.${modelName}.Req, extra: Extra): Promise<ModelItf.${modelName}.Res> => {
+        '${modelName}': (req: ModelItf.${modelName}.Req, extra?: Extra): Promise<ModelItf.${modelName}.Res> => {
           return fetch('${
             itf.url
           }','${itf.method.toUpperCase()}', req, extra) as Promise<ModelItf.${modelName}.Res>;
