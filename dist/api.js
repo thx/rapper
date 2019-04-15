@@ -152,7 +152,7 @@ function createModel(_a) {
                             : "\n    import fetch from '" + relBaseFetchPath + "';\n    import { ModelItf } from '" + relModelPath + "';\n    ") + "\n    type Extra = Parameters<typeof fetch>[3];\n    const request = {\n      " + interfaces
                             .map(function (itf) {
                             var modelName = itfToModelName(itf, urlMapper);
-                            return "\n        '" + modelName + "': (req: ModelItf." + modelName + ".Req, extra?: Extra): Promise<ModelItf." + modelName + ".Res> => {\n          return fetch('" + itf.url + "','" + itf.method.toUpperCase() + "', req, extra) as Promise<ModelItf." + modelName + ".Res>;\n        }";
+                            return "\n        '" + modelName + "': (req: ModelItf." + modelName + ".Req, extra?: Extra) => {\n          return fetch<ModelItf." + modelName + ".Res>('" + itf.url + "','" + itf.method.toUpperCase() + "', req, extra);\n        }";
                         })
                             .join(',\n\n') + "\n    };\n\n    " + (useCommonJsModule
                             ? "\n      export = request;\n      "
