@@ -1,11 +1,11 @@
 {
   "name": "@ali/rapper",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "rapper, use http api as a function",
   "main": "./dist/api.js",
   "scripts": {
     "build": "./node_modules/typescript/bin/tsc -p tsconfig.json",
-    "clean": "rm -rf test_data/model test_data/api",
+    "clean": "rm -rf test_data/model/fetch.ts test_data/model/model.ts test_data/api",
     "api": "node ./dist/test",
     "test": "npm run clean && npm run build && npm run api"
   },
@@ -23,7 +23,9 @@
     "@types/react": "^16.4.18",
     "axios": "^0.18.0",
     "camelcase": "^5.0.0",
+    "chalk": "^2.4.2",
     "json-schema-to-typescript": "^6.0.1",
+    "json5": "^2.1.0",
     "lodash": "^4.17.11",
     "mkdirp": "^0.5.1"
   },
@@ -34,6 +36,7 @@
     "registry": "http://registry.npm.alibaba-inc.com"
   },
   "devDependencies": {
+    "@types/json5": "0.0.30",
     "ts-node": "^7.0.1",
     "typescript": "^3.1.6"
   }

@@ -1,23 +1,29 @@
-import { compile, Options, DEFAULT_OPTIONS } from 'json-schema-to-typescript';
 import { JSONSchema4 } from 'json-schema';
+import { compile, DEFAULT_OPTIONS, Options } from 'json-schema-to-typescript';
+import { Interface } from './itf';
+import * as JSON5 from 'json5';
 import * as _ from 'lodash';
 
-function rapSchema2JSONSchema(rapSchema): JSONSchema4 {
-  if (!rapSchema.properties) {
-    return {
-      type: rapSchema.type
-    };
+function inferArrayType(p: Interface.Property): string[] | string {
+  // 当 rule 为 +1 时 mockjs 从属性值 array 中顺序选取 1 个元素，作为最终值。
+  // 当 rule 为 1 时 mockjs 从属性值 array 中随机选取 1 个元素，作为最终值。
+  // 这时候这个属性的类型并非 array，而是 array 子元素的类型
+  // 子元素的类型可以从 value 中推断出来
+  const rule = p.rule && p.rule.trim() || '';
+  if (['1', '+1'].includes(rule) && p.value != null) {
+    try {
+      const arr: any[] = JSON5.parse(p.value);
+      return _.chain(arr).map(e => typeof e).uniq().value();
+    } catch (error) {
+      return ['string', 'number', 'boolean', 'object'];
+    }
   }
-  return {
-    type: rapSchema.type,
-    properties: _(rapSchema.properties)
-      .map(p => [p.name, rapSchema2JSONSchema(p)])
-      .fromPairs()
-      .value()
-  };
+  return 'array';
 }
 
 type Scope = 'request' | 'response';
+
+const removeComment = (str: string) => str.replace(/\/\*|\*\//g, '');
 
 function interfaceToJSONSchema(
   itf,
@@ -32,7 +38,7 @@ function interfaceToJSONSchema(
         const type = p.type.toLowerCase().replace(/regexp|function/, 'string');
         const children = findChildren(p.id);
         const common: { description?: string } = {};
-        if (p.description) common.description = p.description;
+        if (p.description) common.description = removeComment(p.description);
         if (['string', 'number', 'integer', 'boolean', 'null'].includes(type)) {
           return [
             p.name,
@@ -52,18 +58,29 @@ function interfaceToJSONSchema(
             }
           ];
         } else if (type === 'array') {
-          return [
-            p.name,
-            {
-              type,
-              items: {
-                type: 'object',
-                properties: children,
-                additionalProperties
-              },
-              ...common
-            }
-          ];
+          const inferedType = inferArrayType(p);
+          if (typeof inferedType === 'string' && inferedType === 'array') {
+            return [
+              p.name,
+              {
+                type,
+                items: {
+                  type: 'object',
+                  properties: children,
+                  additionalProperties
+                },
+                ...common
+              }
+            ];
+          } else {
+            return [
+              p.name,
+              {
+                type: inferedType,
+                ...common
+              }
+            ];
+          }
         } else {
           throw `type: ${type}
           parentID: ${parentId}

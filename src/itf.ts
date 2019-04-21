@@ -5,7 +5,7 @@ export namespace Interface {
         type: string;
         pos: number;
         name: string;
-        rule?: any;
+        rule?: string;
         value: string;
         description: string;
         parentId: number;
