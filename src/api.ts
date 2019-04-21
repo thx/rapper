@@ -284,9 +284,9 @@ export async function createModel({
     getIntfWithModelName(await getInterfaces(projectId), urlMapper)
   );
   const itfStrs = await Promise.all(
-    interfaces.map(itf => {
-      return convert(itf, additionalProperties).then(([reqItf, resItf]) => {
-        return `
+    interfaces.map(async itf => {
+      const [reqItf, resItf] = await convert(itf, additionalProperties);
+      return `
         /**
          * 接口名：${itf.name}
          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${
@@ -298,7 +298,6 @@ export async function createModel({
           Res: ${resItf.replace('export interface Res', '')};
         }
       `;
-      });
     })
   );
   const modelItf = formatCode(`
@@ -315,10 +314,10 @@ export async function createModel({
     const relBaseFetchPath = relativeImport(requesterPath, baseFetchPath);
 
     const fetcher = formatCode(`
-    /**
-     * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
-     * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
-     */
+      /**
+       * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
+       * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
+       */
     ${
       useCommonJsModule
         ? `
@@ -326,32 +325,32 @@ export async function createModel({
       import { ModelItf } from '${relModelPath}';
       `
         : `
-    import fetch from '${relBaseFetchPath}';
-    import { ModelItf } from '${relModelPath}';
+      import fetch from '${relBaseFetchPath}';
+      import { ModelItf } from '${relModelPath}';
     `
     }
-    type Extra = Parameters<typeof fetch>[3];
-    const request = {
-      ${interfaces
-        .map(itf => {
-          const modelName = itfToModelName(itf, urlMapper);
-          return `
-        /**
-         * 接口名：${itf.name}
-         * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${
-           itf.repositoryId
-         }&mod=${itf.moduleId}&itf=${itf.id}
-         * @param req 请求参数
-         * @param extra 请求配置项
-         */
-        '${modelName}': (req: ModelItf['${modelName}']['Req'], extra?: Extra) => {
-          return fetch<ModelItf['${modelName}']['Res']>('${
-            itf.url
-          }','${itf.method.toUpperCase()}', req, extra);
-        }`;
-        })
-        .join(',\n\n')}
-    };
+      type Extra = Parameters<typeof fetch>[3];
+      const request = {
+        ${interfaces
+          .map(itf => {
+            const modelName = itfToModelName(itf, urlMapper);
+            return `
+          /**
+           * 接口名：${itf.name}
+           * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${
+             itf.repositoryId
+           }&mod=${itf.moduleId}&itf=${itf.id}
+          * @param req 请求参数
+          * @param extra 请求配置项
+          */
+          '${modelName}': (req: ModelItf['${modelName}']['Req'], extra?: Extra) => {
+            return fetch<ModelItf['${modelName}']['Res']>('${
+              itf.url
+            }','${itf.method.toUpperCase()}', req, extra);
+          }`;
+          })
+          .join(',\n\n')}
+      };
 
     ${
       useCommonJsModule

@@ -108,7 +108,7 @@ function interfaceToJSONSchema(
 }
 
 export default function convert(
-  itf,
+  itf: Interface.Root,
   additionalProperties: boolean
 ): Promise<Array<string>> {
   const reqJSONSchema = interfaceToJSONSchema(
