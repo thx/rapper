@@ -43,10 +43,9 @@ function getIntfWithModelName(
   urlMapper: UrlMapper = t => t
 ): Intf[] {
   return intfs.map(itf => {
-    itf.url = urlMapper(itf.url);
     return {
       ...itf,
-      modelName: rap2name(itf)
+      modelName: rap2name(itf, urlMapper)
     };
   });
 }
@@ -90,10 +89,10 @@ function uniqueItfs(itfs: Intf[]) {
   return newItfs;
 }
 
-function rap2name(itf: Interface.Root) {
+function rap2name(itf: Interface.Root, urlMapper: UrlMapper = t => t) {
   // copy from http://gitlab.alibaba-inc.com/thx/magix-cli/blob/master/util/rap.js
   let method = itf.method.toLowerCase();
-  let apiUrl = itf.url;
+  let apiUrl = urlMapper(itf.url);
   let projectId = itf.repositoryId;
   const id = itf.id;
 
@@ -132,10 +131,6 @@ function rap2name(itf: Interface.Root) {
 
   const urlToName = urlSplit.join('_');
   return urlToName;
-}
-function itfToModelName(itf: Intf, urlMapper: UrlMapper = t => t) {
-  itf.url = urlMapper(itf.url);
-  return rap2name(itf);
 }
 
 function writeFile(filepath: string, contents: string) {
@@ -293,7 +288,7 @@ export async function createModel({
            itf.repositoryId
          }&mod=${itf.moduleId}&itf=${itf.id}
          */
-        '${itfToModelName(itf, urlMapper)}': {
+        '${itf.modelName}': {
           Req: ${reqItf.replace('export interface Req', '')};
           Res: ${resItf.replace('export interface Res', '')};
         }
@@ -333,7 +328,7 @@ export async function createModel({
       const request = {
         ${interfaces
           .map(itf => {
-            const modelName = itfToModelName(itf, urlMapper);
+            const modelName = itf.modelName;
             return `
           /**
            * 接口名：${itf.name}

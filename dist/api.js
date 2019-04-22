@@ -78,8 +78,7 @@ function urlToPath(folder, url, suffix) {
 function getIntfWithModelName(intfs, urlMapper) {
     if (urlMapper === void 0) { urlMapper = function (t) { return t; }; }
     return intfs.map(function (itf) {
-        itf.url = urlMapper(itf.url);
-        return __assign({}, itf, { modelName: rap2name(itf) });
+        return __assign({}, itf, { modelName: rap2name(itf, urlMapper) });
     });
 }
 function uniqueItfs(itfs) {
@@ -114,10 +113,11 @@ function uniqueItfs(itfs) {
     });
     return newItfs;
 }
-function rap2name(itf) {
+function rap2name(itf, urlMapper) {
+    if (urlMapper === void 0) { urlMapper = function (t) { return t; }; }
     // copy from http://gitlab.alibaba-inc.com/thx/magix-cli/blob/master/util/rap.js
     var method = itf.method.toLowerCase();
-    var apiUrl = itf.url;
+    var apiUrl = urlMapper(itf.url);
     var projectId = itf.repositoryId;
     var id = itf.id;
     var regExp = /^(?:https?:\/\/[^\/]+)?(\/?.+?\/?)(?:\.[^./]+)?$/;
@@ -146,11 +146,6 @@ function rap2name(itf) {
     urlSplit.push(method);
     var urlToName = urlSplit.join('_');
     return urlToName;
-}
-function itfToModelName(itf, urlMapper) {
-    if (urlMapper === void 0) { urlMapper = function (t) { return t; }; }
-    itf.url = urlMapper(itf.url);
-    return rap2name(itf);
 }
 function writeFile(filepath, contents) {
     return new Promise(function (resolve, reject) {
@@ -238,7 +233,7 @@ function createModel(_a) {
                                     case 0: return [4 /*yield*/, convert_1["default"](itf, additionalProperties)];
                                     case 1:
                                         _a = _b.sent(), reqItf = _a[0], resItf = _a[1];
-                                        return [2 /*return*/, "\n        /**\n         * \u63A5\u53E3\u540D\uFF1A" + itf.name + "\n         * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + itf.repositoryId + "&mod=" + itf.moduleId + "&itf=" + itf.id + "\n         */\n        '" + itfToModelName(itf, urlMapper) + "': {\n          Req: " + reqItf.replace('export interface Req', '') + ";\n          Res: " + resItf.replace('export interface Res', '') + ";\n        }\n      "];
+                                        return [2 /*return*/, "\n        /**\n         * \u63A5\u53E3\u540D\uFF1A" + itf.name + "\n         * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + itf.repositoryId + "&mod=" + itf.moduleId + "&itf=" + itf.id + "\n         */\n        '" + itf.modelName + "': {\n          Req: " + reqItf.replace('export interface Req', '') + ";\n          Res: " + resItf.replace('export interface Res', '') + ";\n        }\n      "];
                                 }
                             });
                         }); }))];
@@ -252,7 +247,7 @@ function createModel(_a) {
                             ? "\n      import fetch =  require('" + relBaseFetchPath + "');\n      import { ModelItf } from '" + relModelPath + "';\n      "
                             : "\n      import fetch from '" + relBaseFetchPath + "';\n      import { ModelItf } from '" + relModelPath + "';\n    ") + "\n      type Extra = Parameters<typeof fetch>[3];\n      const request = {\n        " + interfaces
                             .map(function (itf) {
-                            var modelName = itfToModelName(itf, urlMapper);
+                            var modelName = itf.modelName;
                             return "\n          /**\n           * \u63A5\u53E3\u540D\uFF1A" + itf.name + "\n           * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + itf.repositoryId + "&mod=" + itf.moduleId + "&itf=" + itf.id + "\n          * @param req \u8BF7\u6C42\u53C2\u6570\n          * @param extra \u8BF7\u6C42\u914D\u7F6E\u9879\n          */\n          '" + modelName + "': (req: ModelItf['" + modelName + "']['Req'], extra?: Extra) => {\n            return fetch<ModelItf['" + modelName + "']['Res']>('" + itf.url + "','" + itf.method.toUpperCase() + "', req, extra);\n          }";
                         })
                             .join(',\n\n') + "\n      };\n\n    " + (useCommonJsModule

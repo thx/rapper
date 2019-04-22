@@ -42,12 +42,17 @@ var path_1 = require("path");
 // });
 api_1.createModel({
     // projectId: 2428, // 直通车
-    projectId: 3014,
+    projectId: 2025,
     modelPath: path_1.resolve(__dirname, '../test_data/model/model.ts'),
     requesterPath: path_1.resolve(__dirname, '../test_data/model/fetch.ts'),
     baseFetchPath: path_1.resolve(__dirname, './basefetch.ts'),
     additionalProperties: false,
-    useCommonJsModule: true
+    useCommonJsModule: true,
+    // urlMapper: url =>
+    // parseUrl(url)
+    //   .pathname.replace(/^\//, '')
+    //   .replace(/\.json|\.htm$/, ''),
+    urlMapper: function (url) { return url.replace('https://brandsearch.taobao.com', 'brandsearch'); }
 })
     .then(function () {
     console.log('rapper:generate model success');
