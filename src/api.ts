@@ -265,7 +265,8 @@ export async function createModel({
   baseFetchPath,
   urlMapper = t => t,
   useCommonJsModule = false,
-  additionalProperties = false
+  additionalProperties = false,
+  optionalExtra = true
 }: {
   projectId: number;
   modelPath: string;
@@ -274,6 +275,7 @@ export async function createModel({
   urlMapper?: UrlMapper;
   useCommonJsModule?: boolean;
   additionalProperties?: boolean;
+  optionalExtra?: boolean;
 }) {
   let interfaces = uniqueItfs(
     getIntfWithModelName(await getInterfaces(projectId), urlMapper)
@@ -346,7 +348,7 @@ export async function createModel({
           * @param req 请求参数
           * @param extra 请求配置项
           */
-          '${modelName}': (req: ModelItf['${modelName}']['Req'], extra?: Extra) => {
+          '${modelName}': (req: ModelItf['${modelName}']['Req'], extra${optionalExtra ? '?' : ''}: Extra) => {
             return fetch<ModelItf['${modelName}']['Res']>('${
               itf.url
             }','${itf.method.toUpperCase()}', req, extra);

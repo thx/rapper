@@ -48,7 +48,13 @@ api_1.createModel({
     requesterPath: path_1.resolve(__dirname, '../test_data/model/fetch.ts'),
     baseFetchPath: path_1.resolve(__dirname, './basefetch.ts'),
     additionalProperties: false,
-    useCommonJsModule: true
+    useCommonJsModule: true,
+    optionalExtra: false
+    // urlMapper: url =>
+    // parseUrl(url)
+    //   .pathname.replace(/^\//, '')
+    //   .replace(/\.json|\.htm$/, ''),
+    // urlMapper: url => url.replace('https://brandsearch.taobao.com', 'brandsearch')
 })
     .then(function () {
     console.log('rapper:generate model success');

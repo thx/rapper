@@ -214,18 +214,18 @@ function createApi(_a) {
 }
 exports.createApi = createApi;
 function createModel(_a) {
-    var projectId = _a.projectId, modelPath = _a.modelPath, requesterPath = _a.requesterPath, baseFetchPath = _a.baseFetchPath, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (t) { return t; } : _b, _c = _a.useCommonJsModule, useCommonJsModule = _c === void 0 ? false : _c, _d = _a.additionalProperties, additionalProperties = _d === void 0 ? false : _d;
+    var projectId = _a.projectId, modelPath = _a.modelPath, requesterPath = _a.requesterPath, baseFetchPath = _a.baseFetchPath, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (t) { return t; } : _b, _c = _a.useCommonJsModule, useCommonJsModule = _c === void 0 ? false : _c, _d = _a.additionalProperties, additionalProperties = _d === void 0 ? false : _d, _e = _a.optionalExtra, optionalExtra = _e === void 0 ? true : _e;
     return __awaiter(this, void 0, void 0, function () {
-        var interfaces, _e, _f, itfStrs, modelItf, relModelPath, relBaseFetchPath, fetcher;
+        var interfaces, _f, _g, itfStrs, modelItf, relModelPath, relBaseFetchPath, fetcher;
         var _this = this;
-        return __generator(this, function (_g) {
-            switch (_g.label) {
+        return __generator(this, function (_h) {
+            switch (_h.label) {
                 case 0:
-                    _e = uniqueItfs;
-                    _f = getIntfWithModelName;
+                    _f = uniqueItfs;
+                    _g = getIntfWithModelName;
                     return [4 /*yield*/, getInterfaces(projectId)];
                 case 1:
-                    interfaces = _e.apply(void 0, [_f.apply(void 0, [_g.sent(), urlMapper])]);
+                    interfaces = _f.apply(void 0, [_g.apply(void 0, [_h.sent(), urlMapper])]);
                     return [4 /*yield*/, Promise.all(interfaces.map(function (itf) { return __awaiter(_this, void 0, void 0, function () {
                             var _a, reqItf, resItf, error_1;
                             return __generator(this, function (_b) {
@@ -244,7 +244,7 @@ function createModel(_a) {
                             });
                         }); }))];
                 case 2:
-                    itfStrs = _g.sent();
+                    itfStrs = _h.sent();
                     modelItf = formatCode("\n    /**\n     * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n     * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "\n     */\n    export interface ModelItf {\n      " + itfStrs.join('\n\n') + "\n    };\n  ");
                     if (requesterPath) {
                         relModelPath = relativeImport(requesterPath, modelPath);
@@ -254,7 +254,7 @@ function createModel(_a) {
                             : "\n      import fetch from '" + relBaseFetchPath + "';\n      import { ModelItf } from '" + relModelPath + "';\n    ") + "\n      type Extra = Parameters<typeof fetch>[3];\n      const request = {\n        " + interfaces
                             .map(function (itf) {
                             var modelName = itf.modelName;
-                            return "\n          /**\n           * \u63A5\u53E3\u540D\uFF1A" + itf.name + "\n           * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + itf.repositoryId + "&mod=" + itf.moduleId + "&itf=" + itf.id + "\n          * @param req \u8BF7\u6C42\u53C2\u6570\n          * @param extra \u8BF7\u6C42\u914D\u7F6E\u9879\n          */\n          '" + modelName + "': (req: ModelItf['" + modelName + "']['Req'], extra?: Extra) => {\n            return fetch<ModelItf['" + modelName + "']['Res']>('" + itf.url + "','" + itf.method.toUpperCase() + "', req, extra);\n          }";
+                            return "\n          /**\n           * \u63A5\u53E3\u540D\uFF1A" + itf.name + "\n           * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + itf.repositoryId + "&mod=" + itf.moduleId + "&itf=" + itf.id + "\n          * @param req \u8BF7\u6C42\u53C2\u6570\n          * @param extra \u8BF7\u6C42\u914D\u7F6E\u9879\n          */\n          '" + modelName + "': (req: ModelItf['" + modelName + "']['Req'], extra" + (optionalExtra ? '?' : '') + ": Extra) => {\n            return fetch<ModelItf['" + modelName + "']['Res']>('" + itf.url + "','" + itf.method.toUpperCase() + "', req, extra);\n          }";
                         })
                             .join(',\n\n') + "\n      };\n\n    " + (useCommonJsModule
                             ? "\n      export = request;\n      "

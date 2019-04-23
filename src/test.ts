@@ -56,6 +56,7 @@ createModel({
   baseFetchPath: resolve(__dirname, './basefetch.ts'),
   additionalProperties: false,
   useCommonJsModule: true,
+  optionalExtra: false
   // urlMapper: url =>
   // parseUrl(url)
   //   .pathname.replace(/^\//, '')
