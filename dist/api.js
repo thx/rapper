@@ -227,13 +227,19 @@ function createModel(_a) {
                 case 1:
                     interfaces = _e.apply(void 0, [_f.apply(void 0, [_g.sent(), urlMapper])]);
                     return [4 /*yield*/, Promise.all(interfaces.map(function (itf) { return __awaiter(_this, void 0, void 0, function () {
-                            var _a, reqItf, resItf;
+                            var _a, reqItf, resItf, error_1;
                             return __generator(this, function (_b) {
                                 switch (_b.label) {
-                                    case 0: return [4 /*yield*/, convert_1["default"](itf, additionalProperties)];
+                                    case 0:
+                                        _b.trys.push([0, 2, , 3]);
+                                        return [4 /*yield*/, convert_1["default"](itf, additionalProperties)];
                                     case 1:
                                         _a = _b.sent(), reqItf = _a[0], resItf = _a[1];
-                                        return [2 /*return*/, "\n        /**\n         * \u63A5\u53E3\u540D\uFF1A" + itf.name + "\n         * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + itf.repositoryId + "&mod=" + itf.moduleId + "&itf=" + itf.id + "\n         */\n        '" + itf.modelName + "': {\n          Req: " + reqItf.replace('export interface Req', '') + ";\n          Res: " + resItf.replace('export interface Res', '') + ";\n        }\n      "];
+                                        return [2 /*return*/, "\n          /**\n           * \u63A5\u53E3\u540D\uFF1A" + itf.name + "\n           * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + itf.repositoryId + "&mod=" + itf.moduleId + "&itf=" + itf.id + "\n           */\n          '" + itf.modelName + "': {\n            Req: " + reqItf.replace('export interface Req', '') + ";\n            Res: " + resItf.replace('export interface Res', '') + ";\n          }\n        "];
+                                    case 2:
+                                        error_1 = _b.sent();
+                                        throw chalk_1["default"].red("\u63A5\u53E3\uFF1Ahttp://rap2.alibaba-inc.com/repository/editor?id=" + itf.repositoryId + "&mod=" + itf.moduleId + "&itf=" + itf.id + "\n        \u751F\u6210\u51FA\u9519\n        " + error_1);
+                                    case 3: return [2 /*return*/];
                                 }
                             });
                         }); }))];

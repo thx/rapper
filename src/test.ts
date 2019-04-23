@@ -48,8 +48,9 @@ export interface Model {
 // });
 
 createModel({
-  // projectId: 2428, // 直通车
-  projectId: 2025,
+  projectId: 2428, // 直通车
+  // projectId: 3014, // 示源 / 官方运营工作台
+  // projectId: 2025,
   modelPath: resolve(__dirname, '../test_data/model/model.ts'),
   requesterPath: resolve(__dirname, '../test_data/model/fetch.ts'),
   baseFetchPath: resolve(__dirname, './basefetch.ts'),
@@ -59,7 +60,7 @@ createModel({
   // parseUrl(url)
   //   .pathname.replace(/^\//, '')
   //   .replace(/\.json|\.htm$/, ''),
-  urlMapper: url => url.replace('https://brandsearch.taobao.com', 'brandsearch')
+  // urlMapper: url => url.replace('https://brandsearch.taobao.com', 'brandsearch')
 })
   .then(() => {
     console.log('rapper:generate model success');

@@ -1,13 +1,13 @@
 {
   "name": "@ali/rapper",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "rapper, use http api as a function",
   "main": "./dist/api.js",
   "scripts": {
     "build": "./node_modules/typescript/bin/tsc -p tsconfig.json",
     "clean": "rm -rf test_data/model/fetch.ts test_data/model/model.ts test_data/api",
     "api": "node ./dist/test",
-    "test": "npm run clean && npm run build && npm run api"
+    "test": "npm run build && npm run api"
   },
   "repository": {
     "type": "git",

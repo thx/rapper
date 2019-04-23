@@ -280,19 +280,27 @@ export async function createModel({
   );
   const itfStrs = await Promise.all(
     interfaces.map(async itf => {
-      const [reqItf, resItf] = await convert(itf, additionalProperties);
-      return `
-        /**
-         * 接口名：${itf.name}
-         * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${
-           itf.repositoryId
-         }&mod=${itf.moduleId}&itf=${itf.id}
-         */
-        '${itf.modelName}': {
-          Req: ${reqItf.replace('export interface Req', '')};
-          Res: ${resItf.replace('export interface Res', '')};
-        }
-      `;
+      try {
+        const [reqItf, resItf] = await convert(itf, additionalProperties);
+        return `
+          /**
+           * 接口名：${itf.name}
+           * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${
+             itf.repositoryId
+           }&mod=${itf.moduleId}&itf=${itf.id}
+           */
+          '${itf.modelName}': {
+            Req: ${reqItf.replace('export interface Req', '')};
+            Res: ${resItf.replace('export interface Res', '')};
+          }
+        `;
+      } catch (error) {
+        throw chalk.red(`接口：http://rap2.alibaba-inc.com/repository/editor?id=${
+          itf.repositoryId
+        }&mod=${itf.moduleId}&itf=${itf.id}
+        生成出错
+        ${error}`);
+      }
     })
   );
   const modelItf = formatCode(`
