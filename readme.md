@@ -14,7 +14,7 @@ Object 的类型会根据子节点推断
 
 ### 2.
 
-当 rule 为 +1 时 mockjs 从属性值 a=Array 中顺序选取 1 个元素，作为最终值。
+当 rule 为 +1 时 mockjs 从属性值 Array 中顺序选取 1 个元素，作为最终值。
 
 当 rule 为 1 时 mockjs 从属性值 Array 中随机选取 1 个元素，作为最终值。
 
