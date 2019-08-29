@@ -14,7 +14,8 @@
             ],
             "args": [
                 "${workspaceFolder}/src/test.ts"
-            ]
+            ],
+            "sourceMaps": true
         }
     ]
 }
