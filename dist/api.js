@@ -96,9 +96,7 @@ function uniqueItfs(itfs) {
     itfMap.forEach(function (dupItfs, name) {
         dupItfs.sort(
         // 后更改的在前面
-        function (a, b) {
-            return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-        });
+        function (a, b) { return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(); });
         newItfs.push(dupItfs[0]);
         if (dupItfs.length > 1) {
             console.log(chalk_1["default"].yellow('发现重复接口，修改时间最晚的被采纳：\n') +
@@ -201,7 +199,7 @@ function createApi(_a) {
                                 var itfFileName = urlToPath(folder, url, '-itf');
                                 return Promise.all([
                                     writeFile(itfFileName, formatCode("/**\n              * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n              * \u63A5\u53E3\u540D\uFF1A" + itf.name + "\n              * Rap: http://rap2.alibaba-inc.com/repository/editor?id=" + itf.repositoryId + "&mod=" + itf.moduleId + "&itf=" + itf.id + "\n              */\n            " + reqItf + "\n  \n            " + resItf)),
-                                    writeFile(urlToPath(folder, url), formatCode("/**\n              * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n              * \u63A5\u53E3\u540D\uFF1A" + itf.name + "\n              * Rap: http://rap2.alibaba-inc.com/repository/editor?id=" + itf.repositoryId + "&mod=" + itf.moduleId + "&itf=" + itf.id + "\n              */\n              import { Req, Res } from './" + path.basename(itfFileName, path.extname(itfFileName)) + "';\n              /* \u81EA\u5B9A\u4E49\u8BF7\u6C42\u4EE3\u7801\u5F00\u59CB */\n              " + requestFactory(itf, 'Req', 'Res') + "\n              /* \u81EA\u5B9A\u4E49\u8BF7\u6C42\u4EE3\u7801\u7ED3\u675F */\n              "))
+                                    writeFile(urlToPath(folder, url), formatCode("/**\n              * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n              * \u63A5\u53E3\u540D\uFF1A" + itf.name + "\n              * Rap: http://rap2.alibaba-inc.com/repository/editor?id=" + itf.repositoryId + "&mod=" + itf.moduleId + "&itf=" + itf.id + "\n              */\n              import { Req, Res } from './" + path.basename(itfFileName, path.extname(itfFileName)) + "';\n              /* \u81EA\u5B9A\u4E49\u8BF7\u6C42\u4EE3\u7801\u5F00\u59CB */\n              " + requestFactory(itf, 'Req', 'Res') + "\n              /* \u81EA\u5B9A\u4E49\u8BF7\u6C42\u4EE3\u7801\u7ED3\u675F */\n              ")),
                                 ]);
                             };
                             return [2 /*return*/, convert_1["default"](itf, additionalProperties)
@@ -259,10 +257,7 @@ function createModel(_a) {
                             .join(',\n\n') + "\n      };\n\n    " + (useCommonJsModule
                             ? "\n      export = request;\n      "
                             : "\n      export default request;\n      ") + "\n  ");
-                        return [2 /*return*/, Promise.all([
-                                writeFile(modelPath, modelItf),
-                                writeFile(requesterPath, fetcher)
-                            ])];
+                        return [2 /*return*/, Promise.all([writeFile(modelPath, modelItf), writeFile(requesterPath, fetcher)])];
                     }
                     else {
                         return [2 /*return*/, writeFile(modelPath, modelItf)];

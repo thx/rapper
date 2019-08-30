@@ -24,7 +24,7 @@ function inferArraySchema(p, childProperties, additionalProperties, common) {
                     type: 'object',
                     properties: childProperties,
                     additionalProperties: additionalProperties
-                } }, common)
+                } }, common),
         ];
     }
     else if (['+1', '1'].includes(rule) && p.value) {
@@ -41,14 +41,14 @@ function inferArraySchema(p, childProperties, additionalProperties, common) {
                     .value();
                 return [
                     p.name,
-                    __assign({ type: type }, common)
+                    __assign({ type: type }, common),
                 ];
             }
             else {
                 // 解析失败，返回 any
                 return [
                     p.name,
-                    __assign({ type: ['string', 'number', 'boolean', 'object'] }, common)
+                    __assign({ type: ['string', 'number', 'boolean', 'object'] }, common),
                 ];
             }
         }
@@ -56,7 +56,7 @@ function inferArraySchema(p, childProperties, additionalProperties, common) {
             // 解析失败，返回 any
             return [
                 p.name,
-                __assign({ type: ['string', 'number', 'boolean', 'object'] }, common)
+                __assign({ type: ['string', 'number', 'boolean', 'object'] }, common),
             ];
         }
     }
@@ -75,7 +75,7 @@ function inferArraySchema(p, childProperties, additionalProperties, common) {
                     p.name,
                     __assign({ type: 'array', items: {
                             type: type
-                        } }, common)
+                        } }, common),
                 ];
             }
             else {
@@ -85,7 +85,7 @@ function inferArraySchema(p, childProperties, additionalProperties, common) {
                     p.name,
                     __assign({ type: 'array', items: {
                             type: type
-                        } }, common)
+                        } }, common),
                 ];
             }
         }
@@ -93,7 +93,7 @@ function inferArraySchema(p, childProperties, additionalProperties, common) {
             // 解析失败 返回 array<any>
             return [
                 p.name,
-                __assign({ type: 'array' }, common)
+                __assign({ type: 'array' }, common),
             ];
         }
     }
@@ -101,7 +101,7 @@ function inferArraySchema(p, childProperties, additionalProperties, common) {
         // 无生成规则也无值，生成 array<any>
         return [
             p.name,
-            __assign({ type: 'array' }, common)
+            __assign({ type: 'array' }, common),
         ];
     }
 }
@@ -123,13 +123,13 @@ function interfaceToJSONSchema(itf, scope, additionalProperties) {
             if (['string', 'number', 'integer', 'boolean', 'null'].includes(type)) {
                 return [
                     p.name,
-                    __assign({ type: type }, common)
+                    __assign({ type: type }, common),
                 ];
             }
             else if (type === 'object') {
                 return [
                     p.name,
-                    __assign({ type: type, properties: childProperties, additionalProperties: additionalProperties }, common)
+                    __assign({ type: type, properties: childProperties, additionalProperties: additionalProperties }, common),
                 ];
             }
             else if (type === 'array') {
@@ -161,9 +161,6 @@ function convert(itf, additionalProperties) {
     var reqJSONSchema = interfaceToJSONSchema(itf, 'request', additionalProperties);
     var resJSONSchema = interfaceToJSONSchema(itf, 'response', additionalProperties);
     var options = __assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS, { bannerComment: '' });
-    return Promise.all([
-        json_schema_to_typescript_1.compile(reqJSONSchema, 'Req', options),
-        json_schema_to_typescript_1.compile(resJSONSchema, 'Res', options)
-    ]);
+    return Promise.all([json_schema_to_typescript_1.compile(reqJSONSchema, 'Req', options), json_schema_to_typescript_1.compile(resJSONSchema, 'Res', options)]);
 }
 exports["default"] = convert;

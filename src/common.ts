@@ -1,6 +1,8 @@
 import axios from 'axios'
 import * as _ from 'lodash'
 import chalk from 'chalk'
+import { format } from 'json-schema-to-typescript/dist/src/formatter'
+import { DEFAULT_OPTIONS } from 'json-schema-to-typescript'
 import { Interface, Intf, UrlMapper } from './types'
 
 interface Collaborator {
@@ -39,10 +41,20 @@ export async function getInterfaces(projectId: number) {
     return interfaces
 }
 
-/** 重命名rap接口地址
- * 比如 magix 将 / 转换成 _
+/** 给接口增加 modelName */
+export function getIntfWithModelName(intfs: Interface.Root[], urlMapper: UrlMapper = t => t, noTransform?: boolean): Intf[] {
+    return intfs.map(itf => ({
+        ...itf,
+        modelName: rap2name(itf, urlMapper, noTransform),
+    }))
+}
+
+/**
+ * 转换rap接口地址
+ * 比如 magix 将 / 转换成 _ ，RESTful接口，清除占位符
+ * 参数 noTransform 用来配置是否 将 / 转换成 _ ，默认转换
  */
-export function rap2name(itf: Interface.Root, urlMapper: UrlMapper = t => t) {
+export function rap2name(itf: Interface.Root, urlMapper: UrlMapper = t => t, noTransform?: boolean) {
     // copy from http://gitlab.alibaba-inc.com/thx/magix-cli/blob/master/util/rap.js
     let method = itf.method.toLowerCase()
     let apiUrl = urlMapper(itf.url)
@@ -80,6 +92,45 @@ export function rap2name(itf: Interface.Root, urlMapper: UrlMapper = t => t) {
 
     urlSplit.push(method)
 
-    const urlToName = urlSplit.join('_')
-    return urlToName
+    return noTransform ? urlSplit.join('/') : urlSplit.join('_')
+}
+
+/** 接口去重 */
+export function uniqueItfs(itfs: Intf[]) {
+    const itfMap = new Map<string, Intf[]>()
+    itfs.forEach(itf => {
+        const name = itf.modelName
+        if (itfMap.has(name)) {
+            itfMap.get(name).push(itf)
+        } else {
+            itfMap.set(name, [itf])
+        }
+    })
+    const newItfs: Intf[] = []
+    itfMap.forEach((dupItfs, name) => {
+        dupItfs.sort(
+            // 后更改的在前面
+            (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        )
+        newItfs.push(dupItfs[0])
+        if (dupItfs.length > 1) {
+            console.log(
+                chalk.yellow('发现重复接口，修改时间最晚的被采纳：\n') +
+                    dupItfs
+                        .map((itf, index) => {
+                            const str = `${itf.name}: http://rap2.alibaba-inc.com/repository/editor?id=${itf.repositoryId}&mod=${itf.moduleId}&itf=${itf.id}`
+
+                            return index === 0 ? chalk.green(str) : chalk.gray(str)
+                        })
+                        .join('\n') +
+                    '\n'
+            )
+        }
+    })
+    return newItfs
+}
+
+/** 格式化输出字符串 */
+export function formatCode(code: string) {
+    return format(code, DEFAULT_OPTIONS)
 }

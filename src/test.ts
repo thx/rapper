@@ -9,6 +9,7 @@ createModel({
     optionalExtra: false,
     type: 'redux',
     outputPath: resolve(__dirname, '../test_data/model') /** 输出文件的目录 */,
+    serverAPI: 'https://rap2api.alibaba-inc.com/app/mock/3283',
 })
     .then(() => {
         console.log('rapper:generate model success')
