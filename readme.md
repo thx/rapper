@@ -22,7 +22,6 @@ Object 的类型会根据子节点推断
 
 类型会根据 Array 初始值的类型判断，初始值为 `[1,2,3]`, 那么会推断出 `number`
 
-
 ### 3.
 
 当 rule 为空时，且有初始值的时候，会生成 `array<primitive>`
@@ -30,7 +29,6 @@ Object 的类型会根据子节点推断
 primitive 会根据 Array 初始值的类型判断，初始值为 `[1,2,3]` 或 `1` 都会推断出来 `number[]`
 
 mockjs 并无这个规定，是弥补 rap 无法直接定义这样类型数据的缺陷设定
-
 
 ## basefetch 的函数签名
 
@@ -74,4 +72,117 @@ export = function<Res extends {[x: string]: any}>(
   ) : Promise<Res["data"]> {
       return myfetch(url, method)
   }
+```
+
+# Rap-Redux
+
+## 使用手册
+
+### 第一步、在 createStore 的 时候增加一个 store enhancer
+
+```js
+import { applyMiddleware, createStore, compose } from 'redux'
+import { createLogger } from 'redux-logger'
+import { rapperEnhancer } from '@ali/rapper'
+import reducers from './reducer'
+
+const loggerMiddleware = createLogger()
+
+const enhancer = compose(
+    /** rapperEnhancer 即为增加的 store enhancer */
+    rapperEnhancer(),
+    applyMiddleware(loggerMiddleware)
+)
+
+const store = createStore(reducers, enhancer)
+```
+
+可以给 `rapperEnhancer` 传一个函数作为参数，类似下面这样：
+
+```js
+rapperEnhancer(responseData => responseData.result)
+```
+
+这个函数的作用是对接口返回参数做过滤处理，然后存入 store
+
+比如我们业务中常用的 response 数据结构如下
+
+```json
+{
+    "errno": 0,
+    "errmsg": "",
+    "result": {
+        "tableData": [
+            {
+                "id": 1
+            },
+            {
+                "id": 2
+            }
+        ]
+    }
+}
+```
+
+如果不传处理函数，默认会将 response 数据完整的存入 store，就是上面的数据
+
+如果不传处理函数，经函数处理后，会将下面的数据存入 store （会将业务不关注的冗余参数去掉）
+
+```json
+{
+    "tableData": [
+        {
+            "id": 1
+        },
+        {
+            "id": 2
+        }
+    ]
+}
+```
+
+### 第二步、配置模板文件生成脚本，生成模板文件
+
+```js
+/** rap-redux.js */
+
+const { createModel } = require('@ali/rapper')
+const { resolve } = require('path')
+
+createModel({
+    /** 必须配置 */
+    type: 'redux',
+    /** 必须配置，rap项目id */
+    projectId: 3564,
+    /** 可选，输出文件的目录，默认是 ./model */
+    outputPath: resolve(__dirname, '../requestModel'),
+    /** 可选，rap地址，默认是 http://rap2api.taobao.org */
+    rapUrl: 'https://rap2api.alibaba-inc.com',
+    /** 可选，服务端api地址，默认是根目录相对路径 */
+    serverAPI: 'https://rap2api.alibaba-inc.com/app/mock/3283',
+})
+    .then(() => {
+        console.log('rapper:generate model success')
+    })
+    .catch(err => {
+        console.log('rapper:generate model failed', err)
+    })
+```
+
+配置好如上的配置文件后，执行 `node rap-redux.js` 就能生成模板文件了
+
+### 第三步、愉快的使用
+
+```js
+/** import 的目录就是上面第二步配置的 outputPath */
+import { fetch, useRap, clearRap } from 'requestModel'
+
+/** 请求数据 */
+fetch['adgroup/price/update$/get']()
+
+/** 以 Hooks 的方式获取请求回来的数据 */
+const rapData = useRap['adgroup/price/update$/get']()
+
+/** 清除数据 */
+clearRap['adgroup/price/update$/get']()
 ```

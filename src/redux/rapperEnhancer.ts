@@ -1,5 +1,10 @@
-import qs from 'qs'
+import { locationStringify } from '../common'
 import { rapperStateKey, RAPPER_REDUX_REQUEST, RAPPER_REDUX_UPDATE_STORE } from './constant'
+
+/** 响应参数匹配函数 */
+export interface IResponseMapper {
+    (data: any): any
+}
 
 const sendRequest = async params => {
     let requestUrl = params.endpoint
@@ -10,36 +15,41 @@ const sendRequest = async params => {
     }
 
     if (requestParams.method === 'GET') {
-        // requestUrl = `${requestUrl}?${qs.stringify(params.params)}`
-        requestUrl = `${requestUrl}?`
+        requestUrl = `${requestUrl}?${locationStringify(params.params)}`
     } else if (params.params) {
         requestParams.body = JSON.stringify(params.params)
     }
-    console.log('sendRequest', requestUrl, requestParams)
     const res = await fetch(requestUrl, requestParams)
     const retJSON = res.clone() // clone before return
-    const json = await res.json() // we need json just to check status
-    if (!json.info.ok) {
-        throw new Error(json.info.message)
-    }
+    // const json = await res.json() // we need json just to check status
+    // if (!json.info.ok) {
+    //     throw new Error(json.info.message)
+    // }
     return retJSON.json()
 }
 
 let dispatch = action => {
     console.log('空dispatch', action)
 }
-function rapperEnhancer() {
+function rapperEnhancer(responseMapper: IResponseMapper = data => data) {
     return next => (reducers, initialState, enhancer) => {
-        /** 请求成功，更新 store  */
         const newReducers = (state, action) => {
+            /**
+             * 情况一：请求成功，更新 store
+             * 情况二：用户手动清空
+             */
             if (action.type === RAPPER_REDUX_UPDATE_STORE) {
                 return {
                     ...state,
                     [rapperStateKey]: { ...state[rapperStateKey], ...action.payload },
                 }
+                /**
+                 * Todo: 这儿需要处理手动给 reducers 增加一个 key 时报错
+                 */
             }
             return reducers(state, action)
         }
+
         /** 初始 state 增加 rapperStateKey */
         initialState = initialState ? { ...initialState, [rapperStateKey]: {} } : { [rapperStateKey]: {} }
 
@@ -50,6 +60,7 @@ function rapperEnhancer() {
             }
 
             const {
+                modelName,
                 endpoint,
                 method,
                 params,
@@ -59,16 +70,14 @@ function rapperEnhancer() {
 
             store.dispatch({ type: REQUEST })
             try {
-                console.log('before sendRequest')
                 const responseData = await sendRequest({ endpoint, method, params })
                 cb && cb(responseData)
                 store.dispatch({
                     type: RAPPER_REDUX_UPDATE_STORE,
-                    payload: { [endpoint]: responseData },
+                    payload: { [modelName]: responseMapper(responseData) },
                 })
                 return store.dispatch({ type: SUCCESS, payload: responseData })
             } catch (e) {
-                console.log('error', e)
                 return store.dispatch({ type: FAILURE, payload: e })
             }
         }
@@ -78,8 +87,7 @@ function rapperEnhancer() {
 }
 
 /** 发送请求 */
-function dispatchRequest(action) {
+function dispatchAction(action) {
     dispatch(action)
 }
-
-export { dispatchRequest, rapperEnhancer }
+export { rapperEnhancer, dispatchAction }

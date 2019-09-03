@@ -41,21 +41,21 @@ var createRedux_1 = require("./redux/createRedux");
 var utils_1 = require("./utils");
 var common_1 = require("./common");
 function default_1(_a) {
-    var projectId = _a.projectId, modelPath = _a.modelPath, requesterPath = _a.requesterPath, baseFetchPath = _a.baseFetchPath, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (t) { return t; } : _b, _c = _a.useCommonJsModule, useCommonJsModule = _c === void 0 ? false : _c, _d = _a.additionalProperties, additionalProperties = _d === void 0 ? false : _d, _e = _a.optionalExtra, optionalExtra = _e === void 0 ? true : _e, _f = _a.type, type = _f === void 0 ? 'magix' : _f, _g = _a.outputPath, outputPath = _g === void 0 ? '../model' : _g, serverAPI = _a.serverAPI;
+    var projectId = _a.projectId, modelPath = _a.modelPath, requesterPath = _a.requesterPath, baseFetchPath = _a.baseFetchPath, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (t) { return t; } : _b, _c = _a.useCommonJsModule, useCommonJsModule = _c === void 0 ? false : _c, _d = _a.additionalProperties, additionalProperties = _d === void 0 ? false : _d, _e = _a.optionalExtra, optionalExtra = _e === void 0 ? true : _e, _f = _a.rapUrl, rapUrl = _f === void 0 ? 'http://rap2.taobao.org' : _f, _g = _a.outputPath, outputPath = _g === void 0 ? './model' : _g, _h = _a.serverAPI, serverAPI = _h === void 0 ? '' : _h, _j = _a.type, type = _j === void 0 ? 'default' : _j;
     return __awaiter(this, void 0, void 0, function () {
-        var outputFiles, interfaces, _h, _j, modelStr, relBaseFetchPath, relModelPath, relBaseFetchPath, fetchStr;
-        return __generator(this, function (_k) {
-            switch (_k.label) {
+        var outputFiles, interfaces, _k, _l, modelStr, relModelPath, relBaseFetchPath, fetchStr;
+        return __generator(this, function (_m) {
+            switch (_m.label) {
                 case 0:
                     outputFiles = [];
-                    _h = common_1.uniqueItfs;
-                    _j = common_1.getIntfWithModelName;
-                    return [4 /*yield*/, common_1.getInterfaces(projectId)];
+                    _k = common_1.uniqueItfs;
+                    _l = common_1.getIntfWithModelName;
+                    return [4 /*yield*/, common_1.getInterfaces(rapUrl, projectId)];
                 case 1:
-                    interfaces = _h.apply(void 0, [_j.apply(void 0, [_k.sent(), urlMapper, type === 'redux'])]);
-                    return [4 /*yield*/, index_1.createModel(interfaces, { projectId: projectId, additionalProperties: additionalProperties, serverAPI: serverAPI })];
+                    interfaces = _k.apply(void 0, [_l.apply(void 0, [_m.sent(), urlMapper, type === 'redux'])]);
+                    return [4 /*yield*/, index_1.createModel(interfaces, { projectId: projectId, additionalProperties: additionalProperties })];
                 case 2:
-                    modelStr = _k.sent();
+                    modelStr = _m.sent();
                     outputFiles.push({
                         path: outputPath ? outputPath + "/model.ts" : modelPath,
                         content: common_1.formatCode(modelStr)
@@ -65,15 +65,25 @@ function default_1(_a) {
                             console.log(chalk_1["default"].red('配置文件中 outputPath 不能为空'));
                             return [2 /*return*/];
                         }
+                        /** 生成 index.ts */
+                        outputFiles.push({
+                            path: outputPath + "/index.ts",
+                            content: common_1.formatCode(createRedux_1.createIndexStr())
+                        });
                         /** 生成 redux.ts */
                         outputFiles.push({
                             path: outputPath + "/redux.ts",
-                            content: common_1.formatCode(createRedux_1.createReduxStr(projectId, interfaces))
+                            content: common_1.formatCode(createRedux_1.createReduxStr(interfaces, { projectId: projectId, serverAPI: serverAPI }))
                         });
-                        relBaseFetchPath = utils_1.relativeImport(outputPath + "/fetch.ts", baseFetchPath);
+                        /** 生成 redux 版本的 fetch.ts */
                         outputFiles.push({
                             path: outputPath + "/fetch.ts",
-                            content: common_1.formatCode(createRedux_1.createReduxFetchStr(projectId, interfaces, relBaseFetchPath))
+                            content: common_1.formatCode(createRedux_1.createReduxFetchStr(projectId, interfaces))
+                        });
+                        /** 生成 useRap.ts */
+                        outputFiles.push({
+                            path: outputPath + "/useRap.ts",
+                            content: common_1.formatCode(createRedux_1.createUseRapStr(interfaces))
                         });
                     }
                     else if (requesterPath) {

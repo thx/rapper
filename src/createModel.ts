@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import { UrlMapper } from './types'
 import { createModel, createFetch } from './default/index'
-import { createReduxStr, createReduxFetchStr } from './redux/createRedux'
+import { createIndexStr, createReduxStr, createReduxFetchStr, createUseRapStr } from './redux/createRedux'
 import { relativeImport, writeFile } from './utils'
 import { getInterfaces, getIntfWithModelName, uniqueItfs, formatCode } from './common'
 
@@ -11,12 +11,13 @@ interface ICreateModel {
     useCommonJsModule?: boolean
     additionalProperties?: boolean
     optionalExtra?: boolean
-    type?: 'magix' | 'redux' | 'mobx' | 'vuex'
+    rapUrl?: string
     outputPath?: string
     modelPath?: string
     requesterPath?: string
     baseFetchPath?: string
     serverAPI?: string
+    type?: 'default' | 'redux' | 'mobx' | 'vuex'
 }
 export default async function({
     projectId,
@@ -27,18 +28,19 @@ export default async function({
     useCommonJsModule = false,
     additionalProperties = false,
     optionalExtra = true,
-    type = 'magix',
-    outputPath = '../model',
-    serverAPI,
+    rapUrl = 'http://rap2.taobao.org',
+    outputPath = './model',
+    serverAPI = '',
+    type = 'default',
 }: ICreateModel) {
     /** 输出文件集合 */
     const outputFiles = []
 
     /** 所有接口 */
-    const interfaces = uniqueItfs(getIntfWithModelName(await getInterfaces(projectId), urlMapper, type === 'redux'))
+    const interfaces = uniqueItfs(getIntfWithModelName(await getInterfaces(rapUrl, projectId), urlMapper, type === 'redux'))
 
     /** 生成 model.ts */
-    const modelStr = await createModel(interfaces, { projectId, additionalProperties, serverAPI })
+    const modelStr = await createModel(interfaces, { projectId, additionalProperties })
     outputFiles.push({
         path: outputPath ? `${outputPath}/model.ts` : modelPath,
         content: formatCode(modelStr),
@@ -49,17 +51,28 @@ export default async function({
             console.log(chalk.red('配置文件中 outputPath 不能为空'))
             return
         }
+        /** 生成 index.ts */
+        outputFiles.push({
+            path: `${outputPath}/index.ts`,
+            content: formatCode(createIndexStr()),
+        })
+
         /** 生成 redux.ts */
         outputFiles.push({
             path: `${outputPath}/redux.ts`,
-            content: formatCode(createReduxStr(projectId, interfaces)),
+            content: formatCode(createReduxStr(interfaces, { projectId, serverAPI })),
         })
 
         /** 生成 redux 版本的 fetch.ts */
-        const relBaseFetchPath = relativeImport(`${outputPath}/fetch.ts`, baseFetchPath)
         outputFiles.push({
             path: `${outputPath}/fetch.ts`,
-            content: formatCode(createReduxFetchStr(projectId, interfaces, relBaseFetchPath)),
+            content: formatCode(createReduxFetchStr(projectId, interfaces)),
+        })
+
+        /** 生成 useRap.ts */
+        outputFiles.push({
+            path: `${outputPath}/useRap.ts`,
+            content: formatCode(createUseRapStr(interfaces)),
         })
     } else if (requesterPath) {
         /** 生成 fetch.ts */

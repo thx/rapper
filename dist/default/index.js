@@ -39,7 +39,7 @@ var chalk_1 = require("chalk");
 var convert_1 = require("../convert");
 /** model.ts 文件的内容 */
 function createModel(interfaces, _a) {
-    var projectId = _a.projectId, additionalProperties = _a.additionalProperties, serverAPI = _a.serverAPI;
+    var projectId = _a.projectId, additionalProperties = _a.additionalProperties;
     return __awaiter(this, void 0, void 0, function () {
         var itfStrs;
         var _this = this;

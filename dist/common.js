@@ -52,12 +52,12 @@ var chalk_1 = require("chalk");
 var formatter_1 = require("json-schema-to-typescript/dist/src/formatter");
 var json_schema_to_typescript_1 = require("json-schema-to-typescript");
 /** 从rap查询所有接口数据 */
-function getInterfaces(projectId) {
+function getInterfaces(rapUrl, projectId) {
     return __awaiter(this, void 0, void 0, function () {
         var response, data, modules, collaborators, interfaces, collaboratorsInterfaces;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, axios_1["default"].get("http://rap2api.alibaba-inc.com/repository/get?id=" + projectId)];
+                case 0: return [4 /*yield*/, axios_1["default"].get(rapUrl + "/repository/get?id=" + projectId)];
                 case 1:
                     response = _a.sent();
                     data = response.data.data;
@@ -68,10 +68,10 @@ function getInterfaces(projectId) {
                         .flatten()
                         .value();
                     if (!collaborators.length) return [3 /*break*/, 3];
-                    return [4 /*yield*/, Promise.all(collaborators.map(function (e) { return getInterfaces(e.id); }))];
+                    return [4 /*yield*/, Promise.all(collaborators.map(function (e) { return getInterfaces(rapUrl, e.id); }))];
                 case 2:
                     collaboratorsInterfaces = _a.sent();
-                    interfaces = interfaces.concat(_.flatten(collaboratorsInterfaces));
+                    interfaces = interfaces.concat(collaboratorsInterfaces.flat());
                     _a.label = 3;
                 case 3: return [2 /*return*/, interfaces];
             }
@@ -93,10 +93,8 @@ exports.getIntfWithModelName = getIntfWithModelName;
 function rap2name(itf, urlMapper, noTransform) {
     if (urlMapper === void 0) { urlMapper = function (t) { return t; }; }
     // copy from http://gitlab.alibaba-inc.com/thx/magix-cli/blob/master/util/rap.js
-    var method = itf.method.toLowerCase();
-    var apiUrl = urlMapper(itf.url);
-    var projectId = itf.repositoryId;
-    var id = itf.id;
+    var method = itf.method, url = itf.url, projectId = itf.repositoryId, id = itf.id;
+    var apiUrl = urlMapper(url);
     var regExp = /^(?:https?:\/\/[^\/]+)?(\/?.+?\/?)(?:\.[^./]+)?$/;
     var regExpExec = regExp.exec(apiUrl);
     if (!regExpExec) {
@@ -120,7 +118,7 @@ function rap2name(itf, urlMapper, noTransform) {
     if (urlSplit[0].trim() === '') {
         urlSplit.shift();
     }
-    urlSplit.push(method);
+    urlSplit.push(method.toLowerCase());
     return noTransform ? urlSplit.join('/') : urlSplit.join('_');
 }
 exports.rap2name = rap2name;
@@ -161,3 +159,19 @@ function formatCode(code) {
     return formatter_1.format(code, json_schema_to_typescript_1.DEFAULT_OPTIONS);
 }
 exports.formatCode = formatCode;
+/**
+ * search 参数转换，比如 { a: 1, b: 2, c: undefined } 转换成 "a=1&b=2"
+ * 会自动删除 undefined
+ */
+function locationStringify(obj) {
+    if (obj === void 0) { obj = {}; }
+    return Object.entries(obj).reduce(function (str, _a) {
+        var key = _a[0], value = _a[1];
+        if (value === undefined) {
+            return str;
+        }
+        str = str && str + "&";
+        return "" + str + key + "=" + value;
+    }, '');
+}
+exports.locationStringify = locationStringify;

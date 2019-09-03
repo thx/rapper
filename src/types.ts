@@ -42,6 +42,38 @@ export namespace Interface {
 
 export type Intf = Interface.Root & { modelName: string }
 
+export interface IModules {
+    id: number
+    name: string
+    description: string
+    priority: number
+    creatorId: number
+    repositoryId: number
+    createdAt: Date
+    updatedAt: Date
+    deletedAt?: Date | null
+    interfaces: Intf[]
+}
+
+export interface ICollaborator {
+    id: number
+    name: string
+    description: string
+    logo?: any
+    visibility: boolean
+    ownerId: number
+    organizationId?: any
+    creatorId: number
+    lockerId?: any
+    createdAt: Date
+    updatedAt: Date
+    deletedAt?: any
+}
+
+/** url 匹配函数 */
 export interface UrlMapper {
     (url: string): string
 }
+
+/** 请求类型 */
+export type REQUEST_METHOD = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD'

@@ -1,8 +1,16 @@
 import createModel from './createModel'
 /** redux */
-import { dispatchRequest, rapperEnhancer } from './redux/rapperEnhancer'
-import fetch from './redux/fetch'
-import useRapper from './redux/useRapper'
-import { rapperStateKey } from './redux/constant'
+import { rapperEnhancer, dispatchAction } from './redux/rapperEnhancer'
+import { rapperStateKey, RAPPER_REDUX_UPDATE_STORE } from './redux/constant'
 
-export { createModel, dispatchRequest, rapperEnhancer, fetch, useRapper, rapperStateKey }
+export {
+    /** 创建 model文件 */
+    createModel,
+    /** store enhancer */
+    rapperEnhancer,
+    /** request.ts 发送请求 */
+    dispatchAction,
+    /** 存入 store 的 key */
+    rapperStateKey,
+    RAPPER_REDUX_UPDATE_STORE,
+}

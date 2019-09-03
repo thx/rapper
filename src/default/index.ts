@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import convert from '../convert'
 
 /** model.ts 文件的内容 */
-async function createModel(interfaces, { projectId, additionalProperties, serverAPI }) {
+async function createModel(interfaces, { projectId, additionalProperties }) {
     const itfStrs = await Promise.all(
         interfaces.map(async itf => {
             try {

@@ -47,9 +47,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var _this = this;
 exports.__esModule = true;
+var common_1 = require("../common");
 var constant_1 = require("./constant");
 var sendRequest = function (params) { return __awaiter(_this, void 0, void 0, function () {
-    var requestUrl, requestParams, res, retJSON, json;
+    var requestUrl, requestParams, res, retJSON;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -60,25 +61,20 @@ var sendRequest = function (params) { return __awaiter(_this, void 0, void 0, fu
                     headers: { 'Content-Type': 'application/json' }
                 };
                 if (requestParams.method === 'GET') {
-                    // requestUrl = `${requestUrl}?${qs.stringify(params.params)}`
-                    requestUrl = requestUrl + "?";
+                    requestUrl = requestUrl + "?" + common_1.locationStringify(params.params);
                 }
                 else if (params.params) {
                     requestParams.body = JSON.stringify(params.params);
                 }
-                console.log('sendRequest', requestUrl, requestParams);
                 return [4 /*yield*/, fetch(requestUrl, requestParams)];
             case 1:
                 res = _a.sent();
                 retJSON = res.clone() // clone before return
                 ;
-                return [4 /*yield*/, res.json()]; // we need json just to check status
-            case 2:
-                json = _a.sent() // we need json just to check status
-                ;
-                if (!json.info.ok) {
-                    throw new Error(json.info.message);
-                }
+                // const json = await res.json() // we need json just to check status
+                // if (!json.info.ok) {
+                //     throw new Error(json.info.message)
+                // }
                 return [2 /*return*/, retJSON.json()];
         }
     });
@@ -86,15 +82,22 @@ var sendRequest = function (params) { return __awaiter(_this, void 0, void 0, fu
 var dispatch = function (action) {
     console.log('空dispatch', action);
 };
-function rapperEnhancer() {
+function rapperEnhancer(responseMapper) {
     var _this = this;
+    if (responseMapper === void 0) { responseMapper = function (data) { return data; }; }
     return function (next) { return function (reducers, initialState, enhancer) {
         var _a, _b;
-        /** 请求成功，更新 store  */
         var newReducers = function (state, action) {
             var _a;
+            /**
+             * 情况一：请求成功，更新 store
+             * 情况二：用户手动清空
+             */
             if (action.type === constant_1.RAPPER_REDUX_UPDATE_STORE) {
                 return __assign({}, state, (_a = {}, _a[constant_1.rapperStateKey] = __assign({}, state[constant_1.rapperStateKey], action.payload), _a));
+                /**
+                 * Todo: 这儿需要处理手动给 reducers 增加一个 key 时报错
+                 */
             }
             return reducers(state, action);
         };
@@ -102,31 +105,29 @@ function rapperEnhancer() {
         initialState = initialState ? __assign({}, initialState, (_a = {}, _a[constant_1.rapperStateKey] = {}, _a)) : (_b = {}, _b[constant_1.rapperStateKey] = {}, _b);
         var store = next(newReducers, initialState, enhancer);
         dispatch = function (action) { return __awaiter(_this, void 0, void 0, function () {
-            var _a, _b, endpoint, method, params, cb, _c, REQUEST, SUCCESS, FAILURE, responseData, e_1;
+            var _a, _b, modelName, endpoint, method, params, cb, _c, REQUEST, SUCCESS, FAILURE, responseData, e_1;
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
                         if (action[constant_1.RAPPER_REDUX_REQUEST] === undefined) {
                             return [2 /*return*/, store.dispatch(action)];
                         }
-                        _b = action[constant_1.RAPPER_REDUX_REQUEST], endpoint = _b.endpoint, method = _b.method, params = _b.params, cb = _b.cb, _c = _b.types, REQUEST = _c[0], SUCCESS = _c[1], FAILURE = _c[2];
+                        _b = action[constant_1.RAPPER_REDUX_REQUEST], modelName = _b.modelName, endpoint = _b.endpoint, method = _b.method, params = _b.params, cb = _b.cb, _c = _b.types, REQUEST = _c[0], SUCCESS = _c[1], FAILURE = _c[2];
                         store.dispatch({ type: REQUEST });
                         _d.label = 1;
                     case 1:
                         _d.trys.push([1, 3, , 4]);
-                        console.log('before sendRequest');
                         return [4 /*yield*/, sendRequest({ endpoint: endpoint, method: method, params: params })];
                     case 2:
                         responseData = _d.sent();
                         cb && cb(responseData);
                         store.dispatch({
                             type: constant_1.RAPPER_REDUX_UPDATE_STORE,
-                            payload: (_a = {}, _a[endpoint] = responseData, _a)
+                            payload: (_a = {}, _a[modelName] = responseMapper(responseData), _a)
                         });
                         return [2 /*return*/, store.dispatch({ type: SUCCESS, payload: responseData })];
                     case 3:
                         e_1 = _d.sent();
-                        console.log('error', e_1);
                         return [2 /*return*/, store.dispatch({ type: FAILURE, payload: e_1 })];
                     case 4: return [2 /*return*/];
                 }
@@ -137,7 +138,7 @@ function rapperEnhancer() {
 }
 exports.rapperEnhancer = rapperEnhancer;
 /** 发送请求 */
-function dispatchRequest(action) {
+function dispatchAction(action) {
     dispatch(action);
 }
-exports.dispatchRequest = dispatchRequest;
+exports.dispatchAction = dispatchAction;

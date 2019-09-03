@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "outDir": "dist", //输出目录
-        "lib": ["es2017", "dom"]
+        "lib": ["esnext", "dom"]
     },
     "include": ["src"]
 }

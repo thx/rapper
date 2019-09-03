@@ -3,39 +3,24 @@ import * as _ from 'lodash'
 import chalk from 'chalk'
 import { format } from 'json-schema-to-typescript/dist/src/formatter'
 import { DEFAULT_OPTIONS } from 'json-schema-to-typescript'
-import { Interface, Intf, UrlMapper } from './types'
-
-interface Collaborator {
-    id: number
-    name: string
-    description: string
-    logo?: any
-    visibility: boolean
-    ownerId: number
-    organizationId?: any
-    creatorId: number
-    lockerId?: any
-    createdAt: Date
-    updatedAt: Date
-    deletedAt?: any
-}
+import { IModules, ICollaborator, Interface, Intf, UrlMapper } from './types'
 
 /** 从rap查询所有接口数据 */
-export async function getInterfaces(projectId: number) {
-    const response = await axios.get(`http://rap2api.alibaba-inc.com/repository/get?id=${projectId}`)
+export async function getInterfaces(rapUrl: string, projectId: number) {
+    const response = await axios.get(`${rapUrl}/repository/get?id=${projectId}`)
 
     const data = response.data.data
-    const modules: Array<any> = data.modules
-    const collaborators: Collaborator[] = data.collaborators
+    const modules: IModules[] = data.modules
+    const collaborators: ICollaborator[] = data.collaborators
 
-    let interfaces: Array<Intf> = _(modules)
+    let interfaces = _(modules)
         .map(m => m.interfaces)
         .flatten()
         .value()
 
     if (collaborators.length) {
-        const collaboratorsInterfaces = await Promise.all(collaborators.map(e => getInterfaces(e.id)))
-        interfaces = interfaces.concat(_.flatten(collaboratorsInterfaces))
+        const collaboratorsInterfaces = await Promise.all(collaborators.map(e => getInterfaces(rapUrl, e.id)))
+        interfaces = interfaces.concat(collaboratorsInterfaces.flat())
     }
 
     return interfaces
@@ -56,10 +41,8 @@ export function getIntfWithModelName(intfs: Interface.Root[], urlMapper: UrlMapp
  */
 export function rap2name(itf: Interface.Root, urlMapper: UrlMapper = t => t, noTransform?: boolean) {
     // copy from http://gitlab.alibaba-inc.com/thx/magix-cli/blob/master/util/rap.js
-    let method = itf.method.toLowerCase()
-    let apiUrl = urlMapper(itf.url)
-    let projectId = itf.repositoryId
-    const id = itf.id
+    const { method, url, repositoryId: projectId, id } = itf
+    const apiUrl = urlMapper(url)
 
     const regExp = /^(?:https?:\/\/[^\/]+)?(\/?.+?\/?)(?:\.[^./]+)?$/
     const regExpExec = regExp.exec(apiUrl)
@@ -90,7 +73,7 @@ export function rap2name(itf: Interface.Root, urlMapper: UrlMapper = t => t, noT
         urlSplit.shift()
     }
 
-    urlSplit.push(method)
+    urlSplit.push(method.toLowerCase())
 
     return noTransform ? urlSplit.join('/') : urlSplit.join('_')
 }
@@ -133,4 +116,22 @@ export function uniqueItfs(itfs: Intf[]) {
 /** 格式化输出字符串 */
 export function formatCode(code: string) {
     return format(code, DEFAULT_OPTIONS)
+}
+
+/**
+ * search 参数转换，比如 { a: 1, b: 2, c: undefined } 转换成 "a=1&b=2"
+ * 会自动删除 undefined
+ */
+export function locationStringify(
+    obj: {
+        [key: string]: any
+    } = {}
+): string {
+    return Object.entries(obj).reduce((str, [key, value]) => {
+        if (value === undefined) {
+            return str
+        }
+        str = str && `${str}&`
+        return `${str}${key}=${value}`
+    }, '')
 }
