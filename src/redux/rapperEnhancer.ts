@@ -1,5 +1,5 @@
 import { locationStringify } from '../common'
-import { rapperStateKey, RAPPER_REDUX_REQUEST, RAPPER_REDUX_UPDATE_STORE } from './constant'
+import { RAP_STATE_KEY, RAPPER_REDUX_REQUEST, RAPPER_REDUX_UPDATE_STORE } from './constant'
 
 /** 响应参数匹配函数 */
 export interface IResponseMapper {
@@ -34,6 +34,12 @@ let dispatch = action => {
 function rapperEnhancer(responseMapper: IResponseMapper = data => data) {
     return next => (reducers, initialState, enhancer) => {
         const newReducers = (state, action) => {
+            if (state) {
+                state[RAP_STATE_KEY] || (state[RAP_STATE_KEY] = {})
+            } else {
+                state = {}
+            }
+
             /**
              * 情况一：请求成功，更新 store
              * 情况二：用户手动清空
@@ -41,19 +47,14 @@ function rapperEnhancer(responseMapper: IResponseMapper = data => data) {
             if (action.type === RAPPER_REDUX_UPDATE_STORE) {
                 return {
                     ...state,
-                    [rapperStateKey]: { ...state[rapperStateKey], ...action.payload },
+                    [RAP_STATE_KEY]: { ...state[RAP_STATE_KEY], ...action.payload },
                 }
-                /**
-                 * Todo: 这儿需要处理手动给 reducers 增加一个 key 时报错
-                 */
             }
             return reducers(state, action)
         }
 
-        /** 初始 state 增加 rapperStateKey */
-        initialState = initialState ? { ...initialState, [rapperStateKey]: {} } : { [rapperStateKey]: {} }
-
-        const store = next(newReducers, initialState, enhancer)
+        const store = next(reducers, initialState, enhancer)
+        store.replaceReducer(newReducers)
         dispatch = async action => {
             if (action[RAPPER_REDUX_REQUEST] === undefined) {
                 return store.dispatch(action)

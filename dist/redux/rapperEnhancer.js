@@ -86,24 +86,33 @@ function rapperEnhancer(responseMapper) {
     var _this = this;
     if (responseMapper === void 0) { responseMapper = function (data) { return data; }; }
     return function (next) { return function (reducers, initialState, enhancer) {
-        var _a, _b;
+        // reducers = combineReducers({
+        //     ...reducers(),
+        //     [RAP_STATE_KEY]: (state = {}) => state,
+        // })
+        console.log('reducers', reducers);
         var newReducers = function (state, action) {
             var _a;
+            if (state) {
+                state[constant_1.RAP_STATE_KEY] || (state[constant_1.RAP_STATE_KEY] = {});
+            }
+            else {
+                state = {};
+            }
             /**
              * 情况一：请求成功，更新 store
              * 情况二：用户手动清空
              */
             if (action.type === constant_1.RAPPER_REDUX_UPDATE_STORE) {
-                return __assign({}, state, (_a = {}, _a[constant_1.rapperStateKey] = __assign({}, state[constant_1.rapperStateKey], action.payload), _a));
-                /**
-                 * Todo: 这儿需要处理手动给 reducers 增加一个 key 时报错
-                 */
+                return __assign({}, state, (_a = {}, _a[constant_1.RAP_STATE_KEY] = __assign({}, state[constant_1.RAP_STATE_KEY], action.payload), _a));
             }
             return reducers(state, action);
         };
-        /** 初始 state 增加 rapperStateKey */
-        initialState = initialState ? __assign({}, initialState, (_a = {}, _a[constant_1.rapperStateKey] = {}, _a)) : (_b = {}, _b[constant_1.rapperStateKey] = {}, _b);
-        var store = next(newReducers, initialState, enhancer);
+        /** 初始 state 增加 RAP_STATE_KEY */
+        // initialState = initialState ? { ...initialState, [RAP_STATE_KEY]: {} } : { [RAP_STATE_KEY]: {} }
+        // console.log('initialState', initialState)
+        var store = next(reducers, initialState, enhancer);
+        store.replaceReducer(newReducers);
         dispatch = function (action) { return __awaiter(_this, void 0, void 0, function () {
             var _a, _b, modelName, endpoint, method, params, cb, _c, REQUEST, SUCCESS, FAILURE, responseData, e_1;
             return __generator(this, function (_d) {

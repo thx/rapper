@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { UrlMapper } from './types'
+import { UrlMapper, RAP_TYPE } from './types'
 import { createModel, createFetch } from './default/index'
 import { createIndexStr, createReduxStr, createReduxFetchStr, createUseRapStr } from './redux/createRedux'
 import { relativeImport, writeFile } from './utils'
@@ -17,7 +17,7 @@ interface ICreateModel {
     requesterPath?: string
     baseFetchPath?: string
     serverAPI?: string
-    type?: 'default' | 'redux' | 'mobx' | 'vuex'
+    type?: RAP_TYPE
 }
 export default async function({
     projectId,
@@ -37,7 +37,7 @@ export default async function({
     const outputFiles = []
 
     /** 所有接口 */
-    const interfaces = uniqueItfs(getIntfWithModelName(await getInterfaces(rapUrl, projectId), urlMapper, type === 'redux'))
+    const interfaces = uniqueItfs(getIntfWithModelName(await getInterfaces(rapUrl, projectId), urlMapper, type))
 
     /** 生成 model.ts */
     const modelStr = await createModel(interfaces, { projectId, additionalProperties })

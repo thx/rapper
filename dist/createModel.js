@@ -52,7 +52,7 @@ function default_1(_a) {
                     _l = common_1.getIntfWithModelName;
                     return [4 /*yield*/, common_1.getInterfaces(rapUrl, projectId)];
                 case 1:
-                    interfaces = _k.apply(void 0, [_l.apply(void 0, [_m.sent(), urlMapper, type === 'redux'])]);
+                    interfaces = _k.apply(void 0, [_l.apply(void 0, [_m.sent(), urlMapper, type])]);
                     return [4 /*yield*/, index_1.createModel(interfaces, { projectId: projectId, additionalProperties: additionalProperties })];
                 case 2:
                     modelStr = _m.sent();

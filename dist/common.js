@@ -80,17 +80,17 @@ function getInterfaces(rapUrl, projectId) {
 }
 exports.getInterfaces = getInterfaces;
 /** 给接口增加 modelName */
-function getIntfWithModelName(intfs, urlMapper, noTransform) {
+function getIntfWithModelName(intfs, urlMapper, type) {
     if (urlMapper === void 0) { urlMapper = function (t) { return t; }; }
-    return intfs.map(function (itf) { return (__assign({}, itf, { modelName: rap2name(itf, urlMapper, noTransform) })); });
+    return intfs.map(function (itf) { return (__assign({}, itf, { modelName: rap2name(itf, urlMapper, type) })); });
 }
 exports.getIntfWithModelName = getIntfWithModelName;
 /**
- * 转换rap接口地址
+ * 转换rap接口名称
  * 比如 magix 将 / 转换成 _ ，RESTful接口，清除占位符
  * 参数 noTransform 用来配置是否 将 / 转换成 _ ，默认转换
  */
-function rap2name(itf, urlMapper, noTransform) {
+function rap2name(itf, urlMapper, type) {
     if (urlMapper === void 0) { urlMapper = function (t) { return t; }; }
     // copy from http://gitlab.alibaba-inc.com/thx/magix-cli/blob/master/util/rap.js
     var method = itf.method, url = itf.url, projectId = itf.repositoryId, id = itf.id;
@@ -118,8 +118,16 @@ function rap2name(itf, urlMapper, noTransform) {
     if (urlSplit[0].trim() === '') {
         urlSplit.shift();
     }
-    urlSplit.push(method.toLowerCase());
-    return noTransform ? urlSplit.join('/') : urlSplit.join('_');
+    var modelName = '';
+    if (type === 'default') {
+        urlSplit.push(method.toLocaleLowerCase());
+        modelName = urlSplit.join('_');
+    }
+    else {
+        urlSplit.unshift(method.toLocaleUpperCase());
+        modelName = urlSplit.join('/');
+    }
+    return modelName;
 }
 exports.rap2name = rap2name;
 /** 接口去重 */

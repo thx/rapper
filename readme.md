@@ -178,11 +178,11 @@ createModel({
 import { fetch, useRap, clearRap } from 'requestModel'
 
 /** 请求数据 */
-fetch['adgroup/price/update$/get']()
+fetch['GET/adgroup/price/update$']()
 
 /** 以 Hooks 的方式获取请求回来的数据 */
-const rapData = useRap['adgroup/price/update$/get']()
+const rapData = useRap['GET/adgroup/price/update$']()
 
 /** 清除数据 */
-clearRap['adgroup/price/update$/get']()
+clearRap['GET/adgroup/price/update$']()
 ```

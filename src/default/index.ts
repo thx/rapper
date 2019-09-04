@@ -1,5 +1,6 @@
 import chalk from 'chalk'
 import convert from '../convert'
+import { Interface, UrlMapper } from '../types'
 
 /** model.ts 文件的内容 */
 async function createModel(interfaces, { projectId, additionalProperties }) {

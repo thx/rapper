@@ -3,7 +3,7 @@ import * as _ from 'lodash'
 import chalk from 'chalk'
 import { format } from 'json-schema-to-typescript/dist/src/formatter'
 import { DEFAULT_OPTIONS } from 'json-schema-to-typescript'
-import { IModules, ICollaborator, Interface, Intf, UrlMapper } from './types'
+import { RAP_TYPE, IModules, ICollaborator, Interface, Intf, UrlMapper } from './types'
 
 /** 从rap查询所有接口数据 */
 export async function getInterfaces(rapUrl: string, projectId: number) {
@@ -27,19 +27,19 @@ export async function getInterfaces(rapUrl: string, projectId: number) {
 }
 
 /** 给接口增加 modelName */
-export function getIntfWithModelName(intfs: Interface.Root[], urlMapper: UrlMapper = t => t, noTransform?: boolean): Intf[] {
+export function getIntfWithModelName(intfs: Interface.Root[], urlMapper: UrlMapper = t => t, type: RAP_TYPE): Intf[] {
     return intfs.map(itf => ({
         ...itf,
-        modelName: rap2name(itf, urlMapper, noTransform),
+        modelName: rap2name(itf, urlMapper, type),
     }))
 }
 
 /**
- * 转换rap接口地址
+ * 转换rap接口名称
  * 比如 magix 将 / 转换成 _ ，RESTful接口，清除占位符
  * 参数 noTransform 用来配置是否 将 / 转换成 _ ，默认转换
  */
-export function rap2name(itf: Interface.Root, urlMapper: UrlMapper = t => t, noTransform?: boolean) {
+export function rap2name(itf: Interface.Root, urlMapper: UrlMapper = t => t, type: RAP_TYPE) {
     // copy from http://gitlab.alibaba-inc.com/thx/magix-cli/blob/master/util/rap.js
     const { method, url, repositoryId: projectId, id } = itf
     const apiUrl = urlMapper(url)
@@ -73,9 +73,16 @@ export function rap2name(itf: Interface.Root, urlMapper: UrlMapper = t => t, noT
         urlSplit.shift()
     }
 
-    urlSplit.push(method.toLowerCase())
+    let modelName = ''
+    if (type === 'default') {
+        urlSplit.push(method.toLocaleLowerCase())
+        modelName = urlSplit.join('_')
+    } else {
+        urlSplit.unshift(method.toLocaleUpperCase())
+        modelName = urlSplit.join('/')
+    }
 
-    return noTransform ? urlSplit.join('/') : urlSplit.join('_')
+    return modelName
 }
 
 /** 接口去重 */

@@ -155,12 +155,13 @@ function createUseRapStr(interfaces: Intf[]): string {
      */
     import { useSelector } from 'react-redux';
     import { ModelItf } from './model';
-    import { rapperStateKey, dispatchAction, RAPPER_REDUX_UPDATE_STORE } from '@ali/rapper';
+    import { RAP_STATE_KEY, dispatchAction, RAPPER_REDUX_UPDATE_STORE } from '@ali/rapper';
 
     /*
     const useRap = modelName => {
-        return useSelector(state => state[rapperStateKey][modelName])
+        return useSelector(state => state[RAP_STATE_KEY][modelName])
     }
+
     const clearRap = modelName => {
         dispatchAction({
             type: RAPPER_REDUX_UPDATE_STORE, 
@@ -180,7 +181,7 @@ function createUseRapStr(interfaces: Intf[]): string {
          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
          */
         '${modelName}': (): ModelItf['${modelName}']['Res'] => {
-            return useSelector(state => state[rapperStateKey]['${modelName}'])
+            return useSelector(state => state[RAP_STATE_KEY] && state[RAP_STATE_KEY]['${modelName}'])
         }`
             )
             .join(',\n\n')}
