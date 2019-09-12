@@ -1,7 +1,7 @@
 import createModel from './createModel'
 /** redux */
 import { rapperEnhancer, dispatchAction } from './redux/rapperEnhancer'
-import { RAP_STATE_KEY, RAPPER_REDUX_UPDATE_STORE } from './redux/constant'
+import { RAP_STATE_KEY, RAP_REDUX_CLEAR_STORE } from './redux/constant'
 
 export {
     /** 创建 model文件 */
@@ -12,5 +12,5 @@ export {
     dispatchAction,
     /** 存入 store 的 key */
     RAP_STATE_KEY,
-    RAPPER_REDUX_UPDATE_STORE,
+    RAP_REDUX_CLEAR_STORE,
 }

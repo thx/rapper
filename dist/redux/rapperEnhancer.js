@@ -82,35 +82,39 @@ var sendRequest = function (params) { return __awaiter(_this, void 0, void 0, fu
 var dispatch = function (action) {
     console.log('空dispatch', action);
 };
-function rapperEnhancer(responseMapper) {
+/** Todo: 处理数据，存起来 */
+function assignData(oldState, payload, maxCache) {
+    var newState = __assign({}, oldState);
+    Object.entries(payload).forEach(function (_a) {
+        var key = _a[0], value = _a[1];
+        newState[key] = newState[key] || [];
+        /** 只存最近 maxCache 个数据 */
+        newState[key] = [].concat(newState[key].splice(0, maxCache), value);
+    });
+    return newState;
+}
+function rapperEnhancer(_a) {
     var _this = this;
-    if (responseMapper === void 0) { responseMapper = function (data) { return data; }; }
+    var _b = _a.responseMapper, responseMapper = _b === void 0 ? function (data) { return data; } : _b, _c = _a.maxCache, maxCache = _c === void 0 ? 2 : _c;
     return function (next) { return function (reducers, initialState, enhancer) {
-        // reducers = combineReducers({
-        //     ...reducers(),
-        //     [RAP_STATE_KEY]: (state = {}) => state,
-        // })
-        console.log('reducers', reducers);
         var newReducers = function (state, action) {
-            var _a;
+            var _a, _b;
             if (state) {
                 state[constant_1.RAP_STATE_KEY] || (state[constant_1.RAP_STATE_KEY] = {});
             }
             else {
                 state = {};
             }
-            /**
-             * 情况一：请求成功，更新 store
-             * 情况二：用户手动清空
-             */
             if (action.type === constant_1.RAPPER_REDUX_UPDATE_STORE) {
-                return __assign({}, state, (_a = {}, _a[constant_1.RAP_STATE_KEY] = __assign({}, state[constant_1.RAP_STATE_KEY], action.payload), _a));
+                /** 请求成功，更新 store */
+                return __assign({}, state, (_a = {}, _a[constant_1.RAP_STATE_KEY] = assignData(state[constant_1.RAP_STATE_KEY], action.payload, maxCache), _a));
+            }
+            else if (action.type === constant_1.RAP_REDUX_CLEAR_STORE) {
+                /** 用户手动清空 */
+                return __assign({}, state, (_b = {}, _b[constant_1.RAP_STATE_KEY] = __assign({}, state[constant_1.RAP_STATE_KEY], action.payload), _b));
             }
             return reducers(state, action);
         };
-        /** 初始 state 增加 RAP_STATE_KEY */
-        // initialState = initialState ? { ...initialState, [RAP_STATE_KEY]: {} } : { [RAP_STATE_KEY]: {} }
-        // console.log('initialState', initialState)
         var store = next(reducers, initialState, enhancer);
         store.replaceReducer(newReducers);
         dispatch = function (action) { return __awaiter(_this, void 0, void 0, function () {

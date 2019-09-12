@@ -1,5 +1,5 @@
 import { locationStringify } from '../common'
-import { RAP_STATE_KEY, RAPPER_REDUX_REQUEST, RAPPER_REDUX_UPDATE_STORE } from './constant'
+import { RAP_STATE_KEY, RAPPER_REDUX_REQUEST, RAPPER_REDUX_UPDATE_STORE, RAP_REDUX_CLEAR_STORE } from './constant'
 
 /** 响应参数匹配函数 */
 export interface IResponseMapper {
@@ -31,7 +31,31 @@ const sendRequest = async params => {
 let dispatch = action => {
     console.log('空dispatch', action)
 }
-function rapperEnhancer(responseMapper: IResponseMapper = data => data) {
+
+/** Todo: 处理数据，存起来 */
+function assignData(oldState, payload, maxCache?: number) {
+    let newState = { ...oldState }
+    Object.entries(payload).forEach(([key, value]) => {
+        newState[key] = newState[key] || []
+        /** 只存最近 maxCache 个数据 */
+        newState[key] = [].concat(newState[key].splice(0, maxCache), value)
+    })
+    return newState
+}
+
+interface IEnhancerProps {
+    /** 响应数据处理函数 */
+    responseMapper?: IResponseMapper
+    /** 缓存数据最大长度 */
+    maxCache?: number
+}
+interface IAction {
+    type: any
+    payload: {
+        [key: string]: any
+    }
+}
+function rapperEnhancer({ responseMapper = data => data, maxCache = 2 }: IEnhancerProps) {
     return next => (reducers, initialState, enhancer) => {
         const newReducers = (state, action) => {
             if (state) {
@@ -40,11 +64,14 @@ function rapperEnhancer(responseMapper: IResponseMapper = data => data) {
                 state = {}
             }
 
-            /**
-             * 情况一：请求成功，更新 store
-             * 情况二：用户手动清空
-             */
             if (action.type === RAPPER_REDUX_UPDATE_STORE) {
+                /** 请求成功，更新 store */
+                return {
+                    ...state,
+                    [RAP_STATE_KEY]: assignData(state[RAP_STATE_KEY], action.payload, maxCache),
+                }
+            } else if (action.type === RAP_REDUX_CLEAR_STORE) {
+                /** 用户手动清空 */
                 return {
                     ...state,
                     [RAP_STATE_KEY]: { ...state[RAP_STATE_KEY], ...action.payload },

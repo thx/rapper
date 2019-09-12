@@ -11,17 +11,46 @@ function getEndpoint(serverAPI: string, url: string): string {
     return `${serverAPI}${url}`
 }
 
-/** 定义 action interface  */
-function getInterfaceStr(interfaces: Intf[], serverAPI: string): string {
+/** 生成 index.ts */
+function createIndexStr(): string {
     return `
-        export interface IAction {
+    /**
+     * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
+     */
+
+    import { useRap, useRapGetAll, clearRap } from './useRap'
+    import fetch from './fetch'
+    
+    export { useRap, useRapGetAll, clearRap, fetch };
+    `
+}
+
+/** 定义 请求types interface  */
+function getRequestTypesInterfaceStr(interfaces: Intf[], serverAPI: string): string {
+    return `
+        export interface IRequestTypes {
         ${interfaces
-            .map(({ modelName, method, url }) => {
+            .map(({ modelName }) => {
                 const actionName = getName(modelName)
                 return `
                     '${actionName}_REQUEST': '${actionName}_REQUEST'
                     '${actionName}_SUCCESS': '${actionName}_SUCCESS'
                     '${actionName}_FAILURE': '${actionName}_FAILURE'
+                `
+            })
+            .join('\n\n')}
+        }
+    `
+}
+
+/** 定义 请求action interface  */
+function getRequestActionInterfaceStr(interfaces: Intf[], serverAPI: string): string {
+    return `
+        export interface IRequestAction {
+        ${interfaces
+            .map(({ modelName, method, url }) => {
+                const actionName = getName(modelName)
+                return `
                     '${actionName}_SUCCESS_ACTION'?: {
                         type: '${actionName}_SUCCESS',
                         payload: ModelItf['${modelName}']['Res']
@@ -43,10 +72,28 @@ function getInterfaceStr(interfaces: Intf[], serverAPI: string): string {
     `
 }
 
-/** 定义 action */
-function getActionStr(interfaces: Intf[], serverAPI: string): string {
+/** 定义 请求types */
+function getRequestTypesStr(interfaces: Intf[], serverAPI: string): string {
     return `
-        export const Action:IAction = {
+        export const RequestTypes:IRequestTypes = {
+            ${interfaces
+                .map(({ modelName }) => {
+                    const actionName = getName(modelName)
+                    return `
+                        '${actionName}_REQUEST': '${actionName}_REQUEST',
+                        '${actionName}_SUCCESS': '${actionName}_SUCCESS',
+                        '${actionName}_FAILURE': '${actionName}_FAILURE',
+                    `
+                })
+                .join('\n\n')}
+        }
+    `
+}
+
+/** 定义 请求action */
+function getRequestActionStr(interfaces: Intf[], serverAPI: string): string {
+    return `
+        export const RequestAction:IRequestAction = {
             ${interfaces
                 .map(({ id, repositoryId, moduleId, name, url, modelName, method }) => {
                     const actionName = getName(modelName)
@@ -55,9 +102,6 @@ function getActionStr(interfaces: Intf[], serverAPI: string): string {
                          * 接口名：${name}
                          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
                          */
-                        '${actionName}_REQUEST': '${actionName}_REQUEST',
-                        '${actionName}_SUCCESS': '${actionName}_SUCCESS',
-                        '${actionName}_FAILURE': '${actionName}_FAILURE',
                         '${actionName}': (params, cb) => ({
                             'RAPPER_REDUX_REQUEST': {
                                 modelName: '${modelName}',
@@ -66,9 +110,9 @@ function getActionStr(interfaces: Intf[], serverAPI: string): string {
                                 params,
                                 cb,
                                 types: [
-                                    '${actionName}_REQUEST',
-                                    '${actionName}_SUCCESS',
-                                    '${actionName}_FAILURE',
+                                    RequestTypes['${actionName}_REQUEST'],
+                                    RequestTypes['${actionName}_SUCCESS'],
+                                    RequestTypes['${actionName}_FAILURE'],
                                 ],
                             },
                         }),
@@ -79,29 +123,12 @@ function getActionStr(interfaces: Intf[], serverAPI: string): string {
     `
 }
 
-/** 生成 index.ts */
-function createIndexStr(): string {
-    return `
-    /**
-     * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
-     */
-
-    import { useRap, clearRap } from './useRap'
-    import fetch from './fetch'
-    
-    export { useRap, clearRap, fetch };
-    `
-}
-
 /** 生成 redux.ts */
 interface IOptionsParams {
     projectId: number
     serverAPI: string
 }
 function createReduxStr(interfaces: Intf[], { projectId, serverAPI }: IOptionsParams): string {
-    const interfaceStr = getInterfaceStr(interfaces, serverAPI)
-    const actionStr = getActionStr(interfaces, serverAPI)
-
     return `
     /**
      * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
@@ -110,9 +137,17 @@ function createReduxStr(interfaces: Intf[], { projectId, serverAPI }: IOptionsPa
 
     import { ModelItf } from './model'
 
-    ${interfaceStr}
+    /** 请求types interface  */
+    ${getRequestTypesInterfaceStr(interfaces, serverAPI)}
 
-    ${actionStr}
+    /** 请求action interface  */
+    ${getRequestActionInterfaceStr(interfaces, serverAPI)}
+
+    /** 请求types */
+    ${getRequestTypesStr(interfaces, serverAPI)}
+
+    /** 请求action */
+    ${getRequestActionStr(interfaces, serverAPI)}
     `
 }
 
@@ -125,7 +160,7 @@ function createReduxFetchStr(projectId: number, interfaces: Intf[]): string {
      */
     import { dispatchAction } from '@ali/rapper';
     import { ModelItf } from './model';
-    import { Action } from './redux';
+    import { RequestAction } from './redux';
 
     const request = {
         ${interfaces
@@ -138,7 +173,7 @@ function createReduxFetchStr(projectId: number, interfaces: Intf[]): string {
          * @param extra 请求配置项
          */
         '${modelName}': (req: ModelItf['${modelName}']['Req'], cb?: () => void) => {
-            dispatchAction(Action['${getName(modelName)}'](req, cb))
+            dispatchAction(RequestAction['${getName(modelName)}'](req, cb))
         }`
             )
             .join(',\n\n')}
@@ -155,22 +190,7 @@ function createUseRapStr(interfaces: Intf[]): string {
      */
     import { useSelector } from 'react-redux';
     import { ModelItf } from './model';
-    import { RAP_STATE_KEY, dispatchAction, RAPPER_REDUX_UPDATE_STORE } from '@ali/rapper';
-
-    /*
-    const useRap = modelName => {
-        return useSelector(state => state[RAP_STATE_KEY][modelName])
-    }
-
-    const clearRap = modelName => {
-        dispatchAction({
-            type: RAPPER_REDUX_UPDATE_STORE, 
-            payload: {
-                [modelName]: undefined,
-            }
-        })
-    }
-    */
+    import { RAP_STATE_KEY, dispatchAction, RAP_REDUX_CLEAR_STORE } from '@ali/rapper';
 
     const useRap = {
         ${interfaces
@@ -181,7 +201,27 @@ function createUseRapStr(interfaces: Intf[]): string {
          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
          */
         '${modelName}': (): ModelItf['${modelName}']['Res'] => {
-            return useSelector(state => state[RAP_STATE_KEY] && state[RAP_STATE_KEY]['${modelName}'])
+            return useSelector(state => {
+                const currentState = (state[RAP_STATE_KEY] && state[RAP_STATE_KEY]['${modelName}']) || []
+                return currentState.slice(-1)[0]
+            })
+        }`
+            )
+            .join(',\n\n')}
+    }
+
+    const useRapGetAll = {
+        ${interfaces
+            .map(
+                ({ modelName, name, repositoryId, moduleId, id }) => `
+        /**
+         * 接口名：${name}
+         * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
+         */
+        '${modelName}': (): ModelItf['${modelName}']['Res'] => {
+            return useSelector(state => {
+                return (state[RAP_STATE_KEY] && state[RAP_STATE_KEY]['${modelName}']) || []
+            })
         }`
             )
             .join(',\n\n')}
@@ -198,7 +238,7 @@ function createUseRapStr(interfaces: Intf[]): string {
          */
         '${modelName}': (): void => {
             dispatchAction({
-                type: RAPPER_REDUX_UPDATE_STORE, 
+                type: RAP_REDUX_CLEAR_STORE, 
                 payload: {
                     ['${modelName}']: undefined,
                 }
@@ -208,7 +248,7 @@ function createUseRapStr(interfaces: Intf[]): string {
             .join(',\n\n')}
     }
 
-    export { useRap, clearRap };
+    export { useRap, useRapGetAll, clearRap };
     `
 }
 

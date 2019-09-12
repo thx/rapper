@@ -8,4 +8,4 @@ exports.rapperEnhancer = rapperEnhancer_1.rapperEnhancer;
 exports.dispatchAction = rapperEnhancer_1.dispatchAction;
 var constant_1 = require("./redux/constant");
 exports.RAP_STATE_KEY = constant_1.RAP_STATE_KEY;
-exports.RAPPER_REDUX_UPDATE_STORE = constant_1.RAPPER_REDUX_UPDATE_STORE;
+exports.RAP_REDUX_CLEAR_STORE = constant_1.RAP_REDUX_CLEAR_STORE;
