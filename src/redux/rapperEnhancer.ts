@@ -1,12 +1,14 @@
 import { locationStringify } from '../common'
-import { RAP_STATE_KEY, RAPPER_REDUX_REQUEST, RAPPER_REDUX_UPDATE_STORE, RAP_REDUX_CLEAR_STORE } from './constant'
+import { RAP_STATE_KEY, RAP_REDUX_REQUEST, RAP_REDUX_UPDATE_STORE, RAP_REDUX_CLEAR_STORE } from './constant'
+import { REQUEST_METHOD } from '../types'
+import { IAction, IEnhancerProps, IStore } from './types'
 
-/** 响应参数匹配函数 */
-export interface IResponseMapper {
-    (data: any): any
+interface IRequestParams {
+    endpoint: string
+    method?: REQUEST_METHOD
+    params?: any
 }
-
-const sendRequest = async params => {
+const sendRequest = async (params: IRequestParams) => {
     let requestUrl = params.endpoint
     const requestParams: any = {
         credentials: 'include',
@@ -28,7 +30,7 @@ const sendRequest = async params => {
     return retJSON.json()
 }
 
-let dispatch = action => {
+let dispatch = (action: IAction) => {
     console.log('空dispatch', action)
 }
 
@@ -43,47 +45,38 @@ function assignData(oldState, payload, maxCache?: number) {
     return newState
 }
 
-interface IEnhancerProps {
-    /** 响应数据处理函数 */
-    responseMapper?: IResponseMapper
-    /** 缓存数据最大长度 */
-    maxCache?: number
-}
-interface IAction {
-    type: any
-    payload: {
-        [key: string]: any
-    }
-}
 function rapperEnhancer({ responseMapper = data => data, maxCache = 2 }: IEnhancerProps) {
     return next => (reducers, initialState, enhancer) => {
-        const newReducers = (state, action) => {
+        const newReducers = (state: any, action: IAction): IStore => {
             if (state) {
                 state[RAP_STATE_KEY] || (state[RAP_STATE_KEY] = {})
             } else {
                 state = {}
             }
 
-            if (action.type === RAPPER_REDUX_UPDATE_STORE) {
-                /** 请求成功，更新 store */
-                return {
-                    ...state,
-                    [RAP_STATE_KEY]: assignData(state[RAP_STATE_KEY], action.payload, maxCache),
-                }
-            } else if (action.type === RAP_REDUX_CLEAR_STORE) {
-                /** 用户手动清空 */
-                return {
-                    ...state,
-                    [RAP_STATE_KEY]: { ...state[RAP_STATE_KEY], ...action.payload },
+            if (action.hasOwnProperty('type')) {
+                if (action.type === RAP_REDUX_UPDATE_STORE) {
+                    /** 请求成功，更新 store */
+                    return {
+                        ...state,
+                        [RAP_STATE_KEY]: assignData(state[RAP_STATE_KEY], action.payload, maxCache),
+                    }
+                } else if (action.type === RAP_REDUX_CLEAR_STORE) {
+                    /** 用户手动清空 */
+                    return {
+                        ...state,
+                        [RAP_STATE_KEY]: { ...state[RAP_STATE_KEY], ...action.payload },
+                    }
                 }
             }
+
             return reducers(state, action)
         }
 
         const store = next(reducers, initialState, enhancer)
         store.replaceReducer(newReducers)
         dispatch = async action => {
-            if (action[RAPPER_REDUX_REQUEST] === undefined) {
+            if (action.type !== RAP_REDUX_REQUEST) {
                 return store.dispatch(action)
             }
 
@@ -94,19 +87,21 @@ function rapperEnhancer({ responseMapper = data => data, maxCache = 2 }: IEnhanc
                 params,
                 cb,
                 types: [REQUEST, SUCCESS, FAILURE],
-            } = action[RAPPER_REDUX_REQUEST]
+            } = action.payload
 
             store.dispatch({ type: REQUEST })
             try {
                 const responseData = await sendRequest({ endpoint, method, params })
                 cb && cb(responseData)
                 store.dispatch({
-                    type: RAPPER_REDUX_UPDATE_STORE,
+                    type: RAP_REDUX_UPDATE_STORE,
                     payload: { [modelName]: responseMapper(responseData) },
                 })
-                return store.dispatch({ type: SUCCESS, payload: responseData })
+                store.dispatch({ type: SUCCESS, payload: responseData })
+                return responseMapper(responseData)
             } catch (e) {
-                return store.dispatch({ type: FAILURE, payload: e })
+                store.dispatch({ type: FAILURE, payload: e })
+                throw Error(e)
             }
         }
 
@@ -115,7 +110,7 @@ function rapperEnhancer({ responseMapper = data => data, maxCache = 2 }: IEnhanc
 }
 
 /** 发送请求 */
-function dispatchAction(action) {
-    dispatch(action)
+function dispatchAction(action: IAction) {
+    return dispatch(action)
 }
 export { rapperEnhancer, dispatchAction }

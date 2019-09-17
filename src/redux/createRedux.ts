@@ -1,5 +1,5 @@
 import { Intf } from '../types'
-import { RAPPER_REDUX_REQUEST } from './constant'
+import { RAP_REDUX_REQUEST } from './constant'
 
 /** 接口名称转义 */
 function getName(name: string): string {
@@ -51,17 +51,13 @@ function getRequestActionInterfaceStr(interfaces: Intf[], serverAPI: string): st
             .map(({ modelName, method, url }) => {
                 const actionName = getName(modelName)
                 return `
-                    '${actionName}_SUCCESS_ACTION'?: {
-                        type: '${actionName}_SUCCESS',
-                        payload: ModelItf['${modelName}']['Res']
-                    }
-                    '${actionName}': (params?: ModelItf['${modelName}']['Req'], cb?: () => void) => {
-                        ${RAPPER_REDUX_REQUEST}: {
+                    '${actionName}': (params?: ModelItf['${modelName}']['Req']) => {
+                        type: '${RAP_REDUX_REQUEST}',
+                        payload: {
                             modelName: '${modelName}'
                             endpoint: '${getEndpoint(serverAPI, url)}'
                             method: '${method}'
                             params?: ModelItf['${modelName}']['Req']
-                            cb?: () => void
                             types: ['${actionName}_REQUEST', '${actionName}_SUCCESS', '${actionName}_FAILURE']
                         }
                     },
@@ -102,13 +98,13 @@ function getRequestActionStr(interfaces: Intf[], serverAPI: string): string {
                          * 接口名：${name}
                          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
                          */
-                        '${actionName}': (params, cb) => ({
-                            'RAPPER_REDUX_REQUEST': {
+                        '${actionName}': (params) => ({
+                            type: '${RAP_REDUX_REQUEST}',
+                            payload: {
                                 modelName: '${modelName}',
                                 endpoint: '${getEndpoint(serverAPI, url)}',
                                 method: '${method}',
                                 params,
-                                cb,
                                 types: [
                                     RequestTypes['${actionName}_REQUEST'],
                                     RequestTypes['${actionName}_SUCCESS'],
@@ -172,8 +168,8 @@ function createReduxFetchStr(projectId: number, interfaces: Intf[]): string {
          * @param req 请求参数
          * @param extra 请求配置项
          */
-        '${modelName}': (req: ModelItf['${modelName}']['Req'], cb?: () => void) => {
-            dispatchAction(RequestAction['${getName(modelName)}'](req, cb))
+        '${modelName}': (req?: ModelItf['${modelName}']['Req']) => {
+            return dispatchAction(RequestAction['${getName(modelName)}'](req))
         }`
             )
             .join(',\n\n')}

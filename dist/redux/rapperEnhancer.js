@@ -105,13 +105,15 @@ function rapperEnhancer(_a) {
             else {
                 state = {};
             }
-            if (action.type === constant_1.RAPPER_REDUX_UPDATE_STORE) {
-                /** 请求成功，更新 store */
-                return __assign({}, state, (_a = {}, _a[constant_1.RAP_STATE_KEY] = assignData(state[constant_1.RAP_STATE_KEY], action.payload, maxCache), _a));
-            }
-            else if (action.type === constant_1.RAP_REDUX_CLEAR_STORE) {
-                /** 用户手动清空 */
-                return __assign({}, state, (_b = {}, _b[constant_1.RAP_STATE_KEY] = __assign({}, state[constant_1.RAP_STATE_KEY], action.payload), _b));
+            if (action.hasOwnProperty('type')) {
+                if (action.type === constant_1.RAP_REDUX_UPDATE_STORE) {
+                    /** 请求成功，更新 store */
+                    return __assign({}, state, (_a = {}, _a[constant_1.RAP_STATE_KEY] = assignData(state[constant_1.RAP_STATE_KEY], action.payload, maxCache), _a));
+                }
+                else if (action.type === constant_1.RAP_REDUX_CLEAR_STORE) {
+                    /** 用户手动清空 */
+                    return __assign({}, state, (_b = {}, _b[constant_1.RAP_STATE_KEY] = __assign({}, state[constant_1.RAP_STATE_KEY], action.payload), _b));
+                }
             }
             return reducers(state, action);
         };
@@ -122,10 +124,10 @@ function rapperEnhancer(_a) {
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
-                        if (action[constant_1.RAPPER_REDUX_REQUEST] === undefined) {
+                        if (action.type !== constant_1.RAP_REDUX_REQUEST) {
                             return [2 /*return*/, store.dispatch(action)];
                         }
-                        _b = action[constant_1.RAPPER_REDUX_REQUEST], modelName = _b.modelName, endpoint = _b.endpoint, method = _b.method, params = _b.params, cb = _b.cb, _c = _b.types, REQUEST = _c[0], SUCCESS = _c[1], FAILURE = _c[2];
+                        _b = action.payload, modelName = _b.modelName, endpoint = _b.endpoint, method = _b.method, params = _b.params, cb = _b.cb, _c = _b.types, REQUEST = _c[0], SUCCESS = _c[1], FAILURE = _c[2];
                         store.dispatch({ type: REQUEST });
                         _d.label = 1;
                     case 1:
@@ -135,13 +137,15 @@ function rapperEnhancer(_a) {
                         responseData = _d.sent();
                         cb && cb(responseData);
                         store.dispatch({
-                            type: constant_1.RAPPER_REDUX_UPDATE_STORE,
+                            type: constant_1.RAP_REDUX_UPDATE_STORE,
                             payload: (_a = {}, _a[modelName] = responseMapper(responseData), _a)
                         });
-                        return [2 /*return*/, store.dispatch({ type: SUCCESS, payload: responseData })];
+                        store.dispatch({ type: SUCCESS, payload: responseData });
+                        throw Error('cuowu');
                     case 3:
                         e_1 = _d.sent();
-                        return [2 /*return*/, store.dispatch({ type: FAILURE, payload: e_1 })];
+                        store.dispatch({ type: FAILURE, payload: e_1 });
+                        throw Error(e_1);
                     case 4: return [2 /*return*/];
                 }
             });
@@ -152,6 +156,6 @@ function rapperEnhancer(_a) {
 exports.rapperEnhancer = rapperEnhancer;
 /** 发送请求 */
 function dispatchAction(action) {
-    dispatch(action);
+    return dispatch(action);
 }
 exports.dispatchAction = dispatchAction;
