@@ -158,6 +158,11 @@ function createReduxFetchStr(projectId: number, interfaces: Intf[]): string {
     import { ModelItf } from './model';
     import { RequestAction } from './redux';
 
+    interface IExtra {
+        isHideSuccess?: boolean
+        isHideFail?: boolean
+    }
+
     const request = {
         ${interfaces
             .map(
@@ -168,8 +173,12 @@ function createReduxFetchStr(projectId: number, interfaces: Intf[]): string {
          * @param req 请求参数
          * @param extra 请求配置项
          */
-        '${modelName}': (req?: ModelItf['${modelName}']['Req']): Promise<ModelItf['${modelName}']['Res']> => {
-            return dispatchAction(RequestAction['${getName(modelName)}'](req))
+        '${modelName}': (req?: ModelItf['${modelName}']['Req'], extra?: IExtra): Promise<ModelItf['${modelName}']['Res']> => {
+            const action = RequestAction['${getName(modelName)}'](req)
+            if (Object.prototype.toString.call(extra)) {
+                action.payload = { ...action.payload, ...extra }
+            }
+            return dispatchAction(action)
         }`
             )
             .join(',\n\n')}

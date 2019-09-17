@@ -104,7 +104,7 @@ exports.rapReducers = rapReducers;
 /** store enhancer */
 function rapEnhancer(_a) {
     var _this = this;
-    var _b = _a.responseMapper, responseMapper = _b === void 0 ? function (data) { return data; } : _b, _c = _a.maxCache, maxCache = _c === void 0 ? 2 : _c;
+    var _b = _a.responseMapper, responseMapper = _b === void 0 ? function (data) { return data; } : _b, _c = _a.maxCache, maxCache = _c === void 0 ? 2 : _c, successCb = _a.successCb, failCb = _a.failCb;
     return function (next) { return function (reducers, initialState, enhancer) {
         var newReducers = function (state, action) {
             var _a, _b;
@@ -129,31 +129,39 @@ function rapEnhancer(_a) {
         var store = next(reducers, initialState, enhancer);
         store.replaceReducer(newReducers);
         dispatch = function (action) { return __awaiter(_this, void 0, void 0, function () {
-            var _a, _b, modelName, endpoint, method, params, cb, _c, REQUEST, SUCCESS, FAILURE, responseData, e_1;
-            return __generator(this, function (_d) {
-                switch (_d.label) {
+            var _a, _b, modelName, endpoint, method, params, cb, _c, REQUEST, SUCCESS, FAILURE, _d, 
+            /** 是否不调用成功回调，默认调用 */
+            isHideSuccess, _e, 
+            /** 是否不调用失败回调，默认调用 */
+            isHideFail, responseData, e_1;
+            return __generator(this, function (_f) {
+                switch (_f.label) {
                     case 0:
                         if (action.type !== constant_1.RAP_REDUX_REQUEST) {
                             return [2 /*return*/, store.dispatch(action)];
                         }
-                        _b = action.payload, modelName = _b.modelName, endpoint = _b.endpoint, method = _b.method, params = _b.params, cb = _b.cb, _c = _b.types, REQUEST = _c[0], SUCCESS = _c[1], FAILURE = _c[2];
+                        _b = action.payload, modelName = _b.modelName, endpoint = _b.endpoint, method = _b.method, params = _b.params, cb = _b.cb, _c = _b.types, REQUEST = _c[0], SUCCESS = _c[1], FAILURE = _c[2], _d = _b.isHideSuccess, isHideSuccess = _d === void 0 ? false : _d, _e = _b.isHideFail, isHideFail = _e === void 0 ? false : _e;
                         store.dispatch({ type: REQUEST });
-                        _d.label = 1;
+                        _f.label = 1;
                     case 1:
-                        _d.trys.push([1, 3, , 4]);
+                        _f.trys.push([1, 3, , 4]);
                         return [4 /*yield*/, sendRequest({ endpoint: endpoint, method: method, params: params })];
                     case 2:
-                        responseData = _d.sent();
+                        responseData = _f.sent();
                         cb && cb(responseData);
                         store.dispatch({
                             type: constant_1.RAP_REDUX_UPDATE_STORE,
                             payload: (_a = {}, _a[modelName] = responseMapper(responseData), _a)
                         });
                         store.dispatch({ type: SUCCESS, payload: responseData });
+                        /** 请求成功回调，用户可以增加 success 提示 */
+                        !isHideSuccess && successCb && typeof successCb === 'function' && successCb(responseData);
                         return [2 /*return*/, responseData];
                     case 3:
-                        e_1 = _d.sent();
+                        e_1 = _f.sent();
                         store.dispatch({ type: FAILURE, payload: e_1 });
+                        /** 请求失败回调，用户可以增加 fail 提示 */
+                        !isHideFail && failCb && typeof failCb === 'function' && failCb(e_1);
                         throw Error(e_1);
                     case 4: return [2 /*return*/];
                 }

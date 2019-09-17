@@ -14,6 +14,8 @@ interface IRequestAction {
         method?: REQUEST_METHOD
         params?: any
         types: string[]
+        isHideSuccess?: boolean
+        isHideFail?: boolean
     }
 }
 
@@ -28,6 +30,10 @@ export interface IEnhancerProps {
     responseMapper?: IResponseMapper
     /** 缓存数据最大长度 */
     maxCache?: number
+    /** 请求成功默认回调 */
+    successCb?: (response: any) => void
+    /** 请求失败默认回调 */
+    failCb?: (e: any) => void
 }
 
 interface Dispatch<A = AnyAction> {

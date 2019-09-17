@@ -50,7 +50,7 @@ const rapReducers = {
 }
 
 /** store enhancer */
-function rapEnhancer({ responseMapper = data => data, maxCache = 2 }: IEnhancerProps) {
+function rapEnhancer({ responseMapper = data => data, maxCache = 2, successCb, failCb }: IEnhancerProps) {
     return next => (reducers, initialState, enhancer) => {
         const newReducers = (state: any, action: IAction): IStore => {
             if (state) {
@@ -92,6 +92,10 @@ function rapEnhancer({ responseMapper = data => data, maxCache = 2 }: IEnhancerP
                 params,
                 cb,
                 types: [REQUEST, SUCCESS, FAILURE],
+                /** 是否不调用成功回调，默认调用 */
+                isHideSuccess = false,
+                /** 是否不调用失败回调，默认调用 */
+                isHideFail = false,
             } = action.payload
 
             store.dispatch({ type: REQUEST })
@@ -103,9 +107,13 @@ function rapEnhancer({ responseMapper = data => data, maxCache = 2 }: IEnhancerP
                     payload: { [modelName]: responseMapper(responseData) },
                 })
                 store.dispatch({ type: SUCCESS, payload: responseData })
+                /** 请求成功回调，用户可以增加 success 提示 */
+                !isHideSuccess && successCb && typeof successCb === 'function' && successCb(responseData)
                 return responseData
             } catch (e) {
                 store.dispatch({ type: FAILURE, payload: e })
+                /** 请求失败回调，用户可以增加 fail 提示 */
+                !isHideFail && failCb && typeof failCb === 'function' && failCb(e)
                 throw Error(e)
             }
         }

@@ -193,5 +193,46 @@ clearRap['GET/adgroup/price/update$']()
 这里，可以给 `rapEnhancer` 传一个函数作为参数，来过滤响应数据，让存入 redux store 的数据更加纯净，类似下面这样：
 
 ```js
-rapEnhancer(responseData => responseData.result)
+import { rapEnhancer } from '@ali/rapper'
+
+rapEnhancer({
+    responseMapper: responseData => responseData.result,
+})
+```
+
+### 2、请求响应数据缓存长度设置
+
+我们可以将多次请求响应的数据缓存起来，默认缓存最近两次请求的数据，当然也可以通过配置 `maxCahce` 来自定义缓存长度
+
+```js
+import { rapEnhancer } from '@ali/rapper'
+
+rapEnhancer({
+    maxCache: 3,
+})
+```
+
+### 3、全局的请求成功、失败回调
+
+在这里，我们可以定义全局的请求回调，比如定义请求失败后的提示框
+
+```js
+import { rapEnhancer } from '@ali/rapper'
+
+rapEnhancer({
+    successCb: (responseData) => {},
+    failCb: (e) => {}
+}),
+```
+
+### 4、单个请求是否调用请求成功回调、失败回调
+
+在定义全局的请求回调后，对于部分请求，我们不希望给用户提示成功或者失败，所以这里也支持自定义，可以通过配置 `isHideSuccess`、`isHideFail` 来实现
+
+```js
+/** import 的目录就是上面第二步配置的 outputPath */
+import { fetch } from 'requestModel'
+
+/** 发送请求 */
+fetch['GET/adgroup/price/update$']({}, { isHideSuccess: true, isHideFail: true })
 ```
