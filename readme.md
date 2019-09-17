@@ -83,24 +83,24 @@ export = function<Res extends {[x: string]: any}>(
 ```js
 import { applyMiddleware, createStore, compose } from 'redux'
 import { createLogger } from 'redux-logger'
-import { rapperEnhancer } from '@ali/rapper'
+import { rapEnhancer } from '@ali/rapper'
 import reducers from './reducer'
 
 const loggerMiddleware = createLogger()
 
 const enhancer = compose(
-    /** rapperEnhancer 即为增加的 store enhancer */
-    rapperEnhancer(),
+    /** rapEnhancer 即为增加的 store enhancer */
+    rapEnhancer(),
     applyMiddleware(loggerMiddleware)
 )
 
 const store = createStore(reducers, enhancer)
 ```
 
-可以给 `rapperEnhancer` 传一个函数作为参数，类似下面这样：
+可以给 `rapEnhancer` 传一个函数作为参数，类似下面这样：
 
 ```js
-rapperEnhancer(responseData => responseData.result)
+rapEnhancer(responseData => responseData.result)
 ```
 
 这个函数的作用是对接口返回参数做过滤处理，然后存入 store
