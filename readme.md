@@ -97,50 +97,6 @@ const enhancer = compose(
 const store = createStore(reducers, enhancer)
 ```
 
-可以给 `rapEnhancer` 传一个函数作为参数，类似下面这样：
-
-```js
-rapEnhancer(responseData => responseData.result)
-```
-
-这个函数的作用是对接口返回参数做过滤处理，然后存入 store
-
-比如我们业务中常用的 response 数据结构如下
-
-```json
-{
-    "errno": 0,
-    "errmsg": "",
-    "result": {
-        "tableData": [
-            {
-                "id": 1
-            },
-            {
-                "id": 2
-            }
-        ]
-    }
-}
-```
-
-如果不传处理函数，默认会将 response 数据完整的存入 store，就是上面的数据
-
-如果不传处理函数，经函数处理后，会将下面的数据存入 store （会将业务不关注的冗余参数去掉）
-
-```json
-{
-    "tableData": [
-        {
-            "id": 1
-        },
-        {
-            "id": 2
-        }
-    ]
-}
-```
-
 ### 第二步、配置模板文件生成脚本，生成模板文件
 
 ```js
@@ -177,12 +133,52 @@ createModel({
 /** import 的目录就是上面第二步配置的 outputPath */
 import { fetch, useRap, clearRap } from 'requestModel'
 
-/** 请求数据 */
+/** 发送请求，返回值是一个 promise */
 fetch['GET/adgroup/price/update$']()
+    .then(response => {
+        console.log('请求成功', response)
+    })
+    .catch(e => {
+        console.log('请求失败', e)
+    })
 
 /** 以 Hooks 的方式获取请求回来的数据 */
 const rapData = useRap['GET/adgroup/price/update$']()
 
+/** 以 Hooks 的方式获取请求回来的所有数据（包括历史数据） */
+const rapData = useRapGetAll['GET/adgroup/price/update$']()
+
 /** 清除数据 */
 clearRap['GET/adgroup/price/update$']()
+```
+
+## 高级配置
+
+### 1、请求响应数据过滤
+
+在实际业务中，我们的接口响应数据会有很多辅助参数，我们真正关心的数据可能只有部分，比如：
+
+```json
+{
+    "errno": 0,
+    "errmsg": "",
+    "result": {
+        "tableData": [
+            {
+                "id": 1
+            },
+            {
+                "id": 2
+            }
+        ]
+    }
+}
+```
+
+我们真正想要的数据是 `result` 参数，`error`、`errmsg`等都只是通用的辅助参数
+
+这里，可以给 `rapEnhancer` 传一个函数作为参数，来过滤响应数据，让存入 redux store 的数据更加纯净，类似下面这样：
+
+```js
+rapEnhancer(responseData => responseData.result)
 ```

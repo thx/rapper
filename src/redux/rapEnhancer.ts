@@ -75,7 +75,7 @@ function rapEnhancer({ responseMapper = data => data, maxCache = 2 }: IEnhancerP
 
         const store = next(reducers, initialState, enhancer)
         store.replaceReducer(newReducers)
-        dispatch = async action => {
+        dispatch = async (action: IAction): Promise<any> => {
             if (action.type !== RAP_REDUX_REQUEST) {
                 return store.dispatch(action)
             }
@@ -98,7 +98,7 @@ function rapEnhancer({ responseMapper = data => data, maxCache = 2 }: IEnhancerP
                     payload: { [modelName]: responseMapper(responseData) },
                 })
                 store.dispatch({ type: SUCCESS, payload: responseData })
-                return responseMapper(responseData)
+                return responseData
             } catch (e) {
                 store.dispatch({ type: FAILURE, payload: e })
                 throw Error(e)
