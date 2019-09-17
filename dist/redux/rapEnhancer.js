@@ -45,8 +45,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
 exports.__esModule = true;
+var _a;
+var _this = this;
 var common_1 = require("../common");
 var constant_1 = require("./constant");
 var sendRequest = function (params) { return __awaiter(_this, void 0, void 0, function () {
@@ -93,6 +94,14 @@ function assignData(oldState, payload, maxCache) {
     });
     return newState;
 }
+var rapReducers = (_a = {},
+    _a[constant_1.RAP_STATE_KEY] = function (state) {
+        if (state === void 0) { state = {}; }
+        return state;
+    },
+    _a);
+exports.rapReducers = rapReducers;
+/** store enhancer */
 function rapEnhancer(_a) {
     var _this = this;
     var _b = _a.responseMapper, responseMapper = _b === void 0 ? function (data) { return data; } : _b, _c = _a.maxCache, maxCache = _c === void 0 ? 2 : _c;

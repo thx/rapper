@@ -4,6 +4,7 @@ var createModel_1 = require("./createModel");
 exports.createModel = createModel_1["default"];
 /** redux */
 var rapEnhancer_1 = require("./redux/rapEnhancer");
+exports.rapReducers = rapEnhancer_1.rapReducers;
 exports.rapEnhancer = rapEnhancer_1.rapEnhancer;
 exports.dispatchAction = rapEnhancer_1.dispatchAction;
 var constant_1 = require("./redux/constant");

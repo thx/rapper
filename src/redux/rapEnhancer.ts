@@ -45,6 +45,11 @@ function assignData(oldState, payload, maxCache?: number) {
     return newState
 }
 
+const rapReducers = {
+    [RAP_STATE_KEY]: (state = {}) => state,
+}
+
+/** store enhancer */
 function rapEnhancer({ responseMapper = data => data, maxCache = 2 }: IEnhancerProps) {
     return next => (reducers, initialState, enhancer) => {
         const newReducers = (state: any, action: IAction): IStore => {
@@ -113,4 +118,4 @@ function rapEnhancer({ responseMapper = data => data, maxCache = 2 }: IEnhancerP
 function dispatchAction(action: IAction) {
     return dispatch(action)
 }
-export { rapEnhancer, dispatchAction }
+export { rapReducers, rapEnhancer, dispatchAction }

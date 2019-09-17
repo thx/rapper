@@ -78,7 +78,9 @@ export = function<Res extends {[x: string]: any}>(
 
 ## 使用手册
 
-### 第一步、在 createStore 的 时候增加一个 store enhancer
+### 第一步、配置 redux 初始化信息
+
+#### 在 createStore 的时候利用 compose 增加一个 store enhancer
 
 ```js
 import { applyMiddleware, createStore, compose } from 'redux'
@@ -95,6 +97,17 @@ const enhancer = compose(
 )
 
 const store = createStore(reducers, enhancer)
+```
+
+#### 在 combineReducers 的时候，增加 rapReducers （请求响应的数据就存在这里面）
+
+```js
+import { rapReducers } from '@ali/rapper'
+
+combineReducers({
+    duck: DuckReducer,
+    ...rapReducers,
+})
 ```
 
 ### 第二步、配置模板文件生成脚本，生成模板文件
