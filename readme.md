@@ -146,7 +146,7 @@ createModel({
 /** import 的目录就是上面第二步配置的 outputPath */
 import { fetch, useRap, clearRap } from 'requestModel'
 
-/** 发送请求，返回值是一个 promise */
+/** 发送请求，返回的是一个 promise，会把响应数据返回 */
 fetch['GET/adgroup/price/update$']()
     .then(response => {
         console.log('请求成功', response)
