@@ -214,7 +214,8 @@ function createUseRapStr(interfaces: Intf[]): string {
         }): ModelItf['${modelName}']['Res'] => {
             return useSelector(state => {
                 const currentState = (state[RAP_STATE_KEY] && state[RAP_STATE_KEY]['${modelName}']) || []
-                const data = currentState.filter(
+                
+                const data = Object.prototype.toString.call(params) === '[object Object]' ? currentState.filter(
                     (item: {
                         req: ModelItf['${modelName}']['Req']
                         res: ModelItf['${modelName}']['Res']
@@ -230,7 +231,7 @@ function createUseRapStr(interfaces: Intf[]): string {
     
                         /** 比较 req */
                         if (params.req !== undefined) {
-                            if (Object.prototype.toString.call(params.req) === 'object') {
+                            if (Object.prototype.toString.call(params.req) === '[object Object]') {
                                 const reqResult = Object.keys(params.req).every(key => {
                                     return item[key] === params.req[key]
                                 })
@@ -241,7 +242,7 @@ function createUseRapStr(interfaces: Intf[]): string {
                         }
                         return true
                     }
-                )
+                ) : currentState
                 /** 过滤出一条最新的符合条件的数据 */
                 return data.length ? data.slice(-1)[0].res : undefined
             })

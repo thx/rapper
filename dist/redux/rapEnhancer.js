@@ -110,7 +110,8 @@ exports.rapReducers = rapReducers;
 /** store enhancer */
 function rapEnhancer(_a) {
     var _this = this;
-    var _b = _a.responseMapper, responseMapper = _b === void 0 ? function (data) { return data; } : _b, _c = _a.maxCache, maxCache = _c === void 0 ? 2 : _c, successCb = _a.successCb, failCb = _a.failCb;
+    var _b = _a.responseMapper, responseMapper = _b === void 0 ? function (data) { return data; } : _b, _c = _a.maxCache, maxCache = _c === void 0 ? 2 : _c, successCb = _a.successCb, failCb = _a.failCb, request = _a.request, judgeSuccess = _a.judgeSuccess;
+    request = typeof request === 'function' ? request : sendRequest;
     return function (next) { return function (reducers, initialState, enhancer) {
         var newReducers = function (state, action) {
             var _a, _b;
@@ -143,7 +144,7 @@ function rapEnhancer(_a) {
             /** 是否不调用成功回调，默认调用 */
             isHideSuccess, _d, 
             /** 是否不调用失败回调，默认调用 */
-            isHideFail, responseData, e_1;
+            isHideFail, responseData, judgeResult, e_1;
             return __generator(this, function (_e) {
                 switch (_e.label) {
                     case 0:
@@ -155,9 +156,18 @@ function rapEnhancer(_a) {
                         _e.label = 1;
                     case 1:
                         _e.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, sendRequest({ endpoint: endpoint, method: method, params: params })];
+                        return [4 /*yield*/, request({ endpoint: endpoint, method: method, params: params })
+                            /** 自定义判断请求状态 */
+                        ];
                     case 2:
                         responseData = _e.sent();
+                        /** 自定义判断请求状态 */
+                        if (typeof judgeSuccess === 'function') {
+                            judgeResult = judgeSuccess(responseData);
+                            if (judgeResult !== true) {
+                                throw Error(judgeResult);
+                            }
+                        }
                         cb && cb(responseData);
                         store.dispatch({
                             type: constant_1.RAP_REDUX_UPDATE_STORE,
