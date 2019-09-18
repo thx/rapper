@@ -1,14 +1,9 @@
 import { locationStringify } from '../common'
 import { RAP_STATE_KEY, RAP_REDUX_REQUEST, RAP_REDUX_UPDATE_STORE, RAP_REDUX_CLEAR_STORE } from './constant'
 import { REQUEST_METHOD } from '../types'
-import { IAction, IEnhancerProps, IStore } from './types'
+import { IAction, IEnhancerProps, IStore, IRequestParams } from './types'
 
-interface IRequestParams {
-    endpoint: string
-    method?: REQUEST_METHOD
-    params?: any
-}
-const sendRequest = async (params: IRequestParams) => {
+const sendRequest = async (params: IRequestParams): Promise<any> => {
     let requestUrl = params.endpoint
     const requestParams: any = {
         credentials: 'include',
@@ -35,12 +30,34 @@ let dispatch = (action: IAction) => {
 }
 
 /** Todo: 处理数据，存起来 */
-function assignData(oldState, payload, maxCache?: number) {
+interface IAssignDataProps {
+    /** 合并前的State */
+    oldState: object
+    /** 最大缓存数 */
+    maxCache?: number
+    payload: {
+        /** 合并的key */
+        key: string
+        /** 请求参数*/
+        req?: any
+        /** 请求响应数据 */
+        res?: any
+    }
+}
+function assignData({ oldState, payload: { key, req, res }, maxCache }: IAssignDataProps) {
     let newState = { ...oldState }
-    Object.entries(payload).forEach(([key, value]) => {
-        newState[key] = newState[key] || []
-        /** 只存最近 maxCache 个数据 */
-        newState[key] = [].concat(newState[key].splice(0, maxCache), value)
+    if (typeof maxCache !== 'number' || maxCache < 1) {
+        maxCache = 2
+    }
+
+    let data = newState[key] || []
+    /** 只存最近 maxCache 个数据 */
+    if (maxCache !== Infinity && data.length > maxCache) {
+        data = newState[key].slice(data.length - maxCache)
+    }
+    newState[key] = [].concat(data, {
+        req,
+        res,
     })
     return newState
 }
@@ -50,7 +67,8 @@ const rapReducers = {
 }
 
 /** store enhancer */
-function rapEnhancer({ responseMapper = data => data, maxCache = 2, successCb, failCb }: IEnhancerProps) {
+function rapEnhancer({ responseMapper = data => data, maxCache = 2, successCb, failCb, request, judgeSuccess }: IEnhancerProps) {
+    request = typeof request === 'function' ? request : sendRequest
     return next => (reducers, initialState, enhancer) => {
         const newReducers = (state: any, action: IAction): IStore => {
             if (state) {
@@ -64,7 +82,11 @@ function rapEnhancer({ responseMapper = data => data, maxCache = 2, successCb, f
                     /** 请求成功，更新 store */
                     return {
                         ...state,
-                        [RAP_STATE_KEY]: assignData(state[RAP_STATE_KEY], action.payload, maxCache),
+                        [RAP_STATE_KEY]: assignData({
+                            oldState: state[RAP_STATE_KEY],
+                            maxCache,
+                            payload: action.payload,
+                        }),
                     }
                 } else if (action.type === RAP_REDUX_CLEAR_STORE) {
                     /** 用户手动清空 */
@@ -100,11 +122,22 @@ function rapEnhancer({ responseMapper = data => data, maxCache = 2, successCb, f
 
             store.dispatch({ type: REQUEST })
             try {
-                const responseData = await sendRequest({ endpoint, method, params })
+                const responseData = await request({ endpoint, method, params })
+                /** 自定义判断请求状态 */
+                if (typeof judgeSuccess === 'function') {
+                    const judgeResult = judgeSuccess(responseData)
+                    if (judgeResult !== true) {
+                        throw Error(judgeResult as string)
+                    }
+                }
                 cb && cb(responseData)
                 store.dispatch({
                     type: RAP_REDUX_UPDATE_STORE,
-                    payload: { [modelName]: responseMapper(responseData) },
+                    payload: {
+                        key: modelName,
+                        req: params,
+                        res: responseMapper(responseData),
+                    },
                 })
                 store.dispatch({ type: SUCCESS, payload: responseData })
                 /** 请求成功回调，用户可以增加 success 提示 */

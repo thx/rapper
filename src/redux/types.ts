@@ -21,6 +21,12 @@ interface IRequestAction {
 
 export type IAction = AnyAction | IRequestAction
 
+export interface IRequestParams {
+    endpoint: string
+    method?: REQUEST_METHOD
+    params?: any
+}
+
 interface IResponseMapper {
     (data: any): any
 }
@@ -34,6 +40,9 @@ export interface IEnhancerProps {
     successCb?: (response: any) => void
     /** 请求失败默认回调 */
     failCb?: (e: any) => void
+    /** 自定义请求函数 */
+    request?: (params: IRequestParams) => Promise<any>
+    judgeSuccess?: (responseData: any) => boolean | string
 }
 
 interface Dispatch<A = AnyAction> {

@@ -144,7 +144,7 @@ createModel({
 
 ```js
 /** import 的目录就是上面第二步配置的 outputPath */
-import { fetch, useRap, clearRap } from 'requestModel'
+import { fetch, useRap, useRapAll, clearRap } from 'requestModel'
 
 /** 发送请求，返回的是一个 promise，会把响应数据返回 */
 fetch['GET/adgroup/price/update$']()
@@ -159,7 +159,7 @@ fetch['GET/adgroup/price/update$']()
 const rapData = useRap['GET/adgroup/price/update$']()
 
 /** 以 Hooks 的方式获取请求回来的所有数据（包括历史数据） */
-const rapData = useRapGetAll['GET/adgroup/price/update$']()
+const rapData = useRapAll['GET/adgroup/price/update$']()
 
 /** 清除数据 */
 clearRap['GET/adgroup/price/update$']()
@@ -208,7 +208,7 @@ rapEnhancer({
 import { rapEnhancer } from '@ali/rapper'
 
 rapEnhancer({
-    maxCache: 3,
+    maxCache: 3, // 也支持 Infinity
 })
 ```
 
