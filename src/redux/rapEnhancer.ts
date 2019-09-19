@@ -1,6 +1,5 @@
 import { locationStringify } from '../common'
 import { RAP_STATE_KEY, RAP_REDUX_REQUEST, RAP_REDUX_UPDATE_STORE, RAP_REDUX_CLEAR_STORE } from './constant'
-import { REQUEST_METHOD } from '../types'
 import { IAction, IEnhancerProps, IStore, IRequestParams } from './types'
 
 const sendRequest = async (params: IRequestParams): Promise<any> => {
@@ -29,7 +28,6 @@ let dispatch = (action: IAction) => {
     console.log('空dispatch', action)
 }
 
-/** Todo: 处理数据，存起来 */
 interface IAssignDataProps {
     /** 合并前的State */
     oldState: object

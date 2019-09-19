@@ -147,7 +147,7 @@ createModel({
 import { fetch, useRap, useRapAll, clearRap } from 'requestModel'
 
 /** 发送请求，返回的是一个 promise，会把响应数据返回 */
-fetch['GET/adgroup/price/update$']()
+fetch['GET/adgroup/price/update$']({ productId: 1 })
     .then(response => {
         console.log('请求成功', response)
     })
@@ -163,6 +163,41 @@ const rapData = useRapAll['GET/adgroup/price/update$']()
 
 /** 清除数据 */
 clearRap['GET/adgroup/price/update$']()
+```
+
+#### 接口响应数据的缓存与使用
+
+常规情况下，`useRap['GET/adgroup/price/update$']()` 就能满足业务需求，获取接口响应数据。但某些情况，我们希望将同一接口多次请求回来的数据缓存起来，并能够方便的获取。在这里 rap-redux 已经帮您实现了。
+
+首先，默认会缓存最近 2 次请求的数据，如需更多，可以按照下面 “高级配置” 中的示例进行配置；
+
+其次，取回缓存数据，我们仍然通过 `useRap` 这个 Hooks 进行筛选读取
+
+-   第一种筛选方式：配置 req 参数，根据请求参数来筛选出满足条件的最新数据
+
+```js
+import { useRap } from 'requestModel'
+
+const rapData = useRap['GET/adgroup/price/update$']({
+    req: { productId: 1 },
+})
+```
+
+-   第二种筛选方式：配置 filter 函数，类似于 Array.filter()，筛选出符合条件的数据
+
+```js
+import { useRap } from 'requestModel'
+
+const rapData = useRap['GET/adgroup/price/update$']({
+    /**
+     * @params req，请求参数
+     * @params res，响应数据
+     * @return 函数返回 Boolean
+     */
+    filter: (req, res) => {
+        return req.productId === 2
+    },
+})
 ```
 
 ## 高级配置
@@ -236,3 +271,45 @@ import { fetch } from 'requestModel'
 /** 发送请求 */
 fetch['GET/adgroup/price/update$']({}, { isHideSuccess: true, isHideFail: true })
 ```
+
+### 5、定制 request
+
+默认使用 fetch 发送请求，如有需要，可以自定义使用 axios、ajax 等发起请求，自定义的方法：
+
+```js
+import { rapEnhancer } from '@ali/rapper'
+
+rapEnhancer({
+    /**
+     * 自定义请求方法
+     * endpoint，接口地址；method，请求类型；params，请求参数
+     * 此函数返回一个 promise，同时将请求结果返回
+     */
+    request: ({ endpoint, method, params }) => {
+        /** 这里自定义请求逻辑 */
+    }
+}),
+```
+
+### 6、请求成功、失败状态的判定
+
+默认当接口状态是 200 就判定成功，但实际业务中，我们可能通过响应字段 errno 等来判定成功与否。因此，这里可以自定义状态判定：
+
+```js
+import { rapEnhancer } from '@ali/rapper'
+
+rapEnhancer({
+    /**
+     * 自定义状态判定函数
+     * responseData，接口响应数据
+     * 从函数返回值是 Boolean 类型，代表判定结果
+     */
+    judgeSuccess: (responseData) => {
+
+    }
+}),
+```
+
+Todo: 缓存方案的 用例，及说明
+
+Todo: 完善类型定义
