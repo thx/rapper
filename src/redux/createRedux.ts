@@ -193,9 +193,35 @@ function createUseRapStr(interfaces: Intf[]): string {
     /**
      * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
      */
+    import { useState, useEffect } from 'react';
     import { useSelector } from 'react-redux';
     import { ModelItf } from './model';
     import { RAP_STATE_KEY, dispatchAction, RAP_REDUX_CLEAR_STORE } from '@ali/rapper';
+
+    /** 深比较 */
+    function looseEqual(newData: any, oldData: any): boolean {
+        const newType = Object.prototype.toString.call(newData)
+        const oldType = Object.prototype.toString.call(oldData)
+    
+        if (newType !== oldType) return false
+    
+        if (newType === '[object Object]' || newType === '[object Array]') {
+            for (let key in newData) {
+                if (!looseEqual(newData[key], oldData[key])) {
+                    return false
+                }
+            }
+            for (let key in oldData) {
+                if (!looseEqual(newData[key], oldData[key])) {
+                    return false
+                }
+            }
+        } else if (newData !== oldData) {
+            return false
+        }
+    
+        return true
+    }
 
     const useRap = {
         ${interfaces
@@ -205,35 +231,38 @@ function createUseRapStr(interfaces: Intf[]): string {
          * 接口名：${name}
          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
          */
-        '${modelName}': (params?: {
+        '${modelName}': (filterParams?: {
             req?: ModelItf['${modelName}']['Req']
             filter?: (
                 req: ModelItf['${modelName}']['Req'],
                 res: ModelItf['${modelName}']['Res']
-            ) => any
+            ) => boolean
         }): ModelItf['${modelName}']['Res'] => {
-            return useSelector(state => {
-                const currentState = (state[RAP_STATE_KEY] && state[RAP_STATE_KEY]['${modelName}']) || []
-                
-                const data = Object.prototype.toString.call(params) === '[object Object]' ? currentState.filter(
-                    (item: {
-                        req: ModelItf['${modelName}']['Req']
-                        res: ModelItf['${modelName}']['Res']
-                    }) => {
+            filterParams = Object.prototype.toString.call(filterParams) === '[object Object]' ? filterParams : {}
+
+            const reduxData = useSelector(state => {
+                return (state[RAP_STATE_KEY] && state[RAP_STATE_KEY]['${modelName}']) || []
+            })
+
+            const [filteredData, setFilteredData] = useState({})
+
+            useEffect(() => {
+                const resultArr = reduxData.filter(
+                    (item: { req: ModelItf['${modelName}']['Req']; res: ModelItf['${modelName}']['Res'] }) => {
                         /** 执行filter */
-                        if (params.filter !== undefined) {
-                            if (typeof params.filter === 'function') {
-                                return params.filter(item.req, item.res)
+                        if (filterParams.filter !== undefined) {
+                            if (typeof filterParams.filter === 'function') {
+                                return filterParams.filter(item.req, item.res)
                             } else {
                                 return false
                             }
                         }
-    
+
                         /** 比较 req */
-                        if (params.req !== undefined) {
-                            if (Object.prototype.toString.call(params.req) === '[object Object]') {
-                                const reqResult = Object.keys(params.req).every(key => {
-                                    return item[key] === params.req[key]
+                        if (filterParams.req !== undefined) {
+                            if (Object.prototype.toString.call(filterParams.req) === '[object Object]') {
+                                const reqResult = Object.keys(filterParams.req).every(key => {
+                                    return item.req[key] === filterParams.req[key]
                                 })
                                 if (!reqResult) return false
                             } else {
@@ -242,10 +271,14 @@ function createUseRapStr(interfaces: Intf[]): string {
                         }
                         return true
                     }
-                ) : currentState
+                )
                 /** 过滤出一条最新的符合条件的数据 */
-                return data.length ? data.slice(-1)[0].res : undefined
-            })
+                const result = resultArr.length ? resultArr.slice(-1)[0].res : undefined
+
+                if (!looseEqual(result, filteredData)) setFilteredData(result)
+            }, [reduxData, filterParams.req, filterParams.filter])
+
+            return filteredData
         }`
             )
             .join(',\n\n')}
