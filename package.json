@@ -49,5 +49,6 @@
         "redux": "^4.0.4",
         "ts-node": "^7.0.1",
         "typescript": "^3.1.6"
-    }
+    },
+    "types": "./dist/index.d.ts"
 }
