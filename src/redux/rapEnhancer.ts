@@ -24,8 +24,8 @@ const sendRequest = async (params: IRequestParams): Promise<any> => {
     return retJSON.json()
 }
 
-let dispatch = (action: IAction) => {
-    console.log('空dispatch', action)
+let dispatch = (action: IAction): Promise<any> => {
+    return new Promise(() => {})
 }
 
 interface IAssignDataProps {
@@ -156,7 +156,7 @@ function rapEnhancer(config?: IEnhancerProps) {
 }
 
 /** 发送请求 */
-function dispatchAction(action: IAction) {
+function dispatchAction(action: IAction): Promise<any> {
     return dispatch(action)
 }
 export { rapReducers, rapEnhancer, dispatchAction }
