@@ -154,7 +154,7 @@ function createReduxFetchStr(projectId: number, interfaces: Intf[]): string {
      * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
      * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
      */
-    import { dispatchAction } from '@ali/rapper';
+    import { dispatchAction } from '@ali/rapper-redux';
     import { ModelItf } from './model';
     import { RequestAction } from './redux';
 
@@ -196,7 +196,7 @@ function createUseRapStr(interfaces: Intf[]): string {
     import { useState, useEffect } from 'react';
     import { useSelector } from 'react-redux';
     import { ModelItf } from './model';
-    import { RAP_STATE_KEY, dispatchAction, RAP_REDUX_CLEAR_STORE } from '@ali/rapper';
+    import { RAP_STATE_KEY, dispatchAction, RAP_REDUX_CLEAR_STORE } from '@ali/rapper-redux';
 
     /** 深比较 */
     function looseEqual(newData: any, oldData: any): boolean {

@@ -85,7 +85,7 @@ export = function<Res extends {[x: string]: any}>(
 ```js
 import { applyMiddleware, createStore, compose } from 'redux'
 import { createLogger } from 'redux-logger'
-import { rapEnhancer } from '@ali/rapper'
+import { rapEnhancer } from '@ali/rapper-redux'
 import reducers from './reducer'
 
 const loggerMiddleware = createLogger()
@@ -102,7 +102,7 @@ const store = createStore(reducers, enhancer)
 #### 在 combineReducers 的时候，增加 rapReducers （请求响应的数据就存在这里面）
 
 ```js
-import { rapReducers } from '@ali/rapper'
+import { rapReducers } from '@ali/rapper-redux'
 
 combineReducers({
     duck: DuckReducer,
@@ -115,7 +115,7 @@ combineReducers({
 ```js
 /** rap-redux.js */
 
-const { createModel } = require('@ali/rapper')
+const { createModel } = require('@ali/rapper-redux')
 const { resolve } = require('path')
 
 createModel({
@@ -228,7 +228,7 @@ const rapData = useRap['GET/adgroup/price/update$']({
 这里，可以给 `rapEnhancer` 传一个函数作为参数，来过滤响应数据，让存入 redux store 的数据更加纯净，类似下面这样：
 
 ```js
-import { rapEnhancer } from '@ali/rapper'
+import { rapEnhancer } from '-redux'
 
 rapEnhancer({
     responseMapper: responseData => responseData.result,
@@ -240,7 +240,7 @@ rapEnhancer({
 我们可以将多次请求响应的数据缓存起来，默认缓存最近两次请求的数据，当然也可以通过配置 `maxCahce` 来自定义缓存长度
 
 ```js
-import { rapEnhancer } from '@ali/rapper'
+import { rapEnhancer } from '@ali/rapper-redux'
 
 rapEnhancer({
     maxCache: 3, // 也支持 Infinity
@@ -252,7 +252,7 @@ rapEnhancer({
 在这里，我们可以定义全局的请求回调，比如定义请求失败后的提示框
 
 ```js
-import { rapEnhancer } from '@ali/rapper'
+import { rapEnhancer } from '@ali/rapper-redux'
 
 rapEnhancer({
     successCb: (responseData) => {},
@@ -277,7 +277,7 @@ fetch['GET/adgroup/price/update$']({}, { isHideSuccess: true, isHideFail: true }
 默认使用 fetch 发送请求，如有需要，可以自定义使用 axios、ajax 等发起请求，自定义的方法：
 
 ```js
-import { rapEnhancer } from '@ali/rapper'
+import { rapEnhancer } from '@ali/rapper-redux'
 
 rapEnhancer({
     /**
@@ -296,7 +296,7 @@ rapEnhancer({
 默认当接口状态是 200 就判定成功，但实际业务中，我们可能通过响应字段 errno 等来判定成功与否。因此，这里可以自定义状态判定：
 
 ```js
-import { rapEnhancer } from '@ali/rapper'
+import { rapEnhancer } from '@ali/rapper-redux'
 
 rapEnhancer({
     /**
