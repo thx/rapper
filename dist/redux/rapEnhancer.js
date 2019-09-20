@@ -81,7 +81,7 @@ var sendRequest = function (params) { return __awaiter(_this, void 0, void 0, fu
     });
 }); };
 var dispatch = function (action) {
-    console.log('空dispatch', action);
+    return new Promise(function () { });
 };
 function assignData(_a) {
     var oldState = _a.oldState, _b = _a.payload, key = _b.key, req = _b.req, res = _b.res, maxCache = _a.maxCache;
@@ -108,11 +108,16 @@ var rapReducers = (_a = {},
     _a);
 exports.rapReducers = rapReducers;
 /** store enhancer */
-function rapEnhancer(_a) {
+function rapEnhancer(config) {
     var _this = this;
-    var _b = _a.responseMapper, responseMapper = _b === void 0 ? function (data) { return data; } : _b, _c = _a.maxCache, maxCache = _c === void 0 ? 2 : _c, successCb = _a.successCb, failCb = _a.failCb, request = _a.request, judgeSuccess = _a.judgeSuccess;
+    var _a = config.responseMapper, responseMapper = _a === void 0 ? function (data) { return data; } : _a, _b = config.maxCache, maxCache = _b === void 0 ? 2 : _b, successCb = config.successCb, failCb = config.failCb, judgeSuccess = config.judgeSuccess;
+    var request = config.request;
     request = typeof request === 'function' ? request : sendRequest;
-    return function (next) { return function (reducers, initialState, enhancer) {
+    return function (next) { return function (reducers) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
         var newReducers = function (state, action) {
             var _a, _b;
             if (state) {
@@ -137,7 +142,7 @@ function rapEnhancer(_a) {
             }
             return reducers(state, action);
         };
-        var store = next(reducers, initialState, enhancer);
+        var store = next.apply(void 0, [reducers].concat(args));
         store.replaceReducer(newReducers);
         dispatch = function (action) { return __awaiter(_this, void 0, void 0, function () {
             var _a, modelName, endpoint, method, params, cb, _b, REQUEST, SUCCESS, FAILURE, _c, 

@@ -1,3 +1,4 @@
 {
-    "editor.snippetSuggestions": "bottom"
+    "editor.snippetSuggestions": "bottom",
+    "editor.formatOnSave": true
 }

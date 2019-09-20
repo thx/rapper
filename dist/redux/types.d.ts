@@ -2,7 +2,7 @@ import { REQUEST_METHOD } from '../types';
 interface Action<T = any> {
     type: T;
 }
-interface AnyAction extends Action {
+export interface AnyAction extends Action {
     [extraProps: string]: any;
 }
 interface IRequestAction {
@@ -46,7 +46,7 @@ interface Dispatch<A = AnyAction> {
 interface Unsubscribe {
     (): void;
 }
-declare type Reducer<S = any, A = AnyAction> = (state: S | undefined, action: A) => S;
+export declare type Reducer<S = any, A = AnyAction> = (state: S | undefined, action: A) => S;
 declare type ExtendState<State, Extension> = [Extension] extends [never] ? State : State & Extension;
 declare type Observer<T> = {
     next?(value: T): void;
@@ -57,6 +57,11 @@ declare type Observable<T> = {
     };
     [Symbol.observable](): Observable<T>;
 };
+export declare type StoreEnhancer<Ext = {}, StateExt = {}> = (next: StoreEnhancerStoreCreator) => StoreEnhancerStoreCreator<Ext, StateExt>;
+export declare type StoreEnhancerStoreCreator<Ext = {}, StateExt = {}> = <S = any, A extends Action = AnyAction>(reducer: Reducer<S, A>, preloadedState?: DeepPartial<S>) => IStore<S & StateExt, A> & Ext;
+export declare type DeepPartial<T> = {
+    [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
+};
 /** Store */
 export interface IStore<S = any, A = IAction, StateExt = never, Ext = {}> {
     dispatch: Dispatch<A>;
@@ -64,5 +69,20 @@ export interface IStore<S = any, A = IAction, StateExt = never, Ext = {}> {
     subscribe(listener: () => void): Unsubscribe;
     replaceReducer<NewState, NewActions>(nextReducer: Reducer<NewState, NewActions>): IStore<ExtendState<NewState, StateExt>, NewActions, StateExt, Ext> & Ext;
     [Symbol.observable](): Observable<S>;
+}
+declare const $CombinedState: unique symbol;
+export declare type CombinedState<S> = {
+    readonly [$CombinedState]?: undefined;
+} & S;
+export declare type PreloadedState<S> = Required<S> extends {
+    [$CombinedState]: undefined;
+} ? S extends CombinedState<infer S1> ? {
+    [K in keyof S1]?: S1[K] extends object ? PreloadedState<S1[K]> : S1[K];
+} : never : {
+    [K in keyof S]: S[K] extends object ? PreloadedState<S[K]> : S[K];
+};
+export interface StoreCreator {
+    <S, A extends Action, Ext = {}, StateExt = never>(reducer: Reducer<S, A>, enhancer?: StoreEnhancer<Ext, StateExt>): IStore<ExtendState<S, StateExt>, A, StateExt, Ext> & Ext;
+    <S, A extends Action, Ext = {}, StateExt = never>(reducer: Reducer<S, A>, preloadedState?: PreloadedState<S>, enhancer?: StoreEnhancer<Ext>): IStore<ExtendState<S, StateExt>, A, StateExt, Ext> & Ext;
 }
 export {};

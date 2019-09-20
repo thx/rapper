@@ -1,5 +1,5 @@
 import { Intf } from '../types'
-import { RAP_REDUX_REQUEST } from './constant'
+import { RAP_STATE_KEY, RAP_REDUX_REQUEST } from './constant'
 
 /** 接口名称转义 */
 function getName(name: string): string {
@@ -223,6 +223,11 @@ function createUseRapStr(interfaces: Intf[]): string {
         return true
     }
 
+    interface IState {
+        ${RAP_STATE_KEY}: any
+        [key: string]: any
+    }
+
     const useRap = {
         ${interfaces
             .map(
@@ -240,7 +245,7 @@ function createUseRapStr(interfaces: Intf[]): string {
         }): ModelItf['${modelName}']['Res'] => {
             filterParams = (Object.prototype.toString.call(filterParams) === '[object Object]' ? filterParams : {}) as object
 
-            const reduxData = useSelector(state => {
+            const reduxData = useSelector((state: IState) => {
                 return (state[RAP_STATE_KEY] && state[RAP_STATE_KEY]['${modelName}']) || []
             })
 
@@ -261,7 +266,7 @@ function createUseRapStr(interfaces: Intf[]): string {
                         /** 比较 req */
                         if (filterParams && filterParams.req !== undefined) {
                             if (Object.prototype.toString.call(filterParams.req) === '[object Object]') {
-                                const reqResult = Object.keys(filterParams.req).every(key => {
+                                const reqResult = Object.keys(filterParams.req).every((key: keyof typeof filterParams.req): boolean => {
                                     return item.req[key] === filterParams.req[key]
                                 })
                                 if (!reqResult) return false
@@ -293,9 +298,9 @@ function createUseRapStr(interfaces: Intf[]): string {
          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
          */
         '${modelName}': (): ModelItf['${modelName}']['Res'][] => {
-            return useSelector(state => {
+            return useSelector((state: IState) => {
                 const selectedState = (state[RAP_STATE_KEY] && state[RAP_STATE_KEY]['${modelName}']) || []
-                return selectedState.map(({ res }) => res)
+                return selectedState
             })
         }`
             )

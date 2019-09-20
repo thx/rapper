@@ -1,6 +1,6 @@
 import { locationStringify } from '../common'
 import { RAP_STATE_KEY, RAP_REDUX_REQUEST, RAP_REDUX_UPDATE_STORE, RAP_REDUX_CLEAR_STORE } from './constant'
-import { IAction, IEnhancerProps, IStore, IRequestParams } from './types'
+import { IAction, IEnhancerProps, IStore, IRequestParams, StoreEnhancer, StoreCreator, Reducer, AnyAction } from './types'
 
 const sendRequest = async (params: IRequestParams): Promise<any> => {
     let requestUrl = params.endpoint
@@ -65,11 +65,11 @@ const rapReducers = {
 }
 
 /** store enhancer */
-function rapEnhancer(config?: IEnhancerProps) {
+function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
     const { responseMapper = data => data, maxCache = 2, successCb, failCb, judgeSuccess } = config
     let { request } = config
     request = typeof request === 'function' ? request : sendRequest
-    return next => (reducers, initialState, enhancer) => {
+    return (next: StoreCreator) => <S, A extends AnyAction>(reducers: Reducer<any, any>, ...args: any[]) => {
         const newReducers = (state: any, action: IAction): IStore => {
             if (state) {
                 state[RAP_STATE_KEY] || (state[RAP_STATE_KEY] = {})
@@ -100,7 +100,7 @@ function rapEnhancer(config?: IEnhancerProps) {
             return reducers(state, action)
         }
 
-        const store = next(reducers, initialState, enhancer)
+        const store = next(reducers, ...args)
         store.replaceReducer(newReducers)
         dispatch = async (action: IAction): Promise<any> => {
             if (action.type !== RAP_REDUX_REQUEST) {
