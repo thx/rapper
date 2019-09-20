@@ -238,7 +238,7 @@ function createUseRapStr(interfaces: Intf[]): string {
                 res: ModelItf['${modelName}']['Res']
             ) => boolean
         }): ModelItf['${modelName}']['Res'] => {
-            filterParams = Object.prototype.toString.call(filterParams) === '[object Object]' ? filterParams : {}
+            filterParams = (Object.prototype.toString.call(filterParams) === '[object Object]' ? filterParams : {}) as object
 
             const reduxData = useSelector(state => {
                 return (state[RAP_STATE_KEY] && state[RAP_STATE_KEY]['${modelName}']) || []
@@ -250,7 +250,7 @@ function createUseRapStr(interfaces: Intf[]): string {
                 const resultArr = reduxData.filter(
                     (item: { req: ModelItf['${modelName}']['Req']; res: ModelItf['${modelName}']['Res'] }) => {
                         /** 执行filter */
-                        if (filterParams.filter !== undefined) {
+                        if (filterParams && filterParams.filter !== undefined) {
                             if (typeof filterParams.filter === 'function') {
                                 return filterParams.filter(item.req, item.res)
                             } else {
@@ -259,7 +259,7 @@ function createUseRapStr(interfaces: Intf[]): string {
                         }
 
                         /** 比较 req */
-                        if (filterParams.req !== undefined) {
+                        if (filterParams && filterParams.req !== undefined) {
                             if (Object.prototype.toString.call(filterParams.req) === '[object Object]') {
                                 const reqResult = Object.keys(filterParams.req).every(key => {
                                     return item.req[key] === filterParams.req[key]
