@@ -65,7 +65,9 @@ const rapReducers = {
 }
 
 /** store enhancer */
-function rapEnhancer({ responseMapper = data => data, maxCache = 2, successCb, failCb, request, judgeSuccess }: IEnhancerProps) {
+function rapEnhancer(config?: IEnhancerProps) {
+    const { responseMapper = data => data, maxCache = 2, successCb, failCb, judgeSuccess } = config
+    let { request } = config
     request = typeof request === 'function' ? request : sendRequest
     return next => (reducers, initialState, enhancer) => {
         const newReducers = (state: any, action: IAction): IStore => {
