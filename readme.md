@@ -169,7 +169,7 @@ fetch['GET/adgroup/price/update$']({ productId: 1 })
 /** 以 Hooks 的方式获取请求回来的数据 */
 const [rapData, isFetching] = useAPI['GET/adgroup/price/update$']()
 
-`rapData` 是 请求响应的数据，`isFetching` 是请求的状态
+rapData 是 请求响应的数据，isFetching 是请求的状态
 
 /** 以 Hooks 的方式获取请求回来的所有数据（包括历史数据） */
 const rapData = useAPIAll['GET/adgroup/price/update$']()
