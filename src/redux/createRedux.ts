@@ -223,6 +223,36 @@ function createUseRapStr(interfaces: Intf[]): string {
         return true
     }
 
+    interface IDefaultItem {
+        request: any
+        response: any
+    }
+    /** 根据请求参数筛选 */
+    function paramsFilter(item: IDefaultItem, filter: any) {
+        if (filter !== undefined) {
+            if (Object.prototype.toString.call(filter) === '[object Object]') {
+                const reqResult = Object.keys(filter).every((key: keyof typeof filter): boolean => {
+                    return item.request[key] === filter[key]
+                })
+                if (!reqResult) return false
+            } else {
+                return false
+            }
+        }
+        return true
+    }
+    /** 根据filter函数自定义筛选 **/
+    function functionFilter(item: IDefaultItem, filter: any) {
+        if (filter !== undefined) {
+            if (typeof filter === 'function') {
+                return filter(...item)
+            } else {
+                return false
+            }
+        }
+        return true
+    }
+
     interface IState {
         ${RAP_STATE_KEY}: any
         [key: string]: any
@@ -236,54 +266,42 @@ function createUseRapStr(interfaces: Intf[]): string {
          * 接口名：${name}
          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
          */
-        '${modelName}': (filterParams?: {
-            req?: ModelItf['${modelName}']['Req']
-            filter?: (
-                req: ModelItf['${modelName}']['Req'],
-                res: ModelItf['${modelName}']['Res']
-            ) => boolean
-        }): ModelItf['${modelName}']['Res'] => {
-            filterParams = (Object.prototype.toString.call(filterParams) === '[object Object]' ? filterParams : {}) as object
-
+        '${modelName}': (
+            filter?: ModelItf['${modelName}']['Req'] | { (
+                request: ModelItf['${modelName}']['Req'],
+                response: ModelItf['${modelName}']['Res']
+            ): boolean }
+        ): [ModelItf['${modelName}']['Res'], boolean] => {
             const reduxData = useSelector((state: IState) => {
                 return (state[RAP_STATE_KEY] && state[RAP_STATE_KEY]['${modelName}']) || []
             })
-
             const [filteredData, setFilteredData] = useState({})
+            const [isFetching, setIsFetching] = useState(false)
 
+            interface IItem {
+                request: ModelItf['${modelName}']['Req']
+                response: ModelItf['${modelName}']['Res']
+            }
             useEffect(() => {
-                const resultArr = reduxData.filter(
-                    (item: { req: ModelItf['${modelName}']['Req']; res: ModelItf['${modelName}']['Res'] }) => {
-                        /** 执行filter */
-                        if (filterParams && filterParams.filter !== undefined) {
-                            if (typeof filterParams.filter === 'function') {
-                                return filterParams.filter(item.req, item.res)
-                            } else {
-                                return false
-                            }
-                        }
-
-                        /** 比较 req */
-                        if (filterParams && filterParams.req !== undefined) {
-                            if (Object.prototype.toString.call(filterParams.req) === '[object Object]') {
-                                const reqResult = Object.keys(filterParams.req).every((key: keyof typeof filterParams.req): boolean => {
-                                    return item.req[key] === filterParams.req[key]
-                                })
-                                if (!reqResult) return false
-                            } else {
-                                return false
-                            }
-                        }
-                        return true
-                    }
-                )
+                let resultArr = []
+                if (filter) {
+                    const func = typeof filter === 'function' ? functionFilter : paramsFilter
+                    resultArr = reduxData.filter(
+                        (item: IItem) => func(item, filter)
+                    )
+                } else {
+                    resultArr = reduxData
+                }
                 /** 过滤出一条最新的符合条件的数据 */
-                const result = resultArr.length ? resultArr.slice(-1)[0].res : undefined
+                const result = resultArr.length ? resultArr.slice(-1)[0] : {}
 
-                if (!looseEqual(result, filteredData)) setFilteredData(result)
-            }, [reduxData, filterParams.req, filterParams.filter])
+                if (!looseEqual(result, filteredData)) {
+                    setFilteredData(result.response)
+                    setIsFetching(result.isFetching)
+                }
+            }, [reduxData, filter])
 
-            return filteredData
+            return [filteredData, isFetching]
         }`
             )
             .join(',\n\n')}

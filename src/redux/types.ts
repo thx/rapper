@@ -27,22 +27,20 @@ export interface IRequestParams {
     params?: any
 }
 
-interface IResponseMapper {
-    (data: any): any
-}
 /** store enhancer 参数 */
 export interface IEnhancerProps {
+    /** 请求参数处理函数 */
+    transformRequest?: (data: any) => any
     /** 响应数据处理函数 */
-    responseMapper?: IResponseMapper
+    transformResponse?: (data: any) => any
     /** 缓存数据最大长度 */
-    maxCache?: number
-    /** 请求成功默认回调 */
-    successCb?: (response: any) => void
-    /** 请求失败默认回调 */
-    failCb?: (e: any) => void
+    maxCacheLength?: number
     /** 自定义请求函数 */
-    request?: (params: IRequestParams) => Promise<any>
-    judgeSuccess?: (responseData: any) => boolean | string
+    fetch?: (params: IRequestParams) => Promise<any>
+    /** 请求成功默认回调 */
+    afterSuccess?: (response: any) => void
+    /** 请求失败默认回调 */
+    afterFail?: (e: any) => void
 }
 
 interface Dispatch<A = AnyAction> {

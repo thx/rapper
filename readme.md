@@ -156,7 +156,9 @@ fetch['GET/adgroup/price/update$']({ productId: 1 })
     })
 
 /** 以 Hooks 的方式获取请求回来的数据 */
-const rapData = useRap['GET/adgroup/price/update$']()
+const [rapData, isFetching] = useRap['GET/adgroup/price/update$']()
+
+`rapData` 是 请求响应的数据，`isFetching` 是请求的状态
 
 /** 以 Hooks 的方式获取请求回来的所有数据（包括历史数据） */
 const rapData = useRapAll['GET/adgroup/price/update$']()
@@ -173,14 +175,12 @@ clearRap['GET/adgroup/price/update$']()
 
 其次，取回缓存数据，我们仍然通过 `useRap` 这个 Hooks 进行筛选读取
 
--   第一种筛选方式：配置 req 参数，根据请求参数来筛选出满足条件的最新数据
+-   第一种筛选方式：配置 request 参数，根据请求参数来筛选出满足条件的最新数据
 
 ```js
 import { useRap } from 'requestModel'
 
-const rapData = useRap['GET/adgroup/price/update$']({
-    req: { productId: 1 },
-})
+const rapData = useRap['GET/adgroup/price/update$']({ productId: 1 })
 ```
 
 -   第二种筛选方式：配置 filter 函数，类似于 Array.filter()，筛选出符合条件的数据
@@ -188,21 +188,31 @@ const rapData = useRap['GET/adgroup/price/update$']({
 ```js
 import { useRap } from 'requestModel'
 
-const rapData = useRap['GET/adgroup/price/update$']({
+const rapData = useRap['GET/adgroup/price/update$'](
     /**
-     * @params req，请求参数
-     * @params res，响应数据
+     * @params request，请求参数
+     * @params response，响应数据
      * @return 函数返回 Boolean
      */
-    filter: (req, res) => {
-        return req.productId === 2
-    },
-})
+    (request, response) => {
+        return request.productId === 2
+    }
+)
 ```
 
 ## 高级配置
 
-### 1、请求响应数据过滤
+### 1、请求参数 Map
+
+```js
+import { rapEnhancer } from '-redux'
+
+rapEnhancer({
+    transformRequest: reqest => request.params,
+})
+```
+
+### 1、接口响应数据过滤
 
 在实际业务中，我们的接口响应数据会有很多辅助参数，我们真正关心的数据可能只有部分，比如：
 
@@ -231,19 +241,19 @@ const rapData = useRap['GET/adgroup/price/update$']({
 import { rapEnhancer } from '-redux'
 
 rapEnhancer({
-    responseMapper: responseData => responseData.result,
+    transformResponse: responseData => responseData.result,
 })
 ```
 
 ### 2、请求响应数据缓存长度设置
 
-我们可以将多次请求响应的数据缓存起来，默认缓存最近两次请求的数据，当然也可以通过配置 `maxCahce` 来自定义缓存长度
+我们可以将多次请求响应的数据缓存起来，默认缓存最近两次请求的数据，当然也可以通过配置 `maxCacheLength` 来自定义缓存长度
 
 ```js
 import { rapEnhancer } from '@ali/rapper-redux'
 
 rapEnhancer({
-    maxCache: 3, // 也支持 Infinity
+    maxCacheLength: 3, // 也支持 Infinity
 })
 ```
 
@@ -255,8 +265,8 @@ rapEnhancer({
 import { rapEnhancer } from '@ali/rapper-redux'
 
 rapEnhancer({
-    successCb: (responseData) => {},
-    failCb: (e) => {}
+    afterSuccess: (responseData) => {},
+    afterFail: (e) => {}
 }),
 ```
 
@@ -272,9 +282,9 @@ import { fetch } from 'requestModel'
 fetch['GET/adgroup/price/update$']({}, { isHideSuccess: true, isHideFail: true })
 ```
 
-### 5、定制 request
+### 5、自定义 fetch，请求成功、失败状态的判定
 
-默认使用 fetch 发送请求，如有需要，可以自定义使用 axios、ajax 等发起请求，自定义的方法：
+默认使用 window.fetch 发送请求，如有需要，可以自定义使用 axios、ajax 等发起请求，自定义的方法：
 
 ```js
 import { rapEnhancer } from '@ali/rapper-redux'
@@ -285,27 +295,8 @@ rapEnhancer({
      * endpoint，接口地址；method，请求类型；params，请求参数
      * 此函数返回一个 promise，同时将请求结果返回
      */
-    request: ({ endpoint, method, params }) => {
+    fetch: ({ endpoint, method, params }) => {
         /** 这里自定义请求逻辑 */
-    }
-}),
-```
-
-### 6、请求成功、失败状态的判定
-
-默认当接口状态是 200 就判定成功，但实际业务中，我们可能通过响应字段 errno 等来判定成功与否。因此，这里可以自定义状态判定：
-
-```js
-import { rapEnhancer } from '@ali/rapper-redux'
-
-rapEnhancer({
-    /**
-     * 自定义状态判定函数
-     * responseData，接口响应数据
-     * 从函数返回值是 Boolean 类型，代表判定结果
-     */
-    judgeSuccess: (responseData) => {
-
     }
 }),
 ```

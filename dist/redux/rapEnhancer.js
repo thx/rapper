@@ -84,20 +84,27 @@ var dispatch = function (action) {
     return new Promise(function () { });
 };
 function assignData(_a) {
-    var oldState = _a.oldState, _b = _a.payload, key = _b.key, req = _b.req, res = _b.res, maxCache = _a.maxCache;
+    var oldState = _a.oldState, _b = _a.payload, interfaceKey = _b.interfaceKey, id = _b.id, requestTime = _b.requestTime, reponseTime = _b.reponseTime, request = _b.request, response = _b.response, isFetching = _b.isFetching, maxCacheLength = _a.maxCacheLength;
     var newState = __assign({}, oldState);
-    if (typeof maxCache !== 'number' || maxCache < 1) {
-        maxCache = 2;
+    if (typeof maxCacheLength !== 'number' || maxCacheLength < 1) {
+        maxCacheLength = 2;
     }
-    var data = newState[key] || [];
-    /** 只存最近 maxCache 个数据 */
-    if (maxCache !== Infinity && data.length > maxCache) {
-        data = newState[key].slice(data.length - maxCache);
+    var data = newState[interfaceKey] || [];
+    if (isFetching === true) {
+        /** 只存最近 maxCacheLength 个数据 */
+        if (maxCacheLength !== Infinity && data.length > maxCacheLength) {
+            data = newState[interfaceKey].slice(data.length - maxCacheLength + 1);
+        }
+        newState[interfaceKey] = [].concat(data, {
+            id: id,
+            requestTime: requestTime,
+            request: request,
+            isFetching: isFetching
+        });
     }
-    newState[key] = [].concat(data, {
-        req: req,
-        res: res
-    });
+    else {
+        newState[interfaceKey] = data.map(function (item) { return (item.id === id ? __assign({}, item, { reponseTime: reponseTime, response: response, isFetching: isFetching }) : item); });
+    }
     return newState;
 }
 var rapReducers = (_a = {},
@@ -110,9 +117,9 @@ exports.rapReducers = rapReducers;
 /** store enhancer */
 function rapEnhancer(config) {
     var _this = this;
-    var _a = config.responseMapper, responseMapper = _a === void 0 ? function (data) { return data; } : _a, _b = config.maxCache, maxCache = _b === void 0 ? 2 : _b, successCb = config.successCb, failCb = config.failCb, judgeSuccess = config.judgeSuccess;
-    var request = config.request;
-    request = typeof request === 'function' ? request : sendRequest;
+    config = config || {};
+    var _a = config.transformRequest, transformRequest = _a === void 0 ? function (data) { return data; } : _a, _b = config.transformResponse, transformResponse = _b === void 0 ? function (data) { return data; } : _b, _c = config.maxCacheLength, maxCacheLength = _c === void 0 ? 2 : _c, afterSuccess = config.afterSuccess, afterFail = config.afterFail, fetch = config.fetch;
+    var request = typeof fetch === 'function' ? fetch : sendRequest;
     return function (next) { return function (reducers) {
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
@@ -131,7 +138,7 @@ function rapEnhancer(config) {
                     /** 请求成功，更新 store */
                     return __assign({}, state, (_a = {}, _a[constant_1.RAP_STATE_KEY] = assignData({
                         oldState: state[constant_1.RAP_STATE_KEY],
-                        maxCache: maxCache,
+                        maxCacheLength: maxCacheLength,
                         payload: action.payload
                     }), _a));
                 }
@@ -149,7 +156,7 @@ function rapEnhancer(config) {
             /** 是否不调用成功回调，默认调用 */
             isHideSuccess, _d, 
             /** 是否不调用失败回调，默认调用 */
-            isHideFail, responseData, judgeResult, e_1;
+            isHideFail, requestTime, newParams, responseData, reponseTime, e_1;
             return __generator(this, function (_e) {
                 switch (_e.label) {
                     case 0:
@@ -157,40 +164,50 @@ function rapEnhancer(config) {
                             return [2 /*return*/, store.dispatch(action)];
                         }
                         _a = action.payload, modelName = _a.modelName, endpoint = _a.endpoint, method = _a.method, params = _a.params, cb = _a.cb, _b = _a.types, REQUEST = _b[0], SUCCESS = _b[1], FAILURE = _b[2], _c = _a.isHideSuccess, isHideSuccess = _c === void 0 ? false : _c, _d = _a.isHideFail, isHideFail = _d === void 0 ? false : _d;
+                        requestTime = new Date().getTime();
                         store.dispatch({ type: REQUEST });
+                        store.dispatch({
+                            type: constant_1.RAP_REDUX_UPDATE_STORE,
+                            payload: {
+                                interfaceKey: modelName,
+                                id: requestTime,
+                                requestTime: requestTime,
+                                isFetching: true
+                            }
+                        });
                         _e.label = 1;
                     case 1:
                         _e.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, request({ endpoint: endpoint, method: method, params: params })
-                            /** 自定义判断请求状态 */
-                        ];
+                        newParams = params;
+                        if (typeof transformRequest === 'function') {
+                            newParams = transformRequest(action.payload);
+                        }
+                        return [4 /*yield*/, request({ endpoint: endpoint, method: method, params: newParams })];
                     case 2:
                         responseData = _e.sent();
-                        /** 自定义判断请求状态 */
-                        if (typeof judgeSuccess === 'function') {
-                            judgeResult = judgeSuccess(responseData);
-                            if (judgeResult !== true) {
-                                throw Error(judgeResult);
-                            }
-                        }
+                        reponseTime = new Date().getTime();
                         cb && cb(responseData);
                         store.dispatch({
                             type: constant_1.RAP_REDUX_UPDATE_STORE,
                             payload: {
-                                key: modelName,
-                                req: params,
-                                res: responseMapper(responseData)
+                                interfaceKey: modelName,
+                                id: requestTime,
+                                requestTime: requestTime,
+                                reponseTime: reponseTime,
+                                request: params,
+                                response: transformResponse(responseData),
+                                isFetching: false
                             }
                         });
                         store.dispatch({ type: SUCCESS, payload: responseData });
                         /** 请求成功回调，用户可以增加 success 提示 */
-                        !isHideSuccess && successCb && typeof successCb === 'function' && successCb(responseData);
+                        !isHideSuccess && afterSuccess && typeof afterSuccess === 'function' && afterSuccess(responseData);
                         return [2 /*return*/, responseData];
                     case 3:
                         e_1 = _e.sent();
                         store.dispatch({ type: FAILURE, payload: e_1 });
                         /** 请求失败回调，用户可以增加 fail 提示 */
-                        !isHideFail && failCb && typeof failCb === 'function' && failCb(e_1);
+                        !isHideFail && afterFail && typeof afterFail === 'function' && afterFail(e_1);
                         throw Error(e_1);
                     case 4: return [2 /*return*/];
                 }

@@ -32,31 +32,58 @@ interface IAssignDataProps {
     /** 合并前的State */
     oldState: object
     /** 最大缓存数 */
-    maxCache?: number
+    maxCacheLength?: number
     payload: {
-        /** 合并的key */
-        key: string
+        /** 接口的key */
+        interfaceKey: string
+        /** 请求的唯一id，暂时等于requestTime */
+        id: number
+        /** 请求时间，同时也可作为本次请求的key */
+        requestTime: number
+        /** 响应时间 */
+        reponseTime?: number
         /** 请求参数*/
-        req?: any
+        request?: any
         /** 请求响应数据 */
-        res?: any
+        response?: any
+        /** 是否正在 fetching */
+        isFetching: boolean
     }
 }
-function assignData({ oldState, payload: { key, req, res }, maxCache }: IAssignDataProps) {
+interface IStateInterfaceItem {
+    id: number
+    requestTime: number
+    request?: any
+    isFetching: boolean
+    reponseTime?: number
+    response?: any
+}
+function assignData({
+    oldState,
+    payload: { interfaceKey, id, requestTime, reponseTime, request, response, isFetching },
+    maxCacheLength,
+}: IAssignDataProps) {
     let newState = { ...oldState }
-    if (typeof maxCache !== 'number' || maxCache < 1) {
-        maxCache = 2
+    if (typeof maxCacheLength !== 'number' || maxCacheLength < 1) {
+        maxCacheLength = 2
     }
 
-    let data = newState[key] || []
-    /** 只存最近 maxCache 个数据 */
-    if (maxCache !== Infinity && data.length > maxCache) {
-        data = newState[key].slice(data.length - maxCache)
+    let data = newState[interfaceKey] || []
+    if (isFetching === true) {
+        /** 只存最近 maxCacheLength 个数据 */
+        if (maxCacheLength !== Infinity && data.length > maxCacheLength) {
+            data = newState[interfaceKey].slice(data.length - maxCacheLength + 1)
+        }
+        newState[interfaceKey] = [].concat(data, {
+            id,
+            requestTime,
+            request,
+            isFetching,
+        })
+    } else {
+        newState[interfaceKey] = data.map((item: IStateInterfaceItem) => (item.id === id ? { ...item, reponseTime, response, isFetching } : item))
     }
-    newState[key] = [].concat(data, {
-        req,
-        res,
-    })
+
     return newState
 }
 
@@ -66,9 +93,11 @@ const rapReducers = {
 
 /** store enhancer */
 function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
-    const { responseMapper = data => data, maxCache = 2, successCb, failCb, judgeSuccess } = config
-    let { request } = config
-    request = typeof request === 'function' ? request : sendRequest
+    config = config || {}
+    const { transformRequest = data => data, transformResponse = data => data, maxCacheLength = 2, afterSuccess, afterFail, fetch } = config
+
+    const request = typeof fetch === 'function' ? fetch : sendRequest
+
     return (next: StoreCreator) => <S, A extends AnyAction>(reducers: Reducer<any, any>, ...args: any[]) => {
         const newReducers = (state: any, action: IAction): IStore => {
             if (state) {
@@ -84,7 +113,7 @@ function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
                         ...state,
                         [RAP_STATE_KEY]: assignData({
                             oldState: state[RAP_STATE_KEY],
-                            maxCache,
+                            maxCacheLength,
                             payload: action.payload,
                         }),
                     }
@@ -119,34 +148,49 @@ function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
                 /** 是否不调用失败回调，默认调用 */
                 isHideFail = false,
             } = action.payload
+            const requestTime = new Date().getTime()
 
             store.dispatch({ type: REQUEST })
+            store.dispatch({
+                type: RAP_REDUX_UPDATE_STORE,
+                payload: {
+                    interfaceKey: modelName,
+                    id: requestTime,
+                    requestTime,
+                    isFetching: true,
+                },
+            })
             try {
-                const responseData = await request({ endpoint, method, params })
-                /** 自定义判断请求状态 */
-                if (typeof judgeSuccess === 'function') {
-                    const judgeResult = judgeSuccess(responseData)
-                    if (judgeResult !== true) {
-                        throw Error(judgeResult as string)
-                    }
+                /** 请求参数统一处理 */
+                let newParams = params
+                if (typeof transformRequest === 'function') {
+                    newParams = transformRequest(action.payload)
                 }
+
+                const responseData = await request({ endpoint, method, params: newParams })
+                const reponseTime = new Date().getTime()
+
                 cb && cb(responseData)
                 store.dispatch({
                     type: RAP_REDUX_UPDATE_STORE,
                     payload: {
-                        key: modelName,
-                        req: params,
-                        res: responseMapper(responseData),
+                        interfaceKey: modelName,
+                        id: requestTime,
+                        requestTime,
+                        reponseTime,
+                        request: params,
+                        response: transformResponse(responseData),
+                        isFetching: false,
                     },
                 })
                 store.dispatch({ type: SUCCESS, payload: responseData })
                 /** 请求成功回调，用户可以增加 success 提示 */
-                !isHideSuccess && successCb && typeof successCb === 'function' && successCb(responseData)
+                !isHideSuccess && afterSuccess && typeof afterSuccess === 'function' && afterSuccess(responseData)
                 return responseData
             } catch (e) {
                 store.dispatch({ type: FAILURE, payload: e })
                 /** 请求失败回调，用户可以增加 fail 提示 */
-                !isHideFail && failCb && typeof failCb === 'function' && failCb(e)
+                !isHideFail && afterFail && typeof afterFail === 'function' && afterFail(e)
                 throw Error(e)
             }
         }
