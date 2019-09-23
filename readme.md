@@ -125,6 +125,17 @@ createModel({
     projectId: 3564,
     /** 可选，输出文件的目录，默认是 ./model */
     outputPath: resolve(__dirname, '../requestModel'),
+    /** 可选，输出模板代码的格式 */
+    codeStyle: {
+        /** 默认单引号 */
+        singleQuote: false,
+        /** 默认2个空格 */
+        tabWidth: 2,
+        /** 分号结尾，默认true */
+        semi: true,
+        /** 逗号 */
+        trailingComma: 'none',
+    },
     /** 可选，rap地址，默认是 http://rap2api.taobao.org */
     rapUrl: 'https://rap2api.alibaba-inc.com',
     /** 可选，服务端api地址，默认是根目录相对路径 */
@@ -144,7 +155,7 @@ createModel({
 
 ```js
 /** import 的目录就是上面第二步配置的 outputPath */
-import { fetch, useRap, useRapAll, clearRap } from 'requestModel'
+import { fetch, useAPI, useAPIAll, clearRap } from 'requestModel'
 
 /** 发送请求，返回的是一个 promise，会把响应数据返回 */
 fetch['GET/adgroup/price/update$']({ productId: 1 })
@@ -156,12 +167,12 @@ fetch['GET/adgroup/price/update$']({ productId: 1 })
     })
 
 /** 以 Hooks 的方式获取请求回来的数据 */
-const [rapData, isFetching] = useRap['GET/adgroup/price/update$']()
+const [rapData, isFetching] = useAPI['GET/adgroup/price/update$']()
 
 `rapData` 是 请求响应的数据，`isFetching` 是请求的状态
 
 /** 以 Hooks 的方式获取请求回来的所有数据（包括历史数据） */
-const rapData = useRapAll['GET/adgroup/price/update$']()
+const rapData = useAPIAll['GET/adgroup/price/update$']()
 
 /** 清除数据 */
 clearRap['GET/adgroup/price/update$']()
@@ -169,26 +180,26 @@ clearRap['GET/adgroup/price/update$']()
 
 #### 接口响应数据的缓存与使用
 
-常规情况下，`useRap['GET/adgroup/price/update$']()` 就能满足业务需求，获取接口响应数据。但某些情况，我们希望将同一接口多次请求回来的数据缓存起来，并能够方便的获取。在这里 rap-redux 已经帮您实现了。
+常规情况下，`useAPI['GET/adgroup/price/update$']()` 就能满足业务需求，获取接口响应数据。但某些情况，我们希望将同一接口多次请求回来的数据缓存起来，并能够方便的获取。在这里 rap-redux 已经帮您实现了。
 
 首先，默认会缓存最近 2 次请求的数据，如需更多，可以按照下面 “高级配置” 中的示例进行配置；
 
-其次，取回缓存数据，我们仍然通过 `useRap` 这个 Hooks 进行筛选读取
+其次，取回缓存数据，我们仍然通过 `useAPI` 这个 Hooks 进行筛选读取
 
 -   第一种筛选方式：配置 request 参数，根据请求参数来筛选出满足条件的最新数据
 
 ```js
-import { useRap } from 'requestModel'
+import { useAPI } from 'requestModel'
 
-const rapData = useRap['GET/adgroup/price/update$']({ productId: 1 })
+const rapData = useAPI['GET/adgroup/price/update$']({ productId: 1 })
 ```
 
 -   第二种筛选方式：配置 filter 函数，类似于 Array.filter()，筛选出符合条件的数据
 
 ```js
-import { useRap } from 'requestModel'
+import { useAPI } from 'requestModel'
 
-const rapData = useRap['GET/adgroup/price/update$'](
+const rapData = useAPI['GET/adgroup/price/update$'](
     /**
      * @params request，请求参数
      * @params response，响应数据

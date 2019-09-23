@@ -18,10 +18,10 @@ function createIndexStr(): string {
      * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
      */
 
-    import { useRap, useRapAll, clearRap } from './useRap'
+    import { useAPI, useAPIAll, clearAPI } from './useRap'
     import fetch from './fetch'
     
-    export { useRap, useRapAll, clearRap, fetch };
+    export { useAPI, useAPIAll, clearAPI, fetch };
     `
 }
 
@@ -203,15 +203,17 @@ function createUseRapStr(interfaces: Intf[]): string {
         const newType = Object.prototype.toString.call(newData)
         const oldType = Object.prototype.toString.call(oldData)
     
-        if (newType !== oldType) return false
+        if (newType !== oldType) {
+            return false
+        }
     
         if (newType === '[object Object]' || newType === '[object Array]') {
-            for (let key in newData) {
+            for (const key in newData) {
                 if (!looseEqual(newData[key], oldData[key])) {
                     return false
                 }
             }
-            for (let key in oldData) {
+            for (const key in oldData) {
                 if (!looseEqual(newData[key], oldData[key])) {
                     return false
                 }
@@ -227,25 +229,30 @@ function createUseRapStr(interfaces: Intf[]): string {
         request: any
         response: any
     }
-    /** 根据请求参数筛选 */
-    function paramsFilter(item: IDefaultItem, filter: any) {
-        if (filter !== undefined) {
-            if (Object.prototype.toString.call(filter) === '[object Object]') {
-                const reqResult = Object.keys(filter).every((key: keyof typeof filter): boolean => {
-                    return item.request[key] === filter[key]
+    interface IFilter {
+        request?: any
+    }
+    /** 根据请求参数筛选，暂时只支持 request */
+    function paramsFilter(item: IDefaultItem, filter?: IFilter) {
+        if (filter && filter.request) {
+            if (Object.prototype.toString.call(filter.request) === '[object Object]') {
+                const reqResult = Object.keys(filter.request).every((key: keyof typeof filter.request): boolean => {
+                    return item.request[key] === filter.request[key]
                 })
-                if (!reqResult) return false
+                if (!reqResult) {
+                    return false
+                }
             } else {
                 return false
             }
         }
         return true
     }
-    /** 根据filter函数自定义筛选 **/
+    /** 根据filter函数自定义筛选 */
     function functionFilter(item: IDefaultItem, filter: any) {
         if (filter !== undefined) {
             if (typeof filter === 'function') {
-                return filter(...item)
+                return filter(item)
             } else {
                 return false
             }
@@ -258,7 +265,7 @@ function createUseRapStr(interfaces: Intf[]): string {
         [key: string]: any
     }
 
-    const useRap = {
+    const useAPI = {
         ${interfaces
             .map(
                 ({ modelName, name, repositoryId, moduleId, id }) => `
@@ -266,12 +273,13 @@ function createUseRapStr(interfaces: Intf[]): string {
          * 接口名：${name}
          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
          */
-        '${modelName}': (
-            filter?: ModelItf['${modelName}']['Req'] | { (
+        /* tslint:disable */
+        '${modelName}': function useData(
+            filter?: { request?: ModelItf['${modelName}']['Req'] } | { (
                 request: ModelItf['${modelName}']['Req'],
                 response: ModelItf['${modelName}']['Res']
             ): boolean }
-        ): [ModelItf['${modelName}']['Res'], boolean] => {
+        ): [ModelItf['${modelName}']['Res'], boolean] {
             const reduxData = useSelector((state: IState) => {
                 return (state[RAP_STATE_KEY] && state[RAP_STATE_KEY]['${modelName}']) || []
             })
@@ -307,7 +315,7 @@ function createUseRapStr(interfaces: Intf[]): string {
             .join(',\n\n')}
     }
 
-    const useRapAll = {
+    const useAPIAll = {
         ${interfaces
             .map(
                 ({ modelName, name, repositoryId, moduleId, id }) => `
@@ -315,7 +323,8 @@ function createUseRapStr(interfaces: Intf[]): string {
          * 接口名：${name}
          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
          */
-        '${modelName}': (): ModelItf['${modelName}']['Res'][] => {
+        /* tslint:disable */
+        '${modelName}': function useData(): ModelItf['${modelName}']['Res'][] {
             return useSelector((state: IState) => {
                 const selectedState = (state[RAP_STATE_KEY] && state[RAP_STATE_KEY]['${modelName}']) || []
                 return selectedState
@@ -326,7 +335,7 @@ function createUseRapStr(interfaces: Intf[]): string {
     }
 
     /** 重置接口数据 */
-    const clearRap = {
+    const clearAPI = {
         ${interfaces
             .map(
                 ({ modelName, name, repositoryId, moduleId, id }) => `
@@ -346,7 +355,7 @@ function createUseRapStr(interfaces: Intf[]): string {
             .join(',\n\n')}
     }
 
-    export { useRap, useRapAll, clearRap };
+    export { useAPI, useAPIAll, clearAPI };
     `
 }
 

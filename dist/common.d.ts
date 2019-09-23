@@ -11,8 +11,6 @@ export declare function getIntfWithModelName(intfs: Interface.Root[], urlMapper:
 export declare function rap2name(itf: Interface.Root, urlMapper: UrlMapper, type: RAP_TYPE): string;
 /** 接口去重 */
 export declare function uniqueItfs(itfs: Intf[]): Intf[];
-/** 格式化输出字符串 */
-export declare function formatCode(code: string): string;
 /**
  * search 参数转换，比如 { a: 1, b: 2, c: undefined } 转换成 "a=1&b=2"
  * 会自动删除 undefined

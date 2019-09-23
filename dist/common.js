@@ -49,8 +49,6 @@ exports.__esModule = true;
 var axios_1 = require("axios");
 var _ = require("lodash");
 var chalk_1 = require("chalk");
-var formatter_1 = require("json-schema-to-typescript/dist/src/formatter");
-var json_schema_to_typescript_1 = require("json-schema-to-typescript");
 /** 从rap查询所有接口数据 */
 function getInterfaces(rapUrl, projectId) {
     return __awaiter(this, void 0, void 0, function () {
@@ -162,11 +160,6 @@ function uniqueItfs(itfs) {
     return newItfs;
 }
 exports.uniqueItfs = uniqueItfs;
-/** 格式化输出字符串 */
-function formatCode(code) {
-    return formatter_1.format(code, json_schema_to_typescript_1.DEFAULT_OPTIONS);
-}
-exports.formatCode = formatCode;
 /**
  * search 参数转换，比如 { a: 1, b: 2, c: undefined } 转换成 "a=1&b=2"
  * 会自动删除 undefined

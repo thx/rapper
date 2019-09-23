@@ -15,7 +15,11 @@ index_1.createModel({
     rapUrl: 'https://rap2api.alibaba-inc.com',
     /** 服务端api地址，默认是根目录相对路径 */
     serverAPI: 'https://rap2api.alibaba-inc.com/app/mock/3283',
-    type: 'redux'
+    type: 'redux',
+    codeStyle: {
+        /** 默认单引号 */
+        singleQuote: true
+    }
 })
     .then(function () {
     console.log('rapper:generate model success');

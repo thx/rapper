@@ -1,9 +1,11 @@
 import chalk from 'chalk'
+import { format } from 'json-schema-to-typescript/dist/src/formatter'
+import { DEFAULT_OPTIONS } from 'json-schema-to-typescript'
 import { UrlMapper, RAP_TYPE } from './types'
 import { createModel, createFetch } from './default/index'
 import { createIndexStr, createReduxStr, createReduxFetchStr, createUseRapStr } from './redux/createRedux'
 import { relativeImport, writeFile } from './utils'
-import { getInterfaces, getIntfWithModelName, uniqueItfs, formatCode } from './common'
+import { getInterfaces, getIntfWithModelName, uniqueItfs } from './common'
 
 interface ICreateModel {
     projectId: number
@@ -18,6 +20,17 @@ interface ICreateModel {
     baseFetchPath?: string
     serverAPI?: string
     type?: RAP_TYPE
+    /** 输出模板代码的格式 */
+    codeStyle?: {
+        /** 默认单引号 */
+        singleQuote?: boolean
+        /** 默认2个空格 */
+        tabWidth?: number
+        /** 分号结尾，默认true */
+        semi?: boolean
+        /** 逗号 */
+        trailingComma?: 'none' | 'all' | 'es5'
+    }
 }
 export default async function({
     projectId,
@@ -32,7 +45,12 @@ export default async function({
     outputPath = './model',
     serverAPI = '',
     type = 'default',
+    codeStyle,
 }: ICreateModel) {
+    if (codeStyle && typeof codeStyle === 'object') {
+        DEFAULT_OPTIONS.style = { ...DEFAULT_OPTIONS.style, ...codeStyle }
+    }
+
     /** 输出文件集合 */
     const outputFiles = []
 
@@ -43,7 +61,7 @@ export default async function({
     const modelStr = await createModel(interfaces, { projectId, additionalProperties })
     outputFiles.push({
         path: outputPath ? `${outputPath}/model.ts` : modelPath,
-        content: formatCode(modelStr),
+        content: format(modelStr, DEFAULT_OPTIONS),
     })
 
     if (type === 'redux') {
@@ -54,25 +72,25 @@ export default async function({
         /** 生成 index.ts */
         outputFiles.push({
             path: `${outputPath}/index.ts`,
-            content: formatCode(createIndexStr()),
+            content: format(createIndexStr(), DEFAULT_OPTIONS),
         })
 
         /** 生成 redux.ts */
         outputFiles.push({
             path: `${outputPath}/redux.ts`,
-            content: formatCode(createReduxStr(interfaces, { projectId, serverAPI })),
+            content: format(createReduxStr(interfaces, { projectId, serverAPI }), DEFAULT_OPTIONS),
         })
 
         /** 生成 redux 版本的 fetch.ts */
         outputFiles.push({
             path: `${outputPath}/fetch.ts`,
-            content: formatCode(createReduxFetchStr(projectId, interfaces)),
+            content: format(createReduxFetchStr(projectId, interfaces), DEFAULT_OPTIONS),
         })
 
         /** 生成 useRap.ts */
         outputFiles.push({
             path: `${outputPath}/useRap.ts`,
-            content: formatCode(createUseRapStr(interfaces)),
+            content: format(createUseRapStr(interfaces), DEFAULT_OPTIONS),
         })
     } else if (requesterPath) {
         /** 生成 fetch.ts */
@@ -82,7 +100,7 @@ export default async function({
         const fetchStr = createFetch(interfaces, { projectId, useCommonJsModule, optionalExtra, relModelPath, relBaseFetchPath })
         outputFiles.push({
             path: requesterPath,
-            content: formatCode(fetchStr),
+            content: format(fetchStr, DEFAULT_OPTIONS),
         })
     }
 

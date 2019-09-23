@@ -1,7 +1,6 @@
 import axios from 'axios'
 import * as _ from 'lodash'
 import chalk from 'chalk'
-import { format } from 'json-schema-to-typescript/dist/src/formatter'
 import { DEFAULT_OPTIONS } from 'json-schema-to-typescript'
 import { RAP_TYPE, IModules, ICollaborator, Interface, Intf, UrlMapper } from './types'
 
@@ -118,11 +117,6 @@ export function uniqueItfs(itfs: Intf[]) {
         }
     })
     return newItfs
-}
-
-/** 格式化输出字符串 */
-export function formatCode(code: string) {
-    return format(code, DEFAULT_OPTIONS)
 }
 
 /**
