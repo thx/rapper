@@ -60,7 +60,7 @@ interface IStateInterfaceItem {
 }
 function assignData({
     oldState,
-    payload: { interfaceKey, id, requestTime, reponseTime, request, response, isFetching },
+    payload: { interfaceKey, id, requestTime, reponseTime, request = {}, response, isFetching },
     maxCacheLength,
 }: IAssignDataProps) {
     let newState = { ...oldState }
@@ -94,7 +94,7 @@ const rapReducers = {
 /** store enhancer */
 function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
     config = config || {}
-    const { transformRequest = data => data, transformResponse = data => data, maxCacheLength = 2, afterSuccess, afterFail, fetch } = config
+    const { transformRequest = data => data, transformResponse = data => data, maxCacheLength = 2, fetch } = config
 
     const request = typeof fetch === 'function' ? fetch : sendRequest
 
@@ -143,10 +143,6 @@ function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
                 params,
                 cb,
                 types: [REQUEST, SUCCESS, FAILURE],
-                /** 是否不调用成功回调，默认调用 */
-                isHideSuccess = false,
-                /** 是否不调用失败回调，默认调用 */
-                isHideFail = false,
             } = action.payload
             const requestTime = new Date().getTime()
 
@@ -157,6 +153,7 @@ function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
                     interfaceKey: modelName,
                     id: requestTime,
                     requestTime,
+                    request: params,
                     isFetching: true,
                 },
             })
@@ -184,13 +181,9 @@ function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
                     },
                 })
                 store.dispatch({ type: SUCCESS, payload: responseData })
-                /** 请求成功回调，用户可以增加 success 提示 */
-                !isHideSuccess && afterSuccess && typeof afterSuccess === 'function' && afterSuccess(responseData)
                 return responseData
             } catch (e) {
                 store.dispatch({ type: FAILURE, payload: e })
-                /** 请求失败回调，用户可以增加 fail 提示 */
-                !isHideFail && afterFail && typeof afterFail === 'function' && afterFail(e)
                 throw Error(e)
             }
         }

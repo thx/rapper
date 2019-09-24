@@ -18,6 +18,10 @@ interface ICreateModel {
         singleQuote?: boolean;
         /** 默认2个空格 */
         tabWidth?: number;
+        /** 分号结尾，默认true */
+        semi?: boolean;
+        /** 逗号 */
+        trailingComma?: 'none' | 'all' | 'es5';
     };
 }
 export default function ({ projectId, modelPath, requesterPath, baseFetchPath, urlMapper, useCommonJsModule, additionalProperties, optionalExtra, rapUrl, outputPath, serverAPI, type, codeStyle, }: ICreateModel): Promise<{}[]>;

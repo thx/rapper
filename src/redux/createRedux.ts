@@ -158,11 +158,6 @@ function createReduxFetchStr(projectId: number, interfaces: Intf[]): string {
     import { ModelItf } from './model';
     import { RequestAction } from './redux';
 
-    interface IExtra {
-        isHideSuccess?: boolean
-        isHideFail?: boolean
-    }
-
     const request = {
         ${interfaces
             .map(
@@ -171,13 +166,9 @@ function createReduxFetchStr(projectId: number, interfaces: Intf[]): string {
          * 接口名：${name}
          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
          * @param req 请求参数
-         * @param extra 请求配置项
          */
-        '${modelName}': (req?: ModelItf['${modelName}']['Req'], extra?: IExtra): Promise<ModelItf['${modelName}']['Res']> => {
+        '${modelName}': (req?: ModelItf['${modelName}']['Req']): Promise<ModelItf['${modelName}']['Res']> => {
             const action = RequestAction['${getName(modelName)}'](req)
-            if (Object.prototype.toString.call(extra)) {
-                action.payload = { ...action.payload, ...extra }
-            }
             return dispatchAction(action)
         }`
             )
@@ -252,7 +243,7 @@ function createUseRapStr(interfaces: Intf[]): string {
     function functionFilter(item: IDefaultItem, filter: any) {
         if (filter !== undefined) {
             if (typeof filter === 'function') {
-                return filter(item)
+                return filter(item.request, item.response)
             } else {
                 return false
             }

@@ -54,27 +54,24 @@ var createRedux_1 = require("./redux/createRedux");
 var utils_1 = require("./utils");
 var common_1 = require("./common");
 function default_1(_a) {
-    var projectId = _a.projectId, modelPath = _a.modelPath, requesterPath = _a.requesterPath, baseFetchPath = _a.baseFetchPath, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (t) { return t; } : _b, _c = _a.useCommonJsModule, useCommonJsModule = _c === void 0 ? false : _c, _d = _a.additionalProperties, additionalProperties = _d === void 0 ? false : _d, _e = _a.optionalExtra, optionalExtra = _e === void 0 ? true : _e, _f = _a.rapUrl, rapUrl = _f === void 0 ? 'http://rap2.taobao.org' : _f, _g = _a.outputPath, outputPath = _g === void 0 ? './model' : _g, _h = _a.serverAPI, serverAPI = _h === void 0 ? '' : _h, _j = _a.type, type = _j === void 0 ? 'default' : _j, _k = _a.codeStyle, codeStyle = _k === void 0 ? {
-        singleQuote: false,
-        tabWidth: 2
-    } : _k;
+    var projectId = _a.projectId, modelPath = _a.modelPath, requesterPath = _a.requesterPath, baseFetchPath = _a.baseFetchPath, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (t) { return t; } : _b, _c = _a.useCommonJsModule, useCommonJsModule = _c === void 0 ? false : _c, _d = _a.additionalProperties, additionalProperties = _d === void 0 ? false : _d, _e = _a.optionalExtra, optionalExtra = _e === void 0 ? true : _e, _f = _a.rapUrl, rapUrl = _f === void 0 ? 'http://rap2.taobao.org' : _f, _g = _a.outputPath, outputPath = _g === void 0 ? './model' : _g, _h = _a.serverAPI, serverAPI = _h === void 0 ? '' : _h, _j = _a.type, type = _j === void 0 ? 'default' : _j, codeStyle = _a.codeStyle;
     return __awaiter(this, void 0, void 0, function () {
-        var outputFiles, interfaces, _l, _m, modelStr, relModelPath, relBaseFetchPath, fetchStr;
-        return __generator(this, function (_o) {
-            switch (_o.label) {
+        var outputFiles, interfaces, _k, _l, modelStr, relModelPath, relBaseFetchPath, fetchStr;
+        return __generator(this, function (_m) {
+            switch (_m.label) {
                 case 0:
                     if (codeStyle && typeof codeStyle === 'object') {
                         json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style, codeStyle);
                     }
                     outputFiles = [];
-                    _l = common_1.uniqueItfs;
-                    _m = common_1.getIntfWithModelName;
+                    _k = common_1.uniqueItfs;
+                    _l = common_1.getIntfWithModelName;
                     return [4 /*yield*/, common_1.getInterfaces(rapUrl, projectId)];
                 case 1:
-                    interfaces = _l.apply(void 0, [_m.apply(void 0, [_o.sent(), urlMapper, type])]);
+                    interfaces = _k.apply(void 0, [_l.apply(void 0, [_m.sent(), urlMapper, type])]);
                     return [4 /*yield*/, index_1.createModel(interfaces, { projectId: projectId, additionalProperties: additionalProperties })];
                 case 2:
-                    modelStr = _o.sent();
+                    modelStr = _m.sent();
                     outputFiles.push({
                         path: outputPath ? outputPath + "/model.ts" : modelPath,
                         content: formatter_1.format(modelStr, json_schema_to_typescript_1.DEFAULT_OPTIONS)

@@ -167,9 +167,9 @@ fetch['GET/adgroup/price/update$']({ productId: 1 })
     })
 
 /** 以 Hooks 的方式获取请求回来的数据 */
-const [rapData, isFetching] = useAPI['GET/adgroup/price/update$']()
+const [responseData, isFetching] = useAPI['GET/adgroup/price/update$']()
 
-rapData 是 请求响应的数据，isFetching 是请求的状态
+responseData 是 请求响应的数据，isFetching 是请求的状态
 
 /** 以 Hooks 的方式获取请求回来的所有数据（包括历史数据） */
 const rapData = useAPIAll['GET/adgroup/price/update$']()
@@ -191,7 +191,11 @@ clearRap['GET/adgroup/price/update$']()
 ```js
 import { useAPI } from 'requestModel'
 
-const rapData = useAPI['GET/adgroup/price/update$']({ productId: 1 })
+const rapData = useAPI['GET/adgroup/price/update$']({
+    request: {
+        productId: 1,
+    },
+})
 ```
 
 -   第二种筛选方式：配置 filter 函数，类似于 Array.filter()，筛选出符合条件的数据
@@ -223,7 +227,7 @@ rapEnhancer({
 })
 ```
 
-### 1、接口响应数据过滤
+### 2、接口响应数据过滤
 
 在实际业务中，我们的接口响应数据会有很多辅助参数，我们真正关心的数据可能只有部分，比如：
 
@@ -256,7 +260,7 @@ rapEnhancer({
 })
 ```
 
-### 2、请求响应数据缓存长度设置
+### 3、请求响应数据缓存长度设置
 
 我们可以将多次请求响应的数据缓存起来，默认缓存最近两次请求的数据，当然也可以通过配置 `maxCacheLength` 来自定义缓存长度
 
@@ -268,34 +272,15 @@ rapEnhancer({
 })
 ```
 
-### 3、全局的请求成功、失败回调
+### 4、自定义 fetch
 
-在这里，我们可以定义全局的请求回调，比如定义请求失败后的提示框
+默认使用 window.fetch 发送请求，但某些项目里面需要有自定义的请求方式，比如：
 
-```js
-import { rapEnhancer } from '@ali/rapper-redux'
+-   自定义使用 axios、ajax 等发起请求
+-   自定义 请求成功、失败状态的判定
+-   请求成功、失败回调，增加全局 loading、全局错误提示等等
 
-rapEnhancer({
-    afterSuccess: (responseData) => {},
-    afterFail: (e) => {}
-}),
-```
-
-### 4、单个请求是否调用请求成功回调、失败回调
-
-在定义全局的请求回调后，对于部分请求，我们不希望给用户提示成功或者失败，所以这里也支持自定义，可以通过配置 `isHideSuccess`、`isHideFail` 来实现
-
-```js
-/** import 的目录就是上面第二步配置的 outputPath */
-import { fetch } from 'requestModel'
-
-/** 发送请求 */
-fetch['GET/adgroup/price/update$']({}, { isHideSuccess: true, isHideFail: true })
-```
-
-### 5、自定义 fetch，请求成功、失败状态的判定
-
-默认使用 window.fetch 发送请求，如有需要，可以自定义使用 axios、ajax 等发起请求，自定义的方法：
+自定义的方法：
 
 ```js
 import { rapEnhancer } from '@ali/rapper-redux'

@@ -84,7 +84,7 @@ var dispatch = function (action) {
     return new Promise(function () { });
 };
 function assignData(_a) {
-    var oldState = _a.oldState, _b = _a.payload, interfaceKey = _b.interfaceKey, id = _b.id, requestTime = _b.requestTime, reponseTime = _b.reponseTime, request = _b.request, response = _b.response, isFetching = _b.isFetching, maxCacheLength = _a.maxCacheLength;
+    var oldState = _a.oldState, _b = _a.payload, interfaceKey = _b.interfaceKey, id = _b.id, requestTime = _b.requestTime, reponseTime = _b.reponseTime, _c = _b.request, request = _c === void 0 ? {} : _c, response = _b.response, isFetching = _b.isFetching, maxCacheLength = _a.maxCacheLength;
     var newState = __assign({}, oldState);
     if (typeof maxCacheLength !== 'number' || maxCacheLength < 1) {
         maxCacheLength = 2;
@@ -118,7 +118,7 @@ exports.rapReducers = rapReducers;
 function rapEnhancer(config) {
     var _this = this;
     config = config || {};
-    var _a = config.transformRequest, transformRequest = _a === void 0 ? function (data) { return data; } : _a, _b = config.transformResponse, transformResponse = _b === void 0 ? function (data) { return data; } : _b, _c = config.maxCacheLength, maxCacheLength = _c === void 0 ? 2 : _c, afterSuccess = config.afterSuccess, afterFail = config.afterFail, fetch = config.fetch;
+    var _a = config.transformRequest, transformRequest = _a === void 0 ? function (data) { return data; } : _a, _b = config.transformResponse, transformResponse = _b === void 0 ? function (data) { return data; } : _b, _c = config.maxCacheLength, maxCacheLength = _c === void 0 ? 2 : _c, fetch = config.fetch;
     var request = typeof fetch === 'function' ? fetch : sendRequest;
     return function (next) { return function (reducers) {
         var args = [];
@@ -152,18 +152,14 @@ function rapEnhancer(config) {
         var store = next.apply(void 0, [reducers].concat(args));
         store.replaceReducer(newReducers);
         dispatch = function (action) { return __awaiter(_this, void 0, void 0, function () {
-            var _a, modelName, endpoint, method, params, cb, _b, REQUEST, SUCCESS, FAILURE, _c, 
-            /** 是否不调用成功回调，默认调用 */
-            isHideSuccess, _d, 
-            /** 是否不调用失败回调，默认调用 */
-            isHideFail, requestTime, newParams, responseData, reponseTime, e_1;
-            return __generator(this, function (_e) {
-                switch (_e.label) {
+            var _a, modelName, endpoint, method, params, cb, _b, REQUEST, SUCCESS, FAILURE, requestTime, newParams, responseData, reponseTime, e_1;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
                         if (action.type !== constant_1.RAP_REDUX_REQUEST) {
                             return [2 /*return*/, store.dispatch(action)];
                         }
-                        _a = action.payload, modelName = _a.modelName, endpoint = _a.endpoint, method = _a.method, params = _a.params, cb = _a.cb, _b = _a.types, REQUEST = _b[0], SUCCESS = _b[1], FAILURE = _b[2], _c = _a.isHideSuccess, isHideSuccess = _c === void 0 ? false : _c, _d = _a.isHideFail, isHideFail = _d === void 0 ? false : _d;
+                        _a = action.payload, modelName = _a.modelName, endpoint = _a.endpoint, method = _a.method, params = _a.params, cb = _a.cb, _b = _a.types, REQUEST = _b[0], SUCCESS = _b[1], FAILURE = _b[2];
                         requestTime = new Date().getTime();
                         store.dispatch({ type: REQUEST });
                         store.dispatch({
@@ -172,19 +168,20 @@ function rapEnhancer(config) {
                                 interfaceKey: modelName,
                                 id: requestTime,
                                 requestTime: requestTime,
+                                request: params,
                                 isFetching: true
                             }
                         });
-                        _e.label = 1;
+                        _c.label = 1;
                     case 1:
-                        _e.trys.push([1, 3, , 4]);
+                        _c.trys.push([1, 3, , 4]);
                         newParams = params;
                         if (typeof transformRequest === 'function') {
                             newParams = transformRequest(action.payload);
                         }
                         return [4 /*yield*/, request({ endpoint: endpoint, method: method, params: newParams })];
                     case 2:
-                        responseData = _e.sent();
+                        responseData = _c.sent();
                         reponseTime = new Date().getTime();
                         cb && cb(responseData);
                         store.dispatch({
@@ -200,14 +197,10 @@ function rapEnhancer(config) {
                             }
                         });
                         store.dispatch({ type: SUCCESS, payload: responseData });
-                        /** 请求成功回调，用户可以增加 success 提示 */
-                        !isHideSuccess && afterSuccess && typeof afterSuccess === 'function' && afterSuccess(responseData);
                         return [2 /*return*/, responseData];
                     case 3:
-                        e_1 = _e.sent();
+                        e_1 = _c.sent();
                         store.dispatch({ type: FAILURE, payload: e_1 });
-                        /** 请求失败回调，用户可以增加 fail 提示 */
-                        !isHideFail && afterFail && typeof afterFail === 'function' && afterFail(e_1);
                         throw Error(e_1);
                     case 4: return [2 /*return*/];
                 }
