@@ -215,18 +215,11 @@ function createUseRapStr(interfaces: Intf[]): string {
         return true
     }
 
-    interface IDefaultItem {
-        request: any
-        response: any
-    }
-    interface IFilter {
-        request?: any
-    }
     /** 根据请求参数筛选，暂时只支持 request */
-    function paramsFilter(item: IDefaultItem, filter?: IFilter) {
+    function paramsFilter<Req, Res, Fil extends { request?: Req }>(item: { request: Req; response: Res }, filter: Fil): boolean {
         if (filter && filter.request) {
             if (Object.prototype.toString.call(filter.request) === '[object Object]') {
-                const reqResult = Object.keys(filter.request).every((key: keyof typeof filter.request): boolean => {
+                const reqResult = Object.keys(filter.request).every((key: string): boolean => {
                     return item.request[key] === filter.request[key]
                 })
                 if (!reqResult) {
@@ -239,7 +232,7 @@ function createUseRapStr(interfaces: Intf[]): string {
         return true
     }
     /** 根据filter函数自定义筛选 */
-    function functionFilter(item: IDefaultItem, filter: any) {
+    function functionFilter<Req, Res, Fil>(item: { request: Req; response: Res }, filter: Fil) {
         if (filter !== undefined) {
             if (typeof filter === 'function') {
                 return filter(item.request, item.response)
@@ -276,17 +269,17 @@ function createUseRapStr(interfaces: Intf[]): string {
             const [filteredData, setFilteredData] = useState({})
             const [isFetching, setIsFetching] = useState(false)
 
-            interface IItem {
-                request: ModelItf['${modelName}']['Req']
-                response: ModelItf['${modelName}']['Res']
-            }
+            type Req = ModelItf['${modelName}']['Req']
+            type Res = ModelItf['${modelName}']['Res']
+
             useEffect(() => {
                 let resultArr = []
                 if (filter) {
-                    const func = typeof filter === 'function' ? functionFilter : paramsFilter
-                    resultArr = reduxData.filter(
-                        (item: IItem) => func(item, filter)
-                    )
+                    if (typeof filter === 'function') {
+                        resultArr = reduxData.filter((item: { request: Req; response: Res }) => functionFilter<Req, Res, typeof filter>(item, filter))
+                    } else {
+                        resultArr = reduxData.filter((item: { request: Req; response: Res }) => paramsFilter<Req, Res, typeof filter>(item, filter))
+                    }
                 } else {
                     resultArr = reduxData
                 }
