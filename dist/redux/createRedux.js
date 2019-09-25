@@ -1,26 +1,21 @@
 "use strict";
 exports.__esModule = true;
 var constant_1 = require("./constant");
-/** 接口名称转义 */
-function getName(name) {
-    return name.toLocaleUpperCase();
-}
 /** 请求链接 */
 function getEndpoint(serverAPI, url) {
     return "" + serverAPI + url;
 }
 /** 生成 index.ts */
 function createIndexStr() {
-    return "\n    /**\n     * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n     */\n\n    import { useAPI, useAPIAll, clearAPI } from './useRap'\n    import fetch from './fetch'\n    \n    export { useAPI, useAPIAll, clearAPI, fetch };\n    ";
+    return "\n    /**\n     * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n     */\n\n    import { useAPI, useAPIAll, clearAPI } from './useRap'\n    import fetch from './fetch'\n    import { getAction } from './redux'\n    \n    export { useAPI, useAPIAll, clearAPI, fetch, getAction };\n    ";
 }
 exports.createIndexStr = createIndexStr;
 /** 定义 请求types interface  */
-function getRequestTypesInterfaceStr(interfaces, serverAPI) {
+function getRequestTypesInterfaceStr(interfaces) {
     return "\n        export interface IRequestTypes {\n        " + interfaces
         .map(function (_a) {
         var modelName = _a.modelName;
-        var actionName = getName(modelName);
-        return "\n                    '" + actionName + "_REQUEST': '" + actionName + "_REQUEST'\n                    '" + actionName + "_SUCCESS': '" + actionName + "_SUCCESS'\n                    '" + actionName + "_FAILURE': '" + actionName + "_FAILURE'\n                ";
+        return "\n                    '" + modelName + "': [\n                        '" + modelName + "_REQUEST',\n                        '" + modelName + "_SUCCESS',\n                        '" + modelName + "_FAILURE',\n                    ]\n                ";
     })
         .join('\n\n') + "\n        }\n    ";
 }
@@ -29,8 +24,7 @@ function getRequestActionInterfaceStr(interfaces, serverAPI) {
     return "\n        export interface IRequestAction {\n        " + interfaces
         .map(function (_a) {
         var modelName = _a.modelName, method = _a.method, url = _a.url;
-        var actionName = getName(modelName);
-        return "\n                    '" + actionName + "': (params?: ModelItf['" + modelName + "']['Req']) => {\n                        type: '" + constant_1.RAP_REDUX_REQUEST + "',\n                        payload: {\n                            modelName: '" + modelName + "'\n                            endpoint: '" + getEndpoint(serverAPI, url) + "'\n                            method: '" + method + "'\n                            params?: ModelItf['" + modelName + "']['Req']\n                            types: ['" + actionName + "_REQUEST', '" + actionName + "_SUCCESS', '" + actionName + "_FAILURE']\n                        }\n                    },\n                ";
+        return "\n                    '" + modelName + "': (params?: ModelItf['" + modelName + "']['Req']) => {\n                        type: '" + constant_1.RAP_REDUX_REQUEST + "',\n                        payload: {\n                            modelName: '" + modelName + "'\n                            endpoint: '" + getEndpoint(serverAPI, url) + "'\n                            method: '" + method + "'\n                            params?: ModelItf['" + modelName + "']['Req']\n                            types: ['" + modelName + "_REQUEST', '" + modelName + "_SUCCESS', '" + modelName + "_FAILURE']\n                        }\n                    },\n                ";
     })
         .join('\n\n') + "\n        }\n    ";
 }
@@ -39,8 +33,7 @@ function getRequestTypesStr(interfaces, serverAPI) {
     return "\n        export const RequestTypes:IRequestTypes = {\n            " + interfaces
         .map(function (_a) {
         var modelName = _a.modelName;
-        var actionName = getName(modelName);
-        return "\n                        '" + actionName + "_REQUEST': '" + actionName + "_REQUEST',\n                        '" + actionName + "_SUCCESS': '" + actionName + "_SUCCESS',\n                        '" + actionName + "_FAILURE': '" + actionName + "_FAILURE',\n                    ";
+        return "\n                        '" + modelName + "': [\n                            '" + modelName + "_REQUEST',\n                            '" + modelName + "_SUCCESS',\n                            '" + modelName + "_FAILURE',\n                        ],\n                    ";
     })
         .join('\n\n') + "\n        }\n    ";
 }
@@ -49,14 +42,16 @@ function getRequestActionStr(interfaces, serverAPI) {
     return "\n        export const RequestAction:IRequestAction = {\n            " + interfaces
         .map(function (_a) {
         var id = _a.id, repositoryId = _a.repositoryId, moduleId = _a.moduleId, name = _a.name, url = _a.url, modelName = _a.modelName, method = _a.method;
-        var actionName = getName(modelName);
-        return "\n                        /**\n                         * \u63A5\u53E3\u540D\uFF1A" + name + "\n                         * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + repositoryId + "&mod=" + moduleId + "&itf=" + id + "\n                         */\n                        '" + actionName + "': (params) => ({\n                            type: '" + constant_1.RAP_REDUX_REQUEST + "',\n                            payload: {\n                                modelName: '" + modelName + "',\n                                endpoint: '" + getEndpoint(serverAPI, url) + "',\n                                method: '" + method + "',\n                                params,\n                                types: [\n                                    RequestTypes['" + actionName + "_REQUEST'],\n                                    RequestTypes['" + actionName + "_SUCCESS'],\n                                    RequestTypes['" + actionName + "_FAILURE'],\n                                ],\n                            },\n                        }),\n                    ";
+        return "\n                        /**\n                         * \u63A5\u53E3\u540D\uFF1A" + name + "\n                         * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + repositoryId + "&mod=" + moduleId + "&itf=" + id + "\n                         */\n                        '" + modelName + "': (params) => ({\n                            type: '" + constant_1.RAP_REDUX_REQUEST + "',\n                            payload: {\n                                modelName: '" + modelName + "',\n                                endpoint: '" + getEndpoint(serverAPI, url) + "',\n                                method: '" + method + "',\n                                params,\n                                types: RequestTypes['" + modelName + "'],\n                            },\n                        }),\n                    ";
     })
         .join('\n\n') + "\n        }\n    ";
 }
 function createReduxStr(interfaces, _a) {
     var projectId = _a.projectId, serverAPI = _a.serverAPI;
-    return "\n    /**\n     * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n     * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "\n     */\n\n    import { ModelItf } from './model'\n\n    /** \u8BF7\u6C42types interface  */\n    " + getRequestTypesInterfaceStr(interfaces, serverAPI) + "\n\n    /** \u8BF7\u6C42action interface  */\n    " + getRequestActionInterfaceStr(interfaces, serverAPI) + "\n\n    /** \u8BF7\u6C42types */\n    " + getRequestTypesStr(interfaces, serverAPI) + "\n\n    /** \u8BF7\u6C42action */\n    " + getRequestActionStr(interfaces, serverAPI) + "\n    ";
+    return "\n    /**\n     * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n     * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "\n     */\n\n    import { ModelItf } from './model'\n\n    /** request interface */\n    export type RequestType = " + interfaces.reduce(function (a, _a) {
+        var modelName = _a.modelName;
+        return a + " | '" + modelName + "'";
+    }, '') + "\n\n    /** \u8BF7\u6C42types interface  */\n    " + getRequestTypesInterfaceStr(interfaces) + "\n\n    /** \u8BF7\u6C42action interface  */\n    " + getRequestActionInterfaceStr(interfaces, serverAPI) + "\n\n    /** \u8BF7\u6C42types */\n    " + getRequestTypesStr(interfaces, serverAPI) + "\n\n    /** \u8BF7\u6C42action */\n    " + getRequestActionStr(interfaces, serverAPI) + "\n\n    export function getAction(requestPath: RequestType) {\n        return RequestTypes[requestPath] || []\n    }\n    ";
 }
 exports.createReduxStr = createReduxStr;
 /** 生成 fetch.ts */
@@ -64,7 +59,7 @@ function createReduxFetchStr(projectId, interfaces) {
     return "\n    /**\n     * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n     * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "\n     */\n    import { dispatchAction } from '@ali/rapper-redux';\n    import { ModelItf } from './model';\n    import { RequestAction } from './redux';\n\n    const request = {\n        " + interfaces
         .map(function (_a) {
         var modelName = _a.modelName, name = _a.name, repositoryId = _a.repositoryId, moduleId = _a.moduleId, id = _a.id;
-        return "\n        /**\n         * \u63A5\u53E3\u540D\uFF1A" + name + "\n         * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + repositoryId + "&mod=" + moduleId + "&itf=" + id + "\n         * @param req \u8BF7\u6C42\u53C2\u6570\n         */\n        '" + modelName + "': (req?: ModelItf['" + modelName + "']['Req']): Promise<ModelItf['" + modelName + "']['Res']> => {\n            const action = RequestAction['" + getName(modelName) + "'](req)\n            return dispatchAction(action)\n        }";
+        return "\n        /**\n         * \u63A5\u53E3\u540D\uFF1A" + name + "\n         * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + repositoryId + "&mod=" + moduleId + "&itf=" + id + "\n         * @param req \u8BF7\u6C42\u53C2\u6570\n         */\n        '" + modelName + "': (req?: ModelItf['" + modelName + "']['Req']): Promise<ModelItf['" + modelName + "']['Res']> => {\n            const action = RequestAction['" + modelName + "'](req)\n            return dispatchAction(action)\n        }";
     })
         .join(',\n\n') + "\n    };\n    export default request;\n    ";
 }

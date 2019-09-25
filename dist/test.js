@@ -20,9 +20,10 @@ index_1.createModel({
         /** 默认单引号 */
         singleQuote: true
     }
-})
-    .then(function () {
-    console.log('rapper:generate model success');
-})["catch"](function (err) {
-    console.log('rapper:generate model failed', err);
 });
+// .then(() => {
+//     console.log('rapper:generate model success')
+// })
+// .catch(err => {
+//     console.log('rapper:generate model failed', err)
+// })

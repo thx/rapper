@@ -105,4 +105,10 @@ export default async function({
     }
 
     return Promise.all(outputFiles.map(({ path, content }) => writeFile(path, content)))
+        .then(() => {
+            console.log(chalk.green('rapper-redux: model 生成成功！'))
+        })
+        .catch(err => {
+            console.log(chalk.red(err))
+        })
 }

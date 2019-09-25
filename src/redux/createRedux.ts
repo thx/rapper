@@ -1,11 +1,6 @@
 import { Intf } from '../types'
 import { RAP_STATE_KEY, RAP_REDUX_REQUEST } from './constant'
 
-/** 接口名称转义 */
-function getName(name: string): string {
-    return name.toLocaleUpperCase()
-}
-
 /** 请求链接 */
 function getEndpoint(serverAPI: string, url: string): string {
     return `${serverAPI}${url}`
@@ -20,22 +15,24 @@ function createIndexStr(): string {
 
     import { useAPI, useAPIAll, clearAPI } from './useRap'
     import fetch from './fetch'
+    import { getAction } from './redux'
     
-    export { useAPI, useAPIAll, clearAPI, fetch };
+    export { useAPI, useAPIAll, clearAPI, fetch, getAction };
     `
 }
 
 /** 定义 请求types interface  */
-function getRequestTypesInterfaceStr(interfaces: Intf[], serverAPI: string): string {
+function getRequestTypesInterfaceStr(interfaces: Intf[]): string {
     return `
         export interface IRequestTypes {
         ${interfaces
             .map(({ modelName }) => {
-                const actionName = getName(modelName)
                 return `
-                    '${actionName}_REQUEST': '${actionName}_REQUEST'
-                    '${actionName}_SUCCESS': '${actionName}_SUCCESS'
-                    '${actionName}_FAILURE': '${actionName}_FAILURE'
+                    '${modelName}': [
+                        '${modelName}_REQUEST',
+                        '${modelName}_SUCCESS',
+                        '${modelName}_FAILURE',
+                    ]
                 `
             })
             .join('\n\n')}
@@ -49,16 +46,15 @@ function getRequestActionInterfaceStr(interfaces: Intf[], serverAPI: string): st
         export interface IRequestAction {
         ${interfaces
             .map(({ modelName, method, url }) => {
-                const actionName = getName(modelName)
                 return `
-                    '${actionName}': (params?: ModelItf['${modelName}']['Req']) => {
+                    '${modelName}': (params?: ModelItf['${modelName}']['Req']) => {
                         type: '${RAP_REDUX_REQUEST}',
                         payload: {
                             modelName: '${modelName}'
                             endpoint: '${getEndpoint(serverAPI, url)}'
                             method: '${method}'
                             params?: ModelItf['${modelName}']['Req']
-                            types: ['${actionName}_REQUEST', '${actionName}_SUCCESS', '${actionName}_FAILURE']
+                            types: ['${modelName}_REQUEST', '${modelName}_SUCCESS', '${modelName}_FAILURE']
                         }
                     },
                 `
@@ -74,11 +70,12 @@ function getRequestTypesStr(interfaces: Intf[], serverAPI: string): string {
         export const RequestTypes:IRequestTypes = {
             ${interfaces
                 .map(({ modelName }) => {
-                    const actionName = getName(modelName)
                     return `
-                        '${actionName}_REQUEST': '${actionName}_REQUEST',
-                        '${actionName}_SUCCESS': '${actionName}_SUCCESS',
-                        '${actionName}_FAILURE': '${actionName}_FAILURE',
+                        '${modelName}': [
+                            '${modelName}_REQUEST',
+                            '${modelName}_SUCCESS',
+                            '${modelName}_FAILURE',
+                        ],
                     `
                 })
                 .join('\n\n')}
@@ -92,24 +89,19 @@ function getRequestActionStr(interfaces: Intf[], serverAPI: string): string {
         export const RequestAction:IRequestAction = {
             ${interfaces
                 .map(({ id, repositoryId, moduleId, name, url, modelName, method }) => {
-                    const actionName = getName(modelName)
                     return `
                         /**
                          * 接口名：${name}
                          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
                          */
-                        '${actionName}': (params) => ({
+                        '${modelName}': (params) => ({
                             type: '${RAP_REDUX_REQUEST}',
                             payload: {
                                 modelName: '${modelName}',
                                 endpoint: '${getEndpoint(serverAPI, url)}',
                                 method: '${method}',
                                 params,
-                                types: [
-                                    RequestTypes['${actionName}_REQUEST'],
-                                    RequestTypes['${actionName}_SUCCESS'],
-                                    RequestTypes['${actionName}_FAILURE'],
-                                ],
+                                types: RequestTypes['${modelName}'],
                             },
                         }),
                     `
@@ -133,8 +125,11 @@ function createReduxStr(interfaces: Intf[], { projectId, serverAPI }: IOptionsPa
 
     import { ModelItf } from './model'
 
+    /** request interface */
+    export type RequestType = ${interfaces.reduce((a, { modelName }) => `${a} | '${modelName}'`, '')}
+
     /** 请求types interface  */
-    ${getRequestTypesInterfaceStr(interfaces, serverAPI)}
+    ${getRequestTypesInterfaceStr(interfaces)}
 
     /** 请求action interface  */
     ${getRequestActionInterfaceStr(interfaces, serverAPI)}
@@ -144,6 +139,10 @@ function createReduxStr(interfaces: Intf[], { projectId, serverAPI }: IOptionsPa
 
     /** 请求action */
     ${getRequestActionStr(interfaces, serverAPI)}
+
+    export function getAction(requestPath: RequestType) {
+        return RequestTypes[requestPath] || []
+    }
     `
 }
 
@@ -168,7 +167,7 @@ function createReduxFetchStr(projectId: number, interfaces: Intf[]): string {
          * @param req 请求参数
          */
         '${modelName}': (req?: ModelItf['${modelName}']['Req']): Promise<ModelItf['${modelName}']['Res']> => {
-            const action = RequestAction['${getName(modelName)}'](req)
+            const action = RequestAction['${modelName}'](req)
             return dispatchAction(action)
         }`
             )

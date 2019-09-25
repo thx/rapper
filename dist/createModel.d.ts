@@ -24,5 +24,5 @@ interface ICreateModel {
         trailingComma?: 'none' | 'all' | 'es5';
     };
 }
-export default function ({ projectId, modelPath, requesterPath, baseFetchPath, urlMapper, useCommonJsModule, additionalProperties, optionalExtra, rapUrl, outputPath, serverAPI, type, codeStyle, }: ICreateModel): Promise<{}[]>;
+export default function ({ projectId, modelPath, requesterPath, baseFetchPath, urlMapper, useCommonJsModule, additionalProperties, optionalExtra, rapUrl, outputPath, serverAPI, type, codeStyle, }: ICreateModel): Promise<void>;
 export {};

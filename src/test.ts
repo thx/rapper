@@ -20,9 +20,9 @@ createModel({
         singleQuote: true,
     },
 })
-    .then(() => {
-        console.log('rapper:generate model success')
-    })
-    .catch(err => {
-        console.log('rapper:generate model failed', err)
-    })
+// .then(() => {
+//     console.log('rapper:generate model success')
+// })
+// .catch(err => {
+//     console.log('rapper:generate model failed', err)
+// })

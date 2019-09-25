@@ -114,7 +114,12 @@ function default_1(_a) {
                     return [2 /*return*/, Promise.all(outputFiles.map(function (_a) {
                             var path = _a.path, content = _a.content;
                             return utils_1.writeFile(path, content);
-                        }))];
+                        }))
+                            .then(function () {
+                            console.log(chalk_1["default"].green('rapper-redux: model 生成成功！'));
+                        })["catch"](function (err) {
+                            console.log(chalk_1["default"].red(err));
+                        })];
             }
         });
     });

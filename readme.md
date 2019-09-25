@@ -141,12 +141,6 @@ createModel({
     /** 可选，服务端api地址，默认是根目录相对路径 */
     serverAPI: 'https://rap2api.alibaba-inc.com/app/mock/3283',
 })
-    .then(() => {
-        console.log('rapper:generate model success')
-    })
-    .catch(err => {
-        console.log('rapper:generate model failed', err)
-    })
 ```
 
 配置好如上的配置文件后，执行 `node rap-redux.js` 就能生成模板文件了
@@ -220,7 +214,7 @@ const rapData = useAPI['GET/adgroup/price/update$'](
 ### 1、请求参数 Map
 
 ```js
-import { rapEnhancer } from '-redux'
+import { rapEnhancer } from '@ali/rapper-redux'
 
 rapEnhancer({
     transformRequest: reqest => request.params,
@@ -253,7 +247,7 @@ rapEnhancer({
 这里，可以给 `rapEnhancer` 传一个函数作为参数，来过滤响应数据，让存入 redux store 的数据更加纯净，类似下面这样：
 
 ```js
-import { rapEnhancer } from '-redux'
+import { rapEnhancer } from '@ali/rapper-redux'
 
 rapEnhancer({
     transformResponse: responseData => responseData.result,
@@ -297,6 +291,10 @@ rapEnhancer({
 }),
 ```
 
-Todo: 缓存方案的 用例，及说明
+### 5、获取请求的三个 Action： Request、Success、Failure
 
-Todo: 完善类型定义
+```js
+import { getAction } from 'requestModel'
+
+const [Request, Success, Failure] = getAction('GET/adgroup/price/update$')
+```
