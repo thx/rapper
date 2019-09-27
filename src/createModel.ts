@@ -47,6 +47,12 @@ export default async function({
     type = 'default',
     codeStyle,
 }: ICreateModel) {
+    DEFAULT_OPTIONS.style = {
+        ...DEFAULT_OPTIONS.style,
+        singleQuote: true,
+        semi: false,
+        trailingComma: 'es5',
+    }
     if (codeStyle && typeof codeStyle === 'object') {
         DEFAULT_OPTIONS.style = { ...DEFAULT_OPTIONS.style, ...codeStyle }
     }

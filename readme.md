@@ -128,13 +128,13 @@ createModel({
     /** 可选，输出模板代码的格式 */
     codeStyle: {
         /** 默认单引号 */
-        singleQuote: false,
+        singleQuote: true,
         /** 默认2个空格 */
         tabWidth: 2,
-        /** 分号结尾，默认true */
-        semi: true,
+        /** 分号结尾，默认false */
+        semi: false,
         /** 逗号 */
-        trailingComma: 'none',
+        trailingComma: 'es5',
     },
     /** 可选，rap地址，默认是 http://rap2api.taobao.org */
     rapUrl: 'https://rap2api.alibaba-inc.com',
@@ -149,7 +149,7 @@ createModel({
 
 ```js
 /** import 的目录就是上面第二步配置的 outputPath */
-import { fetch, useAPI, useAPIAll, clearRap } from 'requestModel'
+import { fetch, useAPI, useAPIAll, clearAPICache } from 'requestModel'
 
 /** 发送请求，返回的是一个 promise，会把响应数据返回 */
 fetch['GET/adgroup/price/update$']({ productId: 1 })
@@ -169,7 +169,7 @@ responseData 是 请求响应的数据，isFetching 是请求的状态
 const rapData = useAPIAll['GET/adgroup/price/update$']()
 
 /** 清除数据 */
-clearRap['GET/adgroup/price/update$']()
+clearAPICache['GET/adgroup/price/update$']()
 ```
 
 #### 接口响应数据的缓存与使用
@@ -197,16 +197,17 @@ const rapData = useAPI['GET/adgroup/price/update$']({
 ```js
 import { useAPI } from 'requestModel'
 
-const rapData = useAPI['GET/adgroup/price/update$'](
-    /**
-     * @params request，请求参数
-     * @params response，响应数据
-     * @return 函数返回 Boolean
-     */
-    (request, response) => {
-        return request.productId === 2
-    }
-)
+const rapData = useAPI['GET/adgroup/price/update$'](({ request, response }) => {
+    return request.productId === 2
+})
+```
+
+```js
+import { useAPI } from 'requestModel'
+
+const rapData = useAPI['GET/adgroup/price/update$'](({ request, response }) => {
+    return request.productId === 2
+})
 ```
 
 ## 高级配置

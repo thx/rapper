@@ -60,6 +60,7 @@ function default_1(_a) {
         return __generator(this, function (_m) {
             switch (_m.label) {
                 case 0:
+                    json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style, { singleQuote: true, semi: false, trailingComma: 'es5' });
                     if (codeStyle && typeof codeStyle === 'object') {
                         json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style, codeStyle);
                     }

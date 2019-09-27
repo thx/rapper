@@ -13,11 +13,11 @@ function createIndexStr(): string {
      * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
      */
 
-    import { useAPI, useAPIAll, clearAPI } from './useRap'
+    import { useAPI, useAPIAll, clearAPICache } from './useRap'
     import fetch from './fetch'
     import { getAction } from './redux'
     
-    export { useAPI, useAPIAll, clearAPI, fetch, getAction };
+    export { useAPI, useAPIAll, clearAPICache, fetch, getAction };
     `
 }
 
@@ -216,11 +216,12 @@ function createUseRapStr(interfaces: Intf[]): string {
     }
 
     /** 根据请求参数筛选，暂时只支持 request */
-    function paramsFilter<Req, Res, Fil extends { request?: Req }>(item: { request: Req; response: Res }, filter: Fil): boolean {
+    function paramsFilter<Req extends { [key: string]: any }, Res, Fil extends { request?: Req }>(item: { request: Req; response: Res }, filter: Fil): boolean {
         if (filter && filter.request) {
+            const filterRequest = filter.request // 这一行是解决 ts2532 报错
             if (Object.prototype.toString.call(filter.request) === '[object Object]') {
-                const reqResult = Object.keys(filter.request).every((key: string): boolean => {
-                    return item.request[key] === filter.request[key]
+                const reqResult = Object.keys(filter.request).every((key): boolean => {
+                    return item.request[key] === filterRequest[key]
                 })
                 if (!reqResult) {
                     return false
@@ -243,12 +244,29 @@ function createUseRapStr(interfaces: Intf[]): string {
         return true
     }
 
+    /** store中存储的数据结构 */
+    export interface IStoreItem {
+        ${interfaces
+            .map(
+                ({ modelName, name, repositoryId, moduleId, id }) => `
+        '${modelName}': {
+            request: ModelItf['${modelName}']['Req']
+            response: ModelItf['${modelName}']['Res']
+            id: number
+            requestTime: number
+            responseTime: number
+            isFetching: boolean
+        }`
+            )
+            .join(',\n\n')}
+    }
+
     interface IState {
         ${RAP_STATE_KEY}: any
         [key: string]: any
     }
 
-    const useAPI = {
+    export const useAPI = {
         ${interfaces
             .map(
                 ({ modelName, name, repositoryId, moduleId, id }) => `
@@ -259,14 +277,13 @@ function createUseRapStr(interfaces: Intf[]): string {
         /* tslint:disable */
         '${modelName}': function useData(
             filter?: { request?: ModelItf['${modelName}']['Req'] } | { (
-                request: ModelItf['${modelName}']['Req'],
-                response: ModelItf['${modelName}']['Res']
+                storeData: IStoreItem['${modelName}']
             ): boolean }
-        ): [ModelItf['${modelName}']['Res'], boolean] {
+        ): [null | ModelItf['${modelName}']['Res'], boolean] {
             const reduxData = useSelector((state: IState) => {
                 return (state[RAP_STATE_KEY] && state[RAP_STATE_KEY]['${modelName}']) || []
             })
-            const [filteredData, setFilteredData] = useState({})
+            const [filteredData, setFilteredData] = useState(null)
             const [isFetching, setIsFetching] = useState(false)
 
             type Req = ModelItf['${modelName}']['Req']
@@ -288,7 +305,7 @@ function createUseRapStr(interfaces: Intf[]): string {
 
                 if (!looseEqual(result, filteredData)) {
                     setFilteredData(result.response)
-                    setIsFetching(result.isFetching)
+                    setIsFetching(result.isFetching || false)
                 }
             }, [reduxData, filter])
 
@@ -298,7 +315,7 @@ function createUseRapStr(interfaces: Intf[]): string {
             .join(',\n\n')}
     }
 
-    const useAPIAll = {
+    export const useAPIAll = {
         ${interfaces
             .map(
                 ({ modelName, name, repositoryId, moduleId, id }) => `
@@ -318,7 +335,7 @@ function createUseRapStr(interfaces: Intf[]): string {
     }
 
     /** 重置接口数据 */
-    const clearAPI = {
+    export const clearAPICache = {
         ${interfaces
             .map(
                 ({ modelName, name, repositoryId, moduleId, id }) => `
@@ -337,8 +354,6 @@ function createUseRapStr(interfaces: Intf[]): string {
             )
             .join(',\n\n')}
     }
-
-    export { useAPI, useAPIAll, clearAPI };
     `
 }
 

@@ -1,6 +1,6 @@
 {
     "name": "@ali/rapper-redux",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "description": "rapper, use http api as a function",
     "main": "./dist/index.js",
     "scripts": {
