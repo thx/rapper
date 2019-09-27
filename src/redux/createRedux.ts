@@ -216,7 +216,7 @@ function createUseRapStr(interfaces: Intf[]): string {
     }
 
     /** 根据请求参数筛选，暂时只支持 request */
-    function paramsFilter<Req extends { [key: string]: any }, Res, Fil extends { request?: Req }>(item: { request: Req; response: Res }, filter: Fil): boolean {
+    function paramsFilter<Req extends { [key: string]: any }, I extends { request: Req }, Fil extends { request?: Req }>(item: I, filter: Fil): boolean {
         if (filter && filter.request) {
             const filterRequest = filter.request // 这一行是解决 ts2532 报错
             if (Object.prototype.toString.call(filter.request) === '[object Object]') {
@@ -233,10 +233,10 @@ function createUseRapStr(interfaces: Intf[]): string {
         return true
     }
     /** 根据filter函数自定义筛选 */
-    function functionFilter<Req, Res, Fil>(item: { request: Req; response: Res }, filter: Fil) {
+    function functionFilter<I, Fil>(item: I, filter: Fil) {
         if (filter !== undefined) {
             if (typeof filter === 'function') {
-                return filter(item.request, item.response)
+                return filter(item)
             } else {
                 return false
             }
@@ -287,15 +287,15 @@ function createUseRapStr(interfaces: Intf[]): string {
             const [isFetching, setIsFetching] = useState(false)
 
             type Req = ModelItf['${modelName}']['Req']
-            type Res = ModelItf['${modelName}']['Res']
+            type ItemType = IStoreItem['${modelName}']
 
             useEffect(() => {
                 let resultArr = []
                 if (filter) {
                     if (typeof filter === 'function') {
-                        resultArr = reduxData.filter((item: { request: Req; response: Res }) => functionFilter<Req, Res, typeof filter>(item, filter))
+                        resultArr = reduxData.filter((item: ItemType) => functionFilter<ItemType, typeof filter>(item, filter))
                     } else {
-                        resultArr = reduxData.filter((item: { request: Req; response: Res }) => paramsFilter<Req, Res, typeof filter>(item, filter))
+                        resultArr = reduxData.filter((item: ItemType) => paramsFilter<Req, ItemType, typeof filter>(item, filter))
                     }
                 } else {
                     resultArr = reduxData
@@ -307,7 +307,7 @@ function createUseRapStr(interfaces: Intf[]): string {
                     setFilteredData(result.response)
                     setIsFetching(result.isFetching || false)
                 }
-            }, [reduxData, filter])
+            }, [reduxData, filter, filteredData])
 
             return [filteredData, isFetching]
         }`

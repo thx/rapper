@@ -71,7 +71,7 @@ function assignData({
     let data = newState[interfaceKey] || []
     if (isFetching === true) {
         /** 只存最近 maxCacheLength 个数据 */
-        if (maxCacheLength !== Infinity && data.length > maxCacheLength) {
+        if (maxCacheLength !== Infinity && data.length >= maxCacheLength) {
             data = newState[interfaceKey].slice(data.length - maxCacheLength + 1)
         }
         newState[interfaceKey] = [].concat(data, {
