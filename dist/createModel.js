@@ -54,25 +54,25 @@ var createRedux_1 = require("./redux/createRedux");
 var utils_1 = require("./utils");
 var common_1 = require("./common");
 function default_1(_a) {
-    var projectId = _a.projectId, modelPath = _a.modelPath, requesterPath = _a.requesterPath, baseFetchPath = _a.baseFetchPath, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (t) { return t; } : _b, _c = _a.useCommonJsModule, useCommonJsModule = _c === void 0 ? false : _c, _d = _a.additionalProperties, additionalProperties = _d === void 0 ? false : _d, _e = _a.optionalExtra, optionalExtra = _e === void 0 ? true : _e, _f = _a.rapUrl, rapUrl = _f === void 0 ? 'http://rap2.taobao.org' : _f, _g = _a.outputPath, outputPath = _g === void 0 ? './model' : _g, _h = _a.serverAPI, serverAPI = _h === void 0 ? '' : _h, _j = _a.type, type = _j === void 0 ? 'default' : _j, codeStyle = _a.codeStyle;
+    var projectId = _a.projectId, modelPath = _a.modelPath, requesterPath = _a.requesterPath, baseFetchPath = _a.baseFetchPath, _b = _a.urlMapper, urlMapper = _b === void 0 ? function (t) { return t; } : _b, _c = _a.useCommonJsModule, useCommonJsModule = _c === void 0 ? false : _c, _d = _a.additionalProperties, additionalProperties = _d === void 0 ? false : _d, _e = _a.optionalExtra, optionalExtra = _e === void 0 ? true : _e, _f = _a.rapUrl, rapUrl = _f === void 0 ? 'http://rap2.taobao.org' : _f, _g = _a.outputPath, outputPath = _g === void 0 ? './model' : _g, _h = _a.type, type = _h === void 0 ? 'default' : _h, codeStyle = _a.codeStyle;
     return __awaiter(this, void 0, void 0, function () {
-        var outputFiles, interfaces, _k, _l, modelStr, relModelPath, relBaseFetchPath, fetchStr;
-        return __generator(this, function (_m) {
-            switch (_m.label) {
+        var outputFiles, interfaces, _j, _k, modelStr, relModelPath, relBaseFetchPath, fetchStr;
+        return __generator(this, function (_l) {
+            switch (_l.label) {
                 case 0:
                     json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style, { singleQuote: true, semi: false, trailingComma: 'es5' });
                     if (codeStyle && typeof codeStyle === 'object') {
                         json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style, codeStyle);
                     }
                     outputFiles = [];
-                    _k = common_1.uniqueItfs;
-                    _l = common_1.getIntfWithModelName;
+                    _j = common_1.uniqueItfs;
+                    _k = common_1.getIntfWithModelName;
                     return [4 /*yield*/, common_1.getInterfaces(rapUrl, projectId)];
                 case 1:
-                    interfaces = _k.apply(void 0, [_l.apply(void 0, [_m.sent(), urlMapper, type])]);
+                    interfaces = _j.apply(void 0, [_k.apply(void 0, [_l.sent(), urlMapper, type])]);
                     return [4 /*yield*/, index_1.createModel(interfaces, { projectId: projectId, additionalProperties: additionalProperties })];
                 case 2:
-                    modelStr = _m.sent();
+                    modelStr = _l.sent();
                     outputFiles.push({
                         path: outputPath ? outputPath + "/model.ts" : modelPath,
                         content: formatter_1.format(modelStr, json_schema_to_typescript_1.DEFAULT_OPTIONS)
@@ -90,7 +90,7 @@ function default_1(_a) {
                         /** 生成 redux.ts */
                         outputFiles.push({
                             path: outputPath + "/redux.ts",
-                            content: formatter_1.format(createRedux_1.createReduxStr(interfaces, { projectId: projectId, serverAPI: serverAPI }), json_schema_to_typescript_1.DEFAULT_OPTIONS)
+                            content: formatter_1.format(createRedux_1.createReduxStr(interfaces, { projectId: projectId }), json_schema_to_typescript_1.DEFAULT_OPTIONS)
                         });
                         /** 生成 redux 版本的 fetch.ts */
                         outputFiles.push({

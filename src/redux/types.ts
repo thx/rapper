@@ -27,6 +27,8 @@ export interface IRequestParams {
 
 /** store enhancer 参数 */
 export interface IEnhancerProps {
+    /** 后端api地址，默认是根目录相对路径 */
+    requestPrefix?: string
     /** 请求参数处理函数 */
     transformRequest?: (data: any) => any
     /** 响应数据处理函数 */

@@ -1,7 +1,14 @@
 import createModel from './createModel'
-/** redux */
+import { paramsFilter, functionFilter, looseEqual } from './common'
 import { rapReducers, rapEnhancer, dispatchAction } from './redux/rapEnhancer'
 import { RAP_STATE_KEY, RAP_REDUX_CLEAR_STORE } from './redux/constant'
+
+/** 工具函数 */
+const utils = {
+    paramsFilter,
+    functionFilter,
+    looseEqual,
+}
 
 export {
     /** 创建 model文件 */
@@ -14,4 +21,5 @@ export {
     /** 存入 store 的 key */
     RAP_STATE_KEY,
     RAP_REDUX_CLEAR_STORE,
+    utils,
 }

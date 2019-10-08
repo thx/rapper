@@ -18,7 +18,6 @@ interface ICreateModel {
     modelPath?: string
     requesterPath?: string
     baseFetchPath?: string
-    serverAPI?: string
     type?: RAP_TYPE
     /** 输出模板代码的格式 */
     codeStyle?: {
@@ -43,7 +42,6 @@ export default async function({
     optionalExtra = true,
     rapUrl = 'http://rap2.taobao.org',
     outputPath = './model',
-    serverAPI = '',
     type = 'default',
     codeStyle,
 }: ICreateModel) {
@@ -84,7 +82,7 @@ export default async function({
         /** 生成 redux.ts */
         outputFiles.push({
             path: `${outputPath}/redux.ts`,
-            content: format(createReduxStr(interfaces, { projectId, serverAPI }), DEFAULT_OPTIONS),
+            content: format(createReduxStr(interfaces, { projectId }), DEFAULT_OPTIONS),
         })
 
         /** 生成 redux 版本的 fetch.ts */

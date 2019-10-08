@@ -10,7 +10,6 @@ interface ICreateModel {
     modelPath?: string;
     requesterPath?: string;
     baseFetchPath?: string;
-    serverAPI?: string;
     type?: RAP_TYPE;
     /** 输出模板代码的格式 */
     codeStyle?: {
@@ -24,5 +23,5 @@ interface ICreateModel {
         trailingComma?: 'none' | 'all' | 'es5';
     };
 }
-export default function ({ projectId, modelPath, requesterPath, baseFetchPath, urlMapper, useCommonJsModule, additionalProperties, optionalExtra, rapUrl, outputPath, serverAPI, type, codeStyle, }: ICreateModel): Promise<void>;
+export default function ({ projectId, modelPath, requesterPath, baseFetchPath, urlMapper, useCommonJsModule, additionalProperties, optionalExtra, rapUrl, outputPath, type, codeStyle, }: ICreateModel): Promise<void>;
 export {};

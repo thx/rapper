@@ -1,7 +1,6 @@
 import axios from 'axios'
 import * as _ from 'lodash'
 import chalk from 'chalk'
-import { DEFAULT_OPTIONS } from 'json-schema-to-typescript'
 import { RAP_TYPE, IModules, ICollaborator, Interface, Intf, UrlMapper } from './types'
 
 /** 从rap查询所有接口数据 */
@@ -135,4 +134,63 @@ export function locationStringify(
         str = str && `${str}&`
         return `${str}${key}=${value}`
     }, '')
+}
+
+/** 深比较 */
+export function looseEqual(newData: any, oldData: any): boolean {
+    const newType = Object.prototype.toString.call(newData)
+    const oldType = Object.prototype.toString.call(oldData)
+
+    if (newType !== oldType) {
+        return false
+    }
+
+    if (newType === '[object Object]' || newType === '[object Array]') {
+        for (const key in newData) {
+            if (!looseEqual(newData[key], oldData[key])) {
+                return false
+            }
+        }
+        for (const key in oldData) {
+            if (!looseEqual(newData[key], oldData[key])) {
+                return false
+            }
+        }
+    } else if (newData !== oldData) {
+        return false
+    }
+
+    return true
+}
+
+/** 根据请求参数筛选，暂时只支持 request */
+export function paramsFilter<Req extends { [key: string]: any }, I extends { request: Req }, Fil extends { request?: Req }>(
+    item: I,
+    filter: Fil
+): boolean {
+    if (filter && filter.request) {
+        const filterRequest = filter.request // 这一行是解决 ts2532 报错
+        if (Object.prototype.toString.call(filter.request) === '[object Object]') {
+            const reqResult = Object.keys(filter.request).every((key): boolean => {
+                return item.request[key] === filterRequest[key]
+            })
+            if (!reqResult) {
+                return false
+            }
+        } else {
+            return false
+        }
+    }
+    return true
+}
+/** 根据filter函数自定义筛选 */
+export function functionFilter<I, Fil>(item: I, filter: Fil) {
+    if (filter !== undefined) {
+        if (typeof filter === 'function') {
+            return filter(item)
+        } else {
+            return false
+        }
+    }
+    return true
 }

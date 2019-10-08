@@ -50,6 +50,14 @@ var _a;
 var _this = this;
 var common_1 = require("../common");
 var constant_1 = require("./constant");
+// MC-Todo: 兼容没有/
+/** 请求链接 */
+var getEndpoint = function (requestPrefix, url) {
+    if (!requestPrefix) {
+        return url;
+    }
+    return "" + requestPrefix + url;
+};
 var sendRequest = function (params) { return __awaiter(_this, void 0, void 0, function () {
     var requestUrl, requestParams, res, retJSON;
     return __generator(this, function (_a) {
@@ -118,7 +126,7 @@ exports.rapReducers = rapReducers;
 function rapEnhancer(config) {
     var _this = this;
     config = config || {};
-    var _a = config.transformRequest, transformRequest = _a === void 0 ? function (data) { return data; } : _a, _b = config.transformResponse, transformResponse = _b === void 0 ? function (data) { return data; } : _b, _c = config.maxCacheLength, maxCacheLength = _c === void 0 ? 2 : _c, fetch = config.fetch;
+    var requestPrefix = config.requestPrefix, _a = config.transformRequest, transformRequest = _a === void 0 ? function (data) { return data; } : _a, _b = config.transformResponse, transformResponse = _b === void 0 ? function (data) { return data; } : _b, _c = config.maxCacheLength, maxCacheLength = _c === void 0 ? 2 : _c, fetch = config.fetch;
     var request = typeof fetch === 'function' ? fetch : sendRequest;
     return function (next) { return function (reducers) {
         var args = [];
@@ -179,7 +187,11 @@ function rapEnhancer(config) {
                         if (typeof transformRequest === 'function') {
                             newParams = transformRequest(action.payload);
                         }
-                        return [4 /*yield*/, request({ endpoint: endpoint, method: method, params: newParams })];
+                        return [4 /*yield*/, request({
+                                endpoint: getEndpoint(requestPrefix, endpoint),
+                                method: method,
+                                params: newParams
+                            })];
                     case 2:
                         responseData = _c.sent();
                         reponseTime = new Date().getTime();

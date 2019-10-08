@@ -1,11 +1,6 @@
 import { Intf } from '../types'
 import { RAP_STATE_KEY, RAP_REDUX_REQUEST } from './constant'
 
-/** 请求链接 */
-function getEndpoint(serverAPI: string, url: string): string {
-    return `${serverAPI}${url}`
-}
-
 /** 生成 index.ts */
 function createIndexStr(): string {
     return `
@@ -15,9 +10,9 @@ function createIndexStr(): string {
 
     import { useAPI, useAPIAll, clearAPICache } from './useRap'
     import fetch from './fetch'
-    import { getAction } from './redux'
+    import { requestAction } from './redux'
     
-    export { useAPI, useAPIAll, clearAPICache, fetch, getAction };
+    export { useAPI, useAPIAll, clearAPICache, fetch, requestAction };
     `
 }
 
@@ -41,7 +36,7 @@ function getRequestTypesInterfaceStr(interfaces: Intf[]): string {
 }
 
 /** 定义 请求action interface  */
-function getRequestActionInterfaceStr(interfaces: Intf[], serverAPI: string): string {
+function getRequestActionInterfaceStr(interfaces: Intf[]): string {
     return `
         export interface IRequestAction {
         ${interfaces
@@ -51,7 +46,7 @@ function getRequestActionInterfaceStr(interfaces: Intf[], serverAPI: string): st
                         type: '${RAP_REDUX_REQUEST}',
                         payload: {
                             modelName: '${modelName}'
-                            endpoint: '${getEndpoint(serverAPI, url)}'
+                            endpoint: '${url}'
                             method: '${method}'
                             params?: ModelItf['${modelName}']['Req']
                             types: ['${modelName}_REQUEST', '${modelName}_SUCCESS', '${modelName}_FAILURE']
@@ -65,7 +60,7 @@ function getRequestActionInterfaceStr(interfaces: Intf[], serverAPI: string): st
 }
 
 /** 定义 请求types */
-function getRequestTypesStr(interfaces: Intf[], serverAPI: string): string {
+function getRequestTypesStr(interfaces: Intf[]): string {
     return `
         export const RequestTypes:IRequestTypes = {
             ${interfaces
@@ -84,7 +79,7 @@ function getRequestTypesStr(interfaces: Intf[], serverAPI: string): string {
 }
 
 /** 定义 请求action */
-function getRequestActionStr(interfaces: Intf[], serverAPI: string): string {
+function getRequestActionStr(interfaces: Intf[]): string {
     return `
         export const RequestAction:IRequestAction = {
             ${interfaces
@@ -98,7 +93,7 @@ function getRequestActionStr(interfaces: Intf[], serverAPI: string): string {
                             type: '${RAP_REDUX_REQUEST}',
                             payload: {
                                 modelName: '${modelName}',
-                                endpoint: '${getEndpoint(serverAPI, url)}',
+                                endpoint: '${url}',
                                 method: '${method}',
                                 params,
                                 types: RequestTypes['${modelName}'],
@@ -114,9 +109,8 @@ function getRequestActionStr(interfaces: Intf[], serverAPI: string): string {
 /** 生成 redux.ts */
 interface IOptionsParams {
     projectId: number
-    serverAPI: string
 }
-function createReduxStr(interfaces: Intf[], { projectId, serverAPI }: IOptionsParams): string {
+function createReduxStr(interfaces: Intf[], { projectId }: IOptionsParams): string {
     return `
     /**
      * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
@@ -132,17 +126,15 @@ function createReduxStr(interfaces: Intf[], { projectId, serverAPI }: IOptionsPa
     ${getRequestTypesInterfaceStr(interfaces)}
 
     /** 请求action interface  */
-    ${getRequestActionInterfaceStr(interfaces, serverAPI)}
+    ${getRequestActionInterfaceStr(interfaces)}
 
     /** 请求types */
-    ${getRequestTypesStr(interfaces, serverAPI)}
+    ${getRequestTypesStr(interfaces)}
 
     /** 请求action */
-    ${getRequestActionStr(interfaces, serverAPI)}
+    ${getRequestActionStr(interfaces)}
 
-    export function getAction(requestPath: RequestType) {
-        return RequestTypes[requestPath] || []
-    }
+    export const requestAction = RequestTypes
     `
 }
 
@@ -186,69 +178,13 @@ function createUseRapStr(interfaces: Intf[]): string {
     import { useState, useEffect } from 'react';
     import { useSelector } from 'react-redux';
     import { ModelItf } from './model';
-    import { RAP_STATE_KEY, dispatchAction, RAP_REDUX_CLEAR_STORE } from '@ali/rapper-redux';
-
-    /** 深比较 */
-    function looseEqual(newData: any, oldData: any): boolean {
-        const newType = Object.prototype.toString.call(newData)
-        const oldType = Object.prototype.toString.call(oldData)
-    
-        if (newType !== oldType) {
-            return false
-        }
-    
-        if (newType === '[object Object]' || newType === '[object Array]') {
-            for (const key in newData) {
-                if (!looseEqual(newData[key], oldData[key])) {
-                    return false
-                }
-            }
-            for (const key in oldData) {
-                if (!looseEqual(newData[key], oldData[key])) {
-                    return false
-                }
-            }
-        } else if (newData !== oldData) {
-            return false
-        }
-    
-        return true
-    }
-
-    /** 根据请求参数筛选，暂时只支持 request */
-    function paramsFilter<Req extends { [key: string]: any }, I extends { request: Req }, Fil extends { request?: Req }>(item: I, filter: Fil): boolean {
-        if (filter && filter.request) {
-            const filterRequest = filter.request // 这一行是解决 ts2532 报错
-            if (Object.prototype.toString.call(filter.request) === '[object Object]') {
-                const reqResult = Object.keys(filter.request).every((key): boolean => {
-                    return item.request[key] === filterRequest[key]
-                })
-                if (!reqResult) {
-                    return false
-                }
-            } else {
-                return false
-            }
-        }
-        return true
-    }
-    /** 根据filter函数自定义筛选 */
-    function functionFilter<I, Fil>(item: I, filter: Fil) {
-        if (filter !== undefined) {
-            if (typeof filter === 'function') {
-                return filter(item)
-            } else {
-                return false
-            }
-        }
-        return true
-    }
+    import { RAP_STATE_KEY, dispatchAction, RAP_REDUX_CLEAR_STORE, utils } from '@ali/rapper-redux';
 
     /** store中存储的数据结构 */
     export interface IStoreItem {
         ${interfaces
             .map(
-                ({ modelName, name, repositoryId, moduleId, id }) => `
+                ({ modelName }) => `
         '${modelName}': {
             request: ModelItf['${modelName}']['Req']
             response: ModelItf['${modelName}']['Res']
@@ -283,8 +219,9 @@ function createUseRapStr(interfaces: Intf[]): string {
             const reduxData = useSelector((state: IState) => {
                 return (state[RAP_STATE_KEY] && state[RAP_STATE_KEY]['${modelName}']) || []
             })
-            const [filteredData, setFilteredData] = useState(null)
-            const [isFetching, setIsFetching] = useState(false)
+            const initData = reduxData.length ? reduxData.slice(-1)[0] : {}
+            const [filteredData, setFilteredData] = useState(initData.response || undefined)
+            const [isFetching, setIsFetching] = useState(initData.isFetching || false)
 
             type Req = ModelItf['${modelName}']['Req']
             type ItemType = IStoreItem['${modelName}']
@@ -293,9 +230,9 @@ function createUseRapStr(interfaces: Intf[]): string {
                 let resultArr = []
                 if (filter) {
                     if (typeof filter === 'function') {
-                        resultArr = reduxData.filter((item: ItemType) => functionFilter<ItemType, typeof filter>(item, filter))
+                        resultArr = reduxData.filter((item: ItemType) => utils.functionFilter<ItemType, typeof filter>(item, filter))
                     } else {
-                        resultArr = reduxData.filter((item: ItemType) => paramsFilter<Req, ItemType, typeof filter>(item, filter))
+                        resultArr = reduxData.filter((item: ItemType) => utils.paramsFilter<Req, ItemType, typeof filter>(item, filter))
                     }
                 } else {
                     resultArr = reduxData
@@ -303,8 +240,8 @@ function createUseRapStr(interfaces: Intf[]): string {
                 /** 过滤出一条最新的符合条件的数据 */
                 const result = resultArr.length ? resultArr.slice(-1)[0] : {}
 
-                if (!looseEqual(result, filteredData)) {
-                    setFilteredData(result.response)
+                if (!utils.looseEqual(result, filteredData)) {
+                    setFilteredData(result.response || undefined)
                     setIsFetching(result.isFetching || false)
                 }
             }, [reduxData, filter, filteredData])

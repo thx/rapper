@@ -123,8 +123,8 @@ createModel({
     type: 'redux',
     /** 必须配置，rap项目id */
     projectId: 3564,
-    /** 可选，输出文件的目录，默认是 ./model */
-    outputPath: resolve(__dirname, '../requestModel'),
+    /** 可选，输出文件的目录，默认是 ./src/models/rapper/ */
+    outputPath: resolve(process.cwd(), './src/models/rapper/'),
     /** 可选，输出模板代码的格式 */
     codeStyle: {
         /** 默认单引号 */
@@ -138,8 +138,6 @@ createModel({
     },
     /** 可选，rap地址，默认是 http://rap2api.taobao.org */
     rapUrl: 'https://rap2api.alibaba-inc.com',
-    /** 可选，服务端api地址，默认是根目录相对路径 */
-    serverAPI: 'https://rap2api.alibaba-inc.com/app/mock/3283',
 })
 ```
 
@@ -211,6 +209,17 @@ const rapData = useAPI['GET/adgroup/price/update$'](({ request, response }) => {
 ```
 
 ## 高级配置
+
+### 1、后端请求路径配置
+
+```js
+import { rapEnhancer } from '@ali/rapper-redux'
+
+rapEnhancer({
+    /** 可选，后端api地址，默认是根目录相对路径 */
+    requestPrefix: '/',
+})
+```
 
 ### 1、请求参数 Map
 

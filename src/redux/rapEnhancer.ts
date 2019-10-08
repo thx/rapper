@@ -2,6 +2,15 @@ import { locationStringify } from '../common'
 import { RAP_STATE_KEY, RAP_REDUX_REQUEST, RAP_REDUX_UPDATE_STORE, RAP_REDUX_CLEAR_STORE } from './constant'
 import { IAction, IEnhancerProps, IStore, IRequestParams, StoreEnhancer, StoreCreator, Reducer, AnyAction } from './types'
 
+// MC-Todo: 兼容没有/
+/** 请求链接 */
+const getEndpoint = (requestPrefix: string, url: string): string => {
+    if (!requestPrefix) {
+        return url
+    }
+    return `${requestPrefix}${url}`
+}
+
 const sendRequest = async (params: IRequestParams): Promise<any> => {
     let requestUrl = params.endpoint
     const requestParams: any = {
@@ -94,7 +103,7 @@ const rapReducers = {
 /** store enhancer */
 function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
     config = config || {}
-    const { transformRequest = data => data, transformResponse = data => data, maxCacheLength = 2, fetch } = config
+    const { requestPrefix, transformRequest = data => data, transformResponse = data => data, maxCacheLength = 2, fetch } = config
 
     const request = typeof fetch === 'function' ? fetch : sendRequest
 
@@ -164,7 +173,11 @@ function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
                     newParams = transformRequest(action.payload)
                 }
 
-                const responseData = await request({ endpoint, method, params: newParams })
+                const responseData = await request({
+                    endpoint: getEndpoint(requestPrefix, endpoint),
+                    method,
+                    params: newParams,
+                })
                 const reponseTime = new Date().getTime()
 
                 cb && cb(responseData)

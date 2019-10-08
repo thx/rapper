@@ -10,11 +10,9 @@ index_1.createModel({
     useCommonJsModule: true,
     optionalExtra: false,
     /** 输出文件的目录，默认是 ./model */
-    outputPath: path_1.resolve(__dirname, '../test_data/model'),
+    outputPath: path_1.resolve(process.cwd(), './test_data/model'),
     /** rap地址，默认是 http://rap2api.taobao.org */
     rapUrl: 'https://rap2api.alibaba-inc.com',
-    /** 服务端api地址，默认是根目录相对路径 */
-    serverAPI: 'https://rap2api.alibaba-inc.com/app/mock/3283',
     type: 'redux'
 });
 // .then(() => {
