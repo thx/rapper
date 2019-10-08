@@ -197,6 +197,15 @@ function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
                 return responseData
             } catch (e) {
                 store.dispatch({ type: FAILURE, payload: e })
+                store.dispatch({
+                    type: RAP_REDUX_UPDATE_STORE,
+                    payload: {
+                        interfaceKey: modelName,
+                        id: requestTime,
+                        requestTime,
+                        isFetching: false,
+                    },
+                })
                 throw Error(e)
             }
         }
