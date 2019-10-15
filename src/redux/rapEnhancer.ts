@@ -2,13 +2,14 @@ import { locationStringify } from '../common'
 import { RAP_STATE_KEY, RAP_REDUX_REQUEST, RAP_REDUX_UPDATE_STORE, RAP_REDUX_CLEAR_STORE } from './constant'
 import { IAction, IEnhancerProps, IStore, IRequestParams, StoreEnhancer, StoreCreator, Reducer, AnyAction } from './types'
 
-// MC-Todo: 兼容没有/
-/** 请求链接 */
+/** 拼接组合request链接 */
 const getEndpoint = (requestPrefix: string, url: string): string => {
     if (!requestPrefix) {
-        return url
+        requestPrefix = ''
     }
-    return `${requestPrefix}${url}`
+    requestPrefix = requestPrefix.replace(/\/$/, '')
+    url = url.replace(/^\//, '')
+    return `${requestPrefix}/${url}`
 }
 
 const sendRequest = async (params: IRequestParams): Promise<any> => {
@@ -108,16 +109,23 @@ function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
     const request = typeof fetch === 'function' ? fetch : sendRequest
 
     return (next: StoreCreator) => <S, A extends AnyAction>(reducers: Reducer<any, any>, ...args: any[]) => {
+        const store = next(reducers, ...args)
+
+        /** 重新定义 reducers */
         const newReducers = (state: any, action: IAction): IStore => {
             if (state) {
                 state[RAP_STATE_KEY] || (state[RAP_STATE_KEY] = {})
             } else {
-                state = {}
+                state = { [RAP_STATE_KEY]: {} }
             }
 
-            if (action.hasOwnProperty('type')) {
-                if (action.type === RAP_REDUX_UPDATE_STORE) {
-                    /** 请求成功，更新 store */
+            if (!action.hasOwnProperty('type')) {
+                return reducers(state, action)
+            }
+
+            switch (action.type) {
+                /** 请求成功，更新 store */
+                case RAP_REDUX_UPDATE_STORE:
                     return {
                         ...state,
                         [RAP_STATE_KEY]: assignData({
@@ -126,20 +134,22 @@ function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
                             payload: action.payload,
                         }),
                     }
-                } else if (action.type === RAP_REDUX_CLEAR_STORE) {
-                    /** 用户手动清空 */
+                /** 用户手动清空 */
+                case RAP_REDUX_CLEAR_STORE:
                     return {
                         ...state,
-                        [RAP_STATE_KEY]: { ...state[RAP_STATE_KEY], ...action.payload },
+                        [RAP_STATE_KEY]: {
+                            ...state[RAP_STATE_KEY],
+                            ...action.payload,
+                        },
                     }
-                }
+                default:
+                    return reducers(state, action)
             }
-
-            return reducers(state, action)
         }
-
-        const store = next(reducers, ...args)
         store.replaceReducer(newReducers)
+
+        /** 重新定义 dispatch */
         dispatch = async (action: IAction): Promise<any> => {
             if (action.type !== RAP_REDUX_REQUEST) {
                 return store.dispatch(action)
@@ -181,6 +191,7 @@ function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
                 const reponseTime = new Date().getTime()
 
                 cb && cb(responseData)
+                /** 请求成功，更新store */
                 store.dispatch({
                     type: RAP_REDUX_UPDATE_STORE,
                     payload: {

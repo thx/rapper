@@ -49,6 +49,7 @@ exports.__esModule = true;
 var chalk_1 = require("chalk");
 var formatter_1 = require("json-schema-to-typescript/dist/src/formatter");
 var json_schema_to_typescript_1 = require("json-schema-to-typescript");
+var types_1 = require("./types");
 var index_1 = require("./default/index");
 var createRedux_1 = require("./redux/createRedux");
 var utils_1 = require("./utils");
@@ -60,7 +61,7 @@ function default_1(_a) {
         return __generator(this, function (_l) {
             switch (_l.label) {
                 case 0:
-                    json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style, { singleQuote: true, semi: false, trailingComma: 'es5' });
+                    json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style, { singleQuote: true, semi: false, trailingComma: types_1.TRAILING_COMMA.ES5 });
                     if (codeStyle && typeof codeStyle === 'object') {
                         json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style, codeStyle);
                     }
@@ -117,7 +118,7 @@ function default_1(_a) {
                             return utils_1.writeFile(path, content);
                         }))
                             .then(function () {
-                            console.log(chalk_1["default"].green('rapper-redux: model 生成成功！'));
+                            console.log(chalk_1["default"].green("rapper-redux: model \u751F\u6210\u6210\u529F\uFF01\u5171\u540C\u6B65:" + interfaces.length + " \u4E2A\u63A5\u53E3"));
                         })["catch"](function (err) {
                             console.log(chalk_1["default"].red(err));
                         })];

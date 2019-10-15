@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import { format } from 'json-schema-to-typescript/dist/src/formatter'
 import { DEFAULT_OPTIONS } from 'json-schema-to-typescript'
-import { UrlMapper, RAP_TYPE } from './types'
+import { UrlMapper, RAP_TYPE, TRAILING_COMMA } from './types'
 import { createModel, createFetch } from './default/index'
 import { createIndexStr, createReduxStr, createReduxFetchStr, createUseRapStr } from './redux/createRedux'
 import { relativeImport, writeFile } from './utils'
@@ -28,7 +28,7 @@ interface ICreateModel {
         /** 分号结尾，默认true */
         semi?: boolean
         /** 逗号 */
-        trailingComma?: 'none' | 'all' | 'es5'
+        trailingComma?: TRAILING_COMMA
     }
 }
 export default async function({
@@ -49,7 +49,7 @@ export default async function({
         ...DEFAULT_OPTIONS.style,
         singleQuote: true,
         semi: false,
-        trailingComma: 'es5',
+        trailingComma: TRAILING_COMMA.ES5,
     }
     if (codeStyle && typeof codeStyle === 'object') {
         DEFAULT_OPTIONS.style = { ...DEFAULT_OPTIONS.style, ...codeStyle }
@@ -58,7 +58,7 @@ export default async function({
     /** 输出文件集合 */
     const outputFiles = []
 
-    /** 所有接口 */
+    /** 获取所有接口 */
     const interfaces = uniqueItfs(getIntfWithModelName(await getInterfaces(rapUrl, projectId), urlMapper, type))
 
     /** 生成 model.ts */
@@ -110,7 +110,7 @@ export default async function({
 
     return Promise.all(outputFiles.map(({ path, content }) => writeFile(path, content)))
         .then(() => {
-            console.log(chalk.green('rapper-redux: model 生成成功！'))
+            console.log(chalk.green(`rapper-redux: model 生成成功！共同步:${interfaces.length} 个接口`))
         })
         .catch(err => {
             console.log(chalk.red(err))

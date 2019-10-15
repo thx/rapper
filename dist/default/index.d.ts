@@ -1,14 +1,17 @@
+import { Intf } from '../types';
 /** model.ts 文件的内容 */
-declare function createModel(interfaces: any, { projectId, additionalProperties }: {
-    projectId: any;
-    additionalProperties: any;
-}): Promise<string>;
+interface ICreateModelParams {
+    projectId: number;
+    additionalProperties?: boolean;
+}
+declare function createModel(interfaces: Intf[], extr: ICreateModelParams): Promise<string>;
 /** fetch.ts 文件的内容 */
-declare function createFetch(interfaces: any, { projectId, useCommonJsModule, optionalExtra, relModelPath, relBaseFetchPath }: {
-    projectId: any;
-    useCommonJsModule: any;
-    optionalExtra: any;
-    relModelPath: any;
-    relBaseFetchPath: any;
-}): string;
+interface ICreateFetchParams {
+    projectId: number;
+    useCommonJsModule?: boolean;
+    optionalExtra?: boolean;
+    relModelPath: string;
+    relBaseFetchPath: string;
+}
+declare function createFetch(interfaces: Intf[], extr: ICreateFetchParams): string;
 export { createModel, createFetch };

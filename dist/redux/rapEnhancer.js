@@ -50,13 +50,14 @@ var _a;
 var _this = this;
 var common_1 = require("../common");
 var constant_1 = require("./constant");
-// MC-Todo: 兼容没有/
-/** 请求链接 */
+/** 拼接组合request链接 */
 var getEndpoint = function (requestPrefix, url) {
     if (!requestPrefix) {
-        return url;
+        requestPrefix = '';
     }
-    return "" + requestPrefix + url;
+    requestPrefix = requestPrefix.replace(/\/$/, '');
+    url = url.replace(/^\//, '');
+    return requestPrefix + "/" + url;
 };
 var sendRequest = function (params) { return __awaiter(_this, void 0, void 0, function () {
     var requestUrl, requestParams, res, retJSON;
@@ -133,32 +134,36 @@ function rapEnhancer(config) {
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
+        var store = next.apply(void 0, [reducers].concat(args));
+        /** 重新定义 reducers */
         var newReducers = function (state, action) {
-            var _a, _b;
+            var _a, _b, _c;
             if (state) {
                 state[constant_1.RAP_STATE_KEY] || (state[constant_1.RAP_STATE_KEY] = {});
             }
             else {
-                state = {};
+                state = (_a = {}, _a[constant_1.RAP_STATE_KEY] = {}, _a);
             }
-            if (action.hasOwnProperty('type')) {
-                if (action.type === constant_1.RAP_REDUX_UPDATE_STORE) {
-                    /** 请求成功，更新 store */
-                    return __assign({}, state, (_a = {}, _a[constant_1.RAP_STATE_KEY] = assignData({
+            if (!action.hasOwnProperty('type')) {
+                return reducers(state, action);
+            }
+            switch (action.type) {
+                /** 请求成功，更新 store */
+                case constant_1.RAP_REDUX_UPDATE_STORE:
+                    return __assign({}, state, (_b = {}, _b[constant_1.RAP_STATE_KEY] = assignData({
                         oldState: state[constant_1.RAP_STATE_KEY],
                         maxCacheLength: maxCacheLength,
                         payload: action.payload
-                    }), _a));
-                }
-                else if (action.type === constant_1.RAP_REDUX_CLEAR_STORE) {
-                    /** 用户手动清空 */
-                    return __assign({}, state, (_b = {}, _b[constant_1.RAP_STATE_KEY] = __assign({}, state[constant_1.RAP_STATE_KEY], action.payload), _b));
-                }
+                    }), _b));
+                /** 用户手动清空 */
+                case constant_1.RAP_REDUX_CLEAR_STORE:
+                    return __assign({}, state, (_c = {}, _c[constant_1.RAP_STATE_KEY] = __assign({}, state[constant_1.RAP_STATE_KEY], action.payload), _c));
+                default:
+                    return reducers(state, action);
             }
-            return reducers(state, action);
         };
-        var store = next.apply(void 0, [reducers].concat(args));
         store.replaceReducer(newReducers);
+        /** 重新定义 dispatch */
         dispatch = function (action) { return __awaiter(_this, void 0, void 0, function () {
             var _a, modelName, endpoint, method, params, cb, _b, REQUEST, SUCCESS, FAILURE, requestTime, newParams, responseData, reponseTime, e_1;
             return __generator(this, function (_c) {
@@ -196,6 +201,7 @@ function rapEnhancer(config) {
                         responseData = _c.sent();
                         reponseTime = new Date().getTime();
                         cb && cb(responseData);
+                        /** 请求成功，更新store */
                         store.dispatch({
                             type: constant_1.RAP_REDUX_UPDATE_STORE,
                             payload: {
@@ -213,6 +219,15 @@ function rapEnhancer(config) {
                     case 3:
                         e_1 = _c.sent();
                         store.dispatch({ type: FAILURE, payload: e_1 });
+                        store.dispatch({
+                            type: constant_1.RAP_REDUX_UPDATE_STORE,
+                            payload: {
+                                interfaceKey: modelName,
+                                id: requestTime,
+                                requestTime: requestTime,
+                                isFetching: false
+                            }
+                        });
                         throw Error(e_1);
                     case 4: return [2 /*return*/];
                 }

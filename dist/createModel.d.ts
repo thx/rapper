@@ -1,4 +1,4 @@
-import { UrlMapper, RAP_TYPE } from './types';
+import { UrlMapper, RAP_TYPE, TRAILING_COMMA } from './types';
 interface ICreateModel {
     projectId: number;
     urlMapper?: UrlMapper;
@@ -20,7 +20,7 @@ interface ICreateModel {
         /** 分号结尾，默认true */
         semi?: boolean;
         /** 逗号 */
-        trailingComma?: 'none' | 'all' | 'es5';
+        trailingComma?: TRAILING_COMMA;
     };
 }
 export default function ({ projectId, modelPath, requesterPath, baseFetchPath, urlMapper, useCommonJsModule, additionalProperties, optionalExtra, rapUrl, outputPath, type, codeStyle, }: ICreateModel): Promise<void>;

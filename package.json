@@ -1,6 +1,6 @@
 {
     "name": "@ali/rapper-redux",
-    "version": "0.0.13",
+    "version": "0.0.14",
     "description": "rapper, use http api as a function",
     "main": "./dist/index.js",
     "scripts": {
@@ -11,7 +11,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git@gitlab.alibaba-inc.com:chibing.fy/pang.git"
+        "url": "git@gitlab.alibaba-inc.com:mm/rapper.git"
     },
     "keywords": [
         "api"

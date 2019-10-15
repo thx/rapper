@@ -1,9 +1,14 @@
 import chalk from 'chalk'
 import convert from '../convert'
-import { Interface, UrlMapper } from '../types'
+import { Intf } from '../types'
 
 /** model.ts 文件的内容 */
-async function createModel(interfaces, { projectId, additionalProperties }) {
+interface ICreateModelParams {
+    projectId: number
+    additionalProperties?: boolean
+}
+async function createModel(interfaces: Intf[], extr: ICreateModelParams) {
+    const { projectId, additionalProperties } = extr
     const itfStrs = await Promise.all(
         interfaces.map(async itf => {
             try {
@@ -37,7 +42,15 @@ async function createModel(interfaces, { projectId, additionalProperties }) {
 }
 
 /** fetch.ts 文件的内容 */
-function createFetch(interfaces, { projectId, useCommonJsModule, optionalExtra, relModelPath, relBaseFetchPath }) {
+interface ICreateFetchParams {
+    projectId: number
+    useCommonJsModule?: boolean
+    optionalExtra?: boolean
+    relModelPath: string
+    relBaseFetchPath: string
+}
+function createFetch(interfaces: Intf[], extr: ICreateFetchParams) {
+    const { projectId, useCommonJsModule, optionalExtra, relModelPath, relBaseFetchPath } = extr
     return `
           /**
            * 本文件由 Rapper 从 Rap 中自动生成，请勿修改

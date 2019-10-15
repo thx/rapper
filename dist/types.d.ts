@@ -75,3 +75,9 @@ export interface UrlMapper {
 export declare type RAP_TYPE = 'default' | 'redux' | 'mobx' | 'vuex';
 /** 请求类型 */
 export declare type REQUEST_METHOD = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD';
+/** 句尾逗号 */
+export declare enum TRAILING_COMMA {
+    NONE = "none",
+    ALL = "all",
+    ES5 = "es5"
+}
