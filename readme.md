@@ -190,7 +190,7 @@ rapEnhancer({
 
 ### 3、请求响应数据缓存长度设置
 
-我们可以将多次请求响应的数据缓存起来，默认缓存最近两次请求的数据，当然也可以通过配置 `maxCacheLength` 来自定义缓存长度
+我们可以将多次请求响应的数据缓存起来，默认缓存最近 2 次请求的数据，当然也可以通过配置 `maxCacheLength` 来自定义缓存长度
 
 ```js
 import { rapEnhancer } from '@ali/rapper-redux'

@@ -240,7 +240,7 @@ function createUseRapStr(interfaces: Intf[]): string {
                 /** 过滤出一条最新的符合条件的数据 */
                 const result = resultArr.length ? resultArr.slice(-1)[0] : {}
 
-                if (!utils.looseEqual(result, filteredData)) {
+                if (!utils.looseEqual(result.response, filteredData)) {
                     setFilteredData(result.response || undefined)
                     setIsFetching(result.isFetching || false)
                 }
