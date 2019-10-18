@@ -15,7 +15,7 @@ interface CreateApiParams {
     urlMapper?: UrlMapper;
     additionalProperties?: boolean;
 }
-export declare function createApi({ projectId, folder, requestFactory, urlMapper, additionalProperties }: CreateApiParams): Promise<(string | [{}, {}])[]>;
+export declare function createApi({ projectId, folder, requestFactory, urlMapper, additionalProperties }: CreateApiParams): Promise<(string | [unknown, unknown])[]>;
 export declare function createModel({ projectId, modelPath, requesterPath, baseFetchPath, urlMapper, useCommonJsModule, additionalProperties, optionalExtra, }: {
     projectId: number;
     modelPath: string;
@@ -25,5 +25,5 @@ export declare function createModel({ projectId, modelPath, requesterPath, baseF
     useCommonJsModule?: boolean;
     additionalProperties?: boolean;
     optionalExtra?: boolean;
-}): Promise<{}>;
+}): Promise<unknown>;
 export {};

@@ -160,7 +160,7 @@ function interfaceToJSONSchema(itf, scope, additionalProperties) {
 function convert(itf, additionalProperties) {
     var reqJSONSchema = interfaceToJSONSchema(itf, 'request', additionalProperties);
     var resJSONSchema = interfaceToJSONSchema(itf, 'response', additionalProperties);
-    var options = __assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS, { bannerComment: '' });
+    var options = __assign(__assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS), { bannerComment: '' });
     return Promise.all([json_schema_to_typescript_1.compile(reqJSONSchema, 'Req', options), json_schema_to_typescript_1.compile(resJSONSchema, 'Res', options)]);
 }
 exports["default"] = convert;

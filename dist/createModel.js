@@ -11,10 +11,11 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -61,9 +62,9 @@ function default_1(_a) {
         return __generator(this, function (_l) {
             switch (_l.label) {
                 case 0:
-                    json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style, { singleQuote: true, semi: false, trailingComma: types_1.TRAILING_COMMA.ES5 });
+                    json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign(__assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style), { singleQuote: true, semi: false, trailingComma: types_1.TRAILING_COMMA.ES5 });
                     if (codeStyle && typeof codeStyle === 'object') {
-                        json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style, codeStyle);
+                        json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign(__assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style), codeStyle);
                     }
                     outputFiles = [];
                     _j = common_1.uniqueItfs;

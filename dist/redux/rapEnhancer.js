@@ -11,10 +11,11 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -45,9 +46,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-exports.__esModule = true;
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 var _a;
-var _this = this;
+exports.__esModule = true;
 var common_1 = require("../common");
 var constant_1 = require("./constant");
 /** 拼接组合request链接 */
@@ -59,7 +66,7 @@ var getEndpoint = function (requestPrefix, url) {
     url = url.replace(/^\//, '');
     return requestPrefix + "/" + url;
 };
-var sendRequest = function (params) { return __awaiter(_this, void 0, void 0, function () {
+var sendRequest = function (params) { return __awaiter(void 0, void 0, void 0, function () {
     var requestUrl, requestParams, res, retJSON;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -112,7 +119,7 @@ function assignData(_a) {
         });
     }
     else {
-        newState[interfaceKey] = data.map(function (item) { return (item.id === id ? __assign({}, item, { reponseTime: reponseTime, response: response, isFetching: isFetching }) : item); });
+        newState[interfaceKey] = data.map(function (item) { return (item.id === id ? __assign(__assign({}, item), { reponseTime: reponseTime, response: response, isFetching: isFetching }) : item); });
     }
     return newState;
 }
@@ -134,7 +141,7 @@ function rapEnhancer(config) {
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        var store = next.apply(void 0, [reducers].concat(args));
+        var store = next.apply(void 0, __spreadArrays([reducers], args));
         /** 重新定义 reducers */
         var newReducers = function (state, action) {
             var _a, _b, _c;
@@ -150,14 +157,14 @@ function rapEnhancer(config) {
             switch (action.type) {
                 /** 请求成功，更新 store */
                 case constant_1.RAP_REDUX_UPDATE_STORE:
-                    return __assign({}, state, (_b = {}, _b[constant_1.RAP_STATE_KEY] = assignData({
+                    return __assign(__assign({}, state), (_b = {}, _b[constant_1.RAP_STATE_KEY] = assignData({
                         oldState: state[constant_1.RAP_STATE_KEY],
                         maxCacheLength: maxCacheLength,
                         payload: action.payload
                     }), _b));
                 /** 用户手动清空 */
                 case constant_1.RAP_REDUX_CLEAR_STORE:
-                    return __assign({}, state, (_c = {}, _c[constant_1.RAP_STATE_KEY] = __assign({}, state[constant_1.RAP_STATE_KEY], action.payload), _c));
+                    return __assign(__assign({}, state), (_c = {}, _c[constant_1.RAP_STATE_KEY] = __assign(__assign({}, state[constant_1.RAP_STATE_KEY]), action.payload), _c));
                 default:
                     return reducers(state, action);
             }
@@ -233,7 +240,7 @@ function rapEnhancer(config) {
                 }
             });
         }); };
-        return __assign({}, store, { dispatch: dispatch });
+        return __assign(__assign({}, store), { dispatch: dispatch });
     }; };
 }
 exports.rapEnhancer = rapEnhancer;
