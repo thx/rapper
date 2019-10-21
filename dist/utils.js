@@ -25,3 +25,18 @@ function writeFile(filepath, contents) {
     });
 }
 exports.writeFile = writeFile;
+function moveFile(from, to) {
+    return new Promise(function (resolve, reject) {
+        mkdirp(path.dirname(to), function (err) {
+            if (err)
+                return reject("\u8BFB\u53D6\u6587\u4EF6\u5931\u8D25: " + from + ", " + err);
+            var contents = fs.readFileSync(from);
+            fs.writeFile(to, contents, function (err) {
+                if (err)
+                    return reject("\u5199\u5165\u6587\u4EF6\u5931\u8D25: " + to + ", " + err);
+                resolve();
+            });
+        });
+    });
+}
+exports.moveFile = moveFile;

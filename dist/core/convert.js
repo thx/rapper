@@ -14,7 +14,7 @@ exports.__esModule = true;
 var json_schema_to_typescript_1 = require("json-schema-to-typescript");
 var JSON5 = require("json5");
 var _ = require("lodash");
-function inferArraySchema(p, childProperties, additionalProperties, common) {
+function inferArraySchema(p, childProperties, common) {
     var rule = (p.rule && p.rule.trim()) || '';
     if (Object.keys(childProperties).length !== 0) {
         // 如果有子孙那么肯定是 object
@@ -22,9 +22,8 @@ function inferArraySchema(p, childProperties, additionalProperties, common) {
             p.name,
             __assign({ type: 'array', items: {
                     type: 'object',
-                    properties: childProperties,
-                    additionalProperties: additionalProperties
-                } }, common),
+                    properties: childProperties
+                } }, common)
         ];
     }
     else if (['+1', '1'].includes(rule) && p.value) {
@@ -41,14 +40,14 @@ function inferArraySchema(p, childProperties, additionalProperties, common) {
                     .value();
                 return [
                     p.name,
-                    __assign({ type: type }, common),
+                    __assign({ type: type }, common)
                 ];
             }
             else {
                 // 解析失败，返回 any
                 return [
                     p.name,
-                    __assign({ type: ['string', 'number', 'boolean', 'object'] }, common),
+                    __assign({ type: ['string', 'number', 'boolean', 'object'] }, common)
                 ];
             }
         }
@@ -56,7 +55,7 @@ function inferArraySchema(p, childProperties, additionalProperties, common) {
             // 解析失败，返回 any
             return [
                 p.name,
-                __assign({ type: ['string', 'number', 'boolean', 'object'] }, common),
+                __assign({ type: ['string', 'number', 'boolean', 'object'] }, common)
             ];
         }
     }
@@ -75,7 +74,7 @@ function inferArraySchema(p, childProperties, additionalProperties, common) {
                     p.name,
                     __assign({ type: 'array', items: {
                             type: type
-                        } }, common),
+                        } }, common)
                 ];
             }
             else {
@@ -85,7 +84,7 @@ function inferArraySchema(p, childProperties, additionalProperties, common) {
                     p.name,
                     __assign({ type: 'array', items: {
                             type: type
-                        } }, common),
+                        } }, common)
                 ];
             }
         }
@@ -93,7 +92,7 @@ function inferArraySchema(p, childProperties, additionalProperties, common) {
             // 解析失败 返回 array<any>
             return [
                 p.name,
-                __assign({ type: 'array' }, common),
+                __assign({ type: 'array' }, common)
             ];
         }
     }
@@ -101,12 +100,12 @@ function inferArraySchema(p, childProperties, additionalProperties, common) {
         // 无生成规则也无值，生成 array<any>
         return [
             p.name,
-            __assign({ type: 'array' }, common),
+            __assign({ type: 'array' }, common)
         ];
     }
 }
 var removeComment = function (str) { return str.replace(/\/\*|\*\//g, ''); };
-function interfaceToJSONSchema(itf, scope, additionalProperties) {
+function interfaceToJSONSchema(itf, scope) {
     var properties = itf.properties.filter(function (p) { return p.scope === scope; });
     function findChildProperties(parentId) {
         return _.chain(properties)
@@ -123,17 +122,17 @@ function interfaceToJSONSchema(itf, scope, additionalProperties) {
             if (['string', 'number', 'integer', 'boolean', 'null'].includes(type)) {
                 return [
                     p.name,
-                    __assign({ type: type }, common),
+                    __assign({ type: type }, common)
                 ];
             }
             else if (type === 'object') {
                 return [
                     p.name,
-                    __assign({ type: type, properties: childProperties, additionalProperties: additionalProperties }, common),
+                    __assign({ type: type, properties: childProperties }, common)
                 ];
             }
             else if (type === 'array') {
-                return inferArraySchema(p, childProperties, additionalProperties, common);
+                return inferArraySchema(p, childProperties, common);
             }
             else {
                 throw "type: " + type + "\n          parentID: " + parentId + "\n          itf.url: " + itf.url + "\n          " + JSON.stringify(childProperties);
@@ -145,22 +144,23 @@ function interfaceToJSONSchema(itf, scope, additionalProperties) {
     var propertyChildren = findChildProperties(-1);
     if (_.isEmpty(properties)) {
         return {
-            type: 'object',
-            additionalProperties: additionalProperties
+            type: 'object'
         };
     }
     else {
         return {
             type: 'object',
-            properties: propertyChildren,
-            additionalProperties: additionalProperties
+            properties: propertyChildren
         };
     }
 }
-function convert(itf, additionalProperties) {
-    var reqJSONSchema = interfaceToJSONSchema(itf, 'request', additionalProperties);
-    var resJSONSchema = interfaceToJSONSchema(itf, 'response', additionalProperties);
+function convert(itf) {
+    var reqJSONSchema = interfaceToJSONSchema(itf, 'request');
+    var resJSONSchema = interfaceToJSONSchema(itf, 'response');
     var options = __assign(__assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS), { bannerComment: '' });
-    return Promise.all([json_schema_to_typescript_1.compile(reqJSONSchema, 'Req', options), json_schema_to_typescript_1.compile(resJSONSchema, 'Res', options)]);
+    return Promise.all([
+        json_schema_to_typescript_1.compile(reqJSONSchema, 'Req', options),
+        json_schema_to_typescript_1.compile(resJSONSchema, 'Res', options)
+    ]);
 }
 exports["default"] = convert;

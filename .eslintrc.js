@@ -18,5 +18,6 @@ module.exports = {
     rules: {
         indent: ['error', 2],
         semi: ['error', 'always'],
+        trailingComma: ['error', 'es5']
     },
 }

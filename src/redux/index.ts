@@ -1,20 +1,6 @@
 import { Intf } from '../types'
-import { RAP_STATE_KEY, RAP_REDUX_REQUEST } from './constant'
 
-/** 生成 index.ts */
-function createIndexStr(): string {
-    return `
-    /**
-     * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
-     */
-
-    import { useAPI, useAPIAll, clearAPICache } from './useRap'
-    import fetch from './fetch'
-    import { requestAction } from './redux'
-    
-    export { useAPI, useAPIAll, clearAPICache, fetch, requestAction };
-    `
-}
+const RAP_REDUX_REQUEST = '$$_RAP_REDUX_REQUEST'
 
 /** 定义 请求types interface  */
 function getRequestTypesInterfaceStr(interfaces: Intf[]): string {
@@ -64,16 +50,16 @@ function getRequestTypesStr(interfaces: Intf[]): string {
     return `
         export const RequestTypes:IRequestTypes = {
             ${interfaces
-                .map(({ modelName }) => {
-                    return `
+            .map(({ modelName }) => {
+                return `
                         '${modelName}': [
                             '${modelName}_REQUEST',
                             '${modelName}_SUCCESS',
                             '${modelName}_FAILURE',
                         ],
                     `
-                })
-                .join('\n\n')}
+            })
+            .join('\n\n')}
         }
     `
 }
@@ -83,8 +69,8 @@ function getRequestActionStr(interfaces: Intf[]): string {
     return `
         export const RequestAction:IRequestAction = {
             ${interfaces
-                .map(({ id, repositoryId, moduleId, name, url, modelName, method }) => {
-                    return `
+            .map(({ id, repositoryId, moduleId, name, url, modelName, method }) => {
+                return `
                         /**
                          * 接口名：${name}
                          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
@@ -100,27 +86,17 @@ function getRequestActionStr(interfaces: Intf[]): string {
                             },
                         }),
                     `
-                })
-                .join('\n\n')}
+            })
+            .join('\n\n')}
         }
     `
 }
 
-/** 生成 redux.ts */
-interface IOptionsParams {
-    projectId: number
-}
-function createReduxStr(interfaces: Intf[], { projectId }: IOptionsParams): string {
+/** 生成 Action 定义 */
+function createActionStr(interfaces: Intf[]): string {
     return `
-    /**
-     * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
-     * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
-     */
-
-    import { ModelItf } from './model'
-
     /** request interface */
-    export type RequestType = ${interfaces.reduce((a, { modelName }) => `${a} | '${modelName}'`, '')}
+    type RequestType = ${interfaces.reduce((a, { modelName }) => `${a} | '${modelName}'`, '')}
 
     /** 请求types interface  */
     ${getRequestTypesInterfaceStr(interfaces)}
@@ -133,22 +109,12 @@ function createReduxStr(interfaces: Intf[], { projectId }: IOptionsParams): stri
 
     /** 请求action */
     ${getRequestActionStr(interfaces)}
-
-    export const requestAction = RequestTypes
     `
 }
 
 /** 生成 fetch.ts */
-function createReduxFetchStr(projectId: number, interfaces: Intf[]): string {
+function createRequestStr(interfaces: Intf[]): string {
     return `
-    /**
-     * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
-     * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
-     */
-    import { dispatchAction } from '@ali/rapper-redux';
-    import { ModelItf } from './model';
-    import { RequestAction } from './redux';
-
     const request = {
         ${interfaces
             .map(
@@ -165,23 +131,14 @@ function createReduxFetchStr(projectId: number, interfaces: Intf[]): string {
             )
             .join(',\n\n')}
     };
-    export default request;
     `
 }
 
-/** 生成 useRap.ts */
+/** 生成 useResponse，useAllResponse */
 function createUseRapStr(interfaces: Intf[]): string {
     return `
-    /**
-     * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
-     */
-    import { useState, useEffect } from 'react';
-    import { useSelector } from 'react-redux';
-    import { ModelItf } from './model';
-    import { RAP_STATE_KEY, dispatchAction, RAP_REDUX_CLEAR_STORE, utils } from '@ali/rapper-redux';
-
     /** store中存储的数据结构 */
-    export interface IStoreItem {
+    interface IStoreItem {
         ${interfaces
             .map(
                 ({ modelName }) => `
@@ -198,11 +155,10 @@ function createUseRapStr(interfaces: Intf[]): string {
     }
 
     interface IState {
-        ${RAP_STATE_KEY}: any
         [key: string]: any
     }
 
-    export const useAPI = {
+    const useResponse = {
         ${interfaces
             .map(
                 ({ modelName, name, repositoryId, moduleId, id }) => `
@@ -252,7 +208,7 @@ function createUseRapStr(interfaces: Intf[]): string {
             .join(',\n\n')}
     }
 
-    export const useAPIAll = {
+    const useAllResponse = {
         ${interfaces
             .map(
                 ({ modelName, name, repositoryId, moduleId, id }) => `
@@ -272,7 +228,7 @@ function createUseRapStr(interfaces: Intf[]): string {
     }
 
     /** 重置接口数据 */
-    export const clearAPICache = {
+    const clearResponseCache = {
         ${interfaces
             .map(
                 ({ modelName, name, repositoryId, moduleId, id }) => `
@@ -294,4 +250,38 @@ function createUseRapStr(interfaces: Intf[]): string {
     `
 }
 
-export { createIndexStr, createReduxStr, createReduxFetchStr, createUseRapStr }
+/** 生成 index.ts */
+function createIndexStr(projectId: number): string {
+    return `
+    /**
+     * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
+     * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
+     */
+
+    import { useAPI, useAPIAll, clearAPICache } from './useRap'
+    import fetch from './fetch'
+    import { requestAction } from './redux'
+    
+    export { useAPI, useAPIAll, clearAPICache, fetch, requestAction };
+    `
+}
+
+/** 生成 fetch.ts */
+function createFetchStr(interfaces: Intf[], { projectId }): string {
+    return `
+    /**
+     * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
+     * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
+     */
+    import { ModelItf } from './model'
+    import { RAP_STATE_KEY, dispatchAction, RAP_REDUX_CLEAR_STORE, utils } from './runtime'
+    import { useState, useEffect } from 'react'
+    import { useSelector } from 'react-redux'
+
+    ${createActionStr(interfaces)}
+    ${createRequestStr(interfaces)}
+    ${createUseRapStr(interfaces)}
+    `
+}
+
+export { createIndexStr, createFetchStr }

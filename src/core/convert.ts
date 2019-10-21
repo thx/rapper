@@ -7,7 +7,6 @@ import * as _ from 'lodash';
 function inferArraySchema(
   p: Interface.Property,
   childProperties: JSONSchema4,
-  additionalProperties: boolean,
   common: Object
 ) {
   const rule = (p.rule && p.rule.trim()) || '';
@@ -20,7 +19,6 @@ function inferArraySchema(
         items: {
           type: 'object',
           properties: childProperties,
-          additionalProperties
         },
         ...common
       }
@@ -130,7 +128,6 @@ const removeComment = (str: string) => str.replace(/\/\*|\*\//g, '');
 function interfaceToJSONSchema(
   itf: Interface.Root,
   scope: Scope,
-  additionalProperties: boolean
 ): JSONSchema4 {
   const properties = itf.properties.filter(p => p.scope === scope);
   function findChildProperties(parentId: number) {
@@ -158,7 +155,6 @@ function interfaceToJSONSchema(
             {
               type,
               properties: childProperties,
-              additionalProperties,
               ...common
             }
           ];
@@ -166,7 +162,6 @@ function interfaceToJSONSchema(
           return inferArraySchema(
             p,
             childProperties,
-            additionalProperties,
             common
           );
         } else {
@@ -184,30 +179,25 @@ function interfaceToJSONSchema(
   if (_.isEmpty(properties)) {
     return {
       type: 'object',
-      additionalProperties
     };
   } else {
     return {
       type: 'object',
       properties: propertyChildren,
-      additionalProperties
     };
   }
 }
 
 export default function convert(
   itf: Interface.Root,
-  additionalProperties: boolean
 ): Promise<Array<string>> {
   const reqJSONSchema = interfaceToJSONSchema(
     itf,
     'request',
-    additionalProperties
   );
   const resJSONSchema = interfaceToJSONSchema(
     itf,
     'response',
-    additionalProperties
   );
 
   const options: Options = {

@@ -1,15 +1,37 @@
-import { locationStringify } from '../common'
-import { RAP_STATE_KEY, RAP_REDUX_REQUEST, RAP_REDUX_UPDATE_STORE, RAP_REDUX_CLEAR_STORE } from './constant'
+export default `
 import { IAction, IEnhancerProps, IStore, IRequestParams, StoreEnhancer, StoreCreator, Reducer, AnyAction } from './types'
+
+export const RAP_REDUX_REQUEST = '$$_RAP_REDUX_REQUEST'
+export const RAP_REDUX_UPDATE_STORE = '$$_RAP_REDUX_UPDATE_STORE'
+export const RAP_REDUX_CLEAR_STORE = '$$_RAP_REDUX_CLEAR_STORE'
+export const RAP_STATE_KEY = '$$rapResponseData'
 
 /** 拼接组合request链接 */
 const getEndpoint = (requestPrefix: string, url: string): string => {
     if (!requestPrefix) {
         requestPrefix = ''
     }
-    requestPrefix = requestPrefix.replace(/\/$/, '')
-    url = url.replace(/^\//, '')
-    return `${requestPrefix}/${url}`
+    requestPrefix = requestPrefix.replace(/\\/$/, '')
+    url = url.replace(/^\\//, '')
+    return requestPrefix + '/' + url
+}
+
+/**
+ * search 参数转换，比如 { a: 1, b: 2, c: undefined } 转换成 "a=1&b=2"
+ * 会自动删除 undefined
+ */
+function locationStringify(
+    obj: {
+        [key: string]: any
+    } = {}
+): string {
+    return Object.entries(obj).reduce((str, [key, value]) => {
+        if (value === undefined) {
+            return str
+        }
+        str = str ? str + '&' : str
+        return str + key + '=' + value
+    }, '')
 }
 
 const sendRequest = async (params: IRequestParams): Promise<any> => {
@@ -21,21 +43,17 @@ const sendRequest = async (params: IRequestParams): Promise<any> => {
     }
 
     if (requestParams.method === 'GET') {
-        requestUrl = `${requestUrl}?${locationStringify(params.params)}`
+        requestUrl = requestUrl + '?' + locationStringify(params.params)
     } else if (params.params) {
         requestParams.body = JSON.stringify(params.params)
     }
     const res = await fetch(requestUrl, requestParams)
     const retJSON = res.clone() // clone before return
-    // const json = await res.json() // we need json just to check status
-    // if (!json.info.ok) {
-    //     throw new Error(json.info.message)
-    // }
     return retJSON.json()
 }
 
 let dispatch = (action: IAction): Promise<any> => {
-    return new Promise(() => {})
+    return new Promise(() => { })
 }
 
 interface IAssignDataProps {
@@ -97,12 +115,12 @@ function assignData({
     return newState
 }
 
-const rapReducers = {
+export const rapReducers = {
     [RAP_STATE_KEY]: (state = {}) => state,
 }
 
 /** store enhancer */
-function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
+export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
     config = config || {}
     const { requestPrefix, transformRequest = data => data, transformResponse = data => data, maxCacheLength = 2, fetch } = config
 
@@ -226,7 +244,7 @@ function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
 }
 
 /** 发送请求 */
-function dispatchAction(action: IAction): Promise<any> {
+export function dispatchAction(action: IAction): Promise<any> {
     return dispatch(action)
 }
-export { rapReducers, rapEnhancer, dispatchAction }
+`

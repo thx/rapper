@@ -39,16 +39,18 @@ combineReducers({
 ```js
 /** rap-redux.js */
 
-const { createModel } = require('@ali/rapper-redux')
+const { rapper } = require('@ali/rapper-redux')
 const { resolve } = require('path')
 
-createModel({
+rapper({
     /** 必须配置 */
     type: 'redux',
     /** 必须配置，rap项目id */
     projectId: 3564,
     /** 可选，输出文件的目录，默认是 ./src/models/rapper/ */
-    outputPath: resolve(process.cwd(), './src/models/rapper/'),
+    rapperPath: resolve(process.cwd(), './src/models/rapper/'),
+    /** 可选，rap地址，默认是 http://rap2api.taobao.org */
+    rapUrl: 'https://rap2api.alibaba-inc.com',
     /** 可选，输出模板代码的格式 */
     codeStyle: {
         /** 默认单引号 */
@@ -60,8 +62,6 @@ createModel({
         /** 逗号 */
         trailingComma: 'es5',
     },
-    /** 可选，rap地址，默认是 http://rap2api.taobao.org */
-    rapUrl: 'https://rap2api.alibaba-inc.com',
 })
 ```
 

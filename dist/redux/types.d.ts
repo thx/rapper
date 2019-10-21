@@ -1,4 +1,5 @@
-import { REQUEST_METHOD } from '../types';
+/** 请求类型 */
+declare type REQUEST_METHOD = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD';
 interface Action<T = any> {
     type: T;
 }

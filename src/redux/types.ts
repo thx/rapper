@@ -1,4 +1,5 @@
-import { REQUEST_METHOD } from '../types'
+/** 请求类型 */
+type REQUEST_METHOD = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD'
 
 interface Action<T = any> {
     type: T
@@ -85,13 +86,13 @@ export type PreloadedState<S> = Required<S> extends {
     [$CombinedState]: undefined
 }
     ? S extends CombinedState<infer S1>
-        ? {
-              [K in keyof S1]?: S1[K] extends object ? PreloadedState<S1[K]> : S1[K]
-          }
-        : never
+    ? {
+        [K in keyof S1]?: S1[K] extends object ? PreloadedState<S1[K]> : S1[K]
+    }
+    : never
     : {
-          [K in keyof S]: S[K] extends object ? PreloadedState<S[K]> : S[K]
-      }
+        [K in keyof S]: S[K] extends object ? PreloadedState<S[K]> : S[K]
+    }
 
 export interface StoreCreator {
     <S, A extends Action, Ext = {}, StateExt = never>(reducer: Reducer<S, A>, enhancer?: StoreEnhancer<Ext, StateExt>): IStore<

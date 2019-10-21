@@ -76,10 +76,7 @@ export interface UrlMapper {
 }
 
 /** 生成模板类型 */
-export type RAP_TYPE = 'default' | 'redux' | 'mobx' | 'vuex'
-
-/** 请求类型 */
-export type REQUEST_METHOD = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD'
+export type RAPPER_TYPE = 'requester' | 'redux'
 
 /** 句尾逗号 */
 export enum TRAILING_COMMA {

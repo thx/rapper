@@ -1,31 +1,26 @@
-import chalk from 'chalk';
-import { format } from 'json-schema-to-typescript/dist/src/formatter';
-import { DEFAULT_OPTIONS } from 'json-schema-to-typescript';
-import { UrlMapper, RAP_TYPE, TRAILING_COMMA } from './types';
-import { createModel, createFetch } from './requester/index';
-import {
-  createIndexStr,
-  createReduxStr,
-  createReduxFetchStr,
-  createUseRapStr
-} from './redux/createRedux';
-import { relativeImport, writeFile } from './utils';
-import { getInterfaces, getIntfWithModelName, uniqueItfs } from './common';
+import chalk from 'chalk'
+import { format } from 'json-schema-to-typescript/dist/src/formatter'
+import { DEFAULT_OPTIONS } from 'json-schema-to-typescript'
+import { UrlMapper, RAPPER_TYPE, TRAILING_COMMA } from './types'
+import { createModel, getInterfaces } from './core/common'
+import * as RequesterCreator from './requester'
+import * as ReduxCreator from './redux';
+import { writeFile } from './utils'
+import runtimeStr from './redux/runtime'
+import { getIntfWithModelName, uniqueItfs } from './core/tools'
 
-interface ICreateModel {
+interface IRapper {
+  /** 必填，redux、requester 等 */
+  type: RAPPER_TYPE;
+  /** 必填，rap 项目id */
   projectId: number;
-  urlMapper?: UrlMapper;
-  useCommonJsModule?: boolean;
-  additionalProperties?: boolean;
-  optionalExtra?: boolean;
+  /** 选填，rap网站地址，默认是 http://rap2.taobao.org */
   rapUrl?: string;
-  /** 生成出 rapper 的文件夹地址 */
+  /** 选填，生成出 rapper 的文件夹地址, 默认 ./rapper */
   rapperPath?: string;
-  modelPath?: string;
-  requesterPath?: string;
-  baseFetchPath?: string;
-  type?: RAP_TYPE;
-  /** 输出模板代码的格式 */
+  /** 选填，url映射，可用来将复杂的url映射为简单的url */
+  urlMapper?: UrlMapper;
+  /** 选填，输出模板代码的格式 */
   codeStyle?: {
     /** 默认单引号 */
     singleQuote?: boolean;
@@ -37,101 +32,92 @@ interface ICreateModel {
     trailingComma?: TRAILING_COMMA;
   };
 }
-export default async function({
+export default async function ({
+  type,
   projectId,
-  modelPath,
-  requesterPath,
-  baseFetchPath,
-  urlMapper = t => t,
-  useCommonJsModule = false,
-  additionalProperties = false,
-  optionalExtra = true,
   rapUrl = 'http://rap2.taobao.org',
-  outputPath = './model',
-  type = 'default',
-  codeStyle
-}: ICreateModel) {
+  rapperPath = './rapper',
+  urlMapper = t => t,
+  codeStyle,
+}: IRapper) {
+  /** 参数校验 */
+  if (!type) {
+    return new Promise(() => console.log(chalk.red('rapper: 请配置 type 参数')))
+  } else if (!['requester', 'redux'].includes(type)) {
+    return new Promise(() => console.log(chalk.red('rapper: type 参数配置错误，请重新配置')))
+  }
+  if (!projectId) {
+    return new Promise(() => console.log(chalk.red('rapper: 请配置 projectId 参数')))
+  }
+  if (codeStyle && typeof codeStyle === 'object') {
+    DEFAULT_OPTIONS.style = { ...DEFAULT_OPTIONS.style, ...codeStyle };
+  }
   DEFAULT_OPTIONS.style = {
     ...DEFAULT_OPTIONS.style,
     singleQuote: true,
     semi: false,
-    trailingComma: TRAILING_COMMA.ES5
+    trailingComma: TRAILING_COMMA.ES5,
   };
-  if (codeStyle && typeof codeStyle === 'object') {
-    DEFAULT_OPTIONS.style = { ...DEFAULT_OPTIONS.style, ...codeStyle };
+
+  if (!rapperPath) {
+    return new Promise(() => console.log(chalk.red('rapper: rapperPath 配置失败，请修改')))
+  } else {
+    rapperPath = rapperPath.replace(/\/$/, '')
   }
 
   /** 输出文件集合 */
   const outputFiles = [];
 
   /** 获取所有接口 */
-  const interfaces = uniqueItfs(
-    getIntfWithModelName(
-      await getInterfaces(rapUrl, projectId),
-      urlMapper,
-      type
-    )
+  let interfaces = []
+  try {
+    interfaces = await getInterfaces(rapUrl, projectId)
+  } catch (e) {
+    return new Promise(() => console.log(chalk.red(`rapper: 同步 rap 接口失败，${e}`)))
+  }
+  if (!(Array.isArray(interfaces) && interfaces.length)) {
+    return new Promise(() => console.log(chalk.yellow('rapper: 没有课同步的 rap 接口')))
+  }
+  interfaces = uniqueItfs(
+    getIntfWithModelName(interfaces, urlMapper)
   );
 
-  /** 生成 model.ts */
-  const modelStr = await createModel(interfaces, {
-    projectId,
-    additionalProperties
+  let Creator = null
+  switch (type) {
+    case 'requester':
+      Creator = ReduxCreator
+      break
+    case 'redux':
+      Creator = RequesterCreator
+      break
+    default:
+      Creator = {}
+  }
+
+  /** 生成 index.ts */
+  Creator.createIndexStr && outputFiles.push({
+    path: `${rapperPath}/index.ts`,
+    content: format(Creator.createIndexStr(), DEFAULT_OPTIONS)
   });
+
+  /** 生成 model.ts */
+  const modelStr = await createModel(interfaces, { projectId, });
   outputFiles.push({
-    path: outputPath ? `${outputPath}/model.ts` : modelPath,
+    path: `${rapperPath}/model.ts`,
     content: format(modelStr, DEFAULT_OPTIONS)
   });
 
+  /** 生成 fetch.ts */
+  Creator.createFetchStr && outputFiles.push({
+    path: `${rapperPath}/fetch.ts`,
+    content: format(Creator.createFetchStr(interfaces, { projectId, }), DEFAULT_OPTIONS)
+  });
+
+  /** 生成 redux runtime.ts */
   if (type === 'redux') {
-    if (!outputPath) {
-      console.log(chalk.red('配置文件中 outputPath 不能为空'));
-      return;
-    }
-    /** 生成 index.ts */
     outputFiles.push({
-      path: `${outputPath}/index.ts`,
-      content: format(createIndexStr(), DEFAULT_OPTIONS)
-    });
-
-    /** 生成 redux.ts */
-    outputFiles.push({
-      path: `${outputPath}/redux.ts`,
-      content: format(
-        createReduxStr(interfaces, { projectId }),
-        DEFAULT_OPTIONS
-      )
-    });
-
-    /** 生成 redux 版本的 fetch.ts */
-    outputFiles.push({
-      path: `${outputPath}/fetch.ts`,
-      content: format(
-        createReduxFetchStr(projectId, interfaces),
-        DEFAULT_OPTIONS
-      )
-    });
-
-    /** 生成 useRap.ts */
-    outputFiles.push({
-      path: `${outputPath}/useRap.ts`,
-      content: format(createUseRapStr(interfaces), DEFAULT_OPTIONS)
-    });
-  } else if (requesterPath) {
-    /** 生成 fetch.ts */
-    const relModelPath = relativeImport(requesterPath, modelPath);
-    const relBaseFetchPath = relativeImport(requesterPath, baseFetchPath);
-
-    const fetchStr = createFetch(interfaces, {
-      projectId,
-      useCommonJsModule,
-      optionalExtra,
-      relModelPath,
-      relBaseFetchPath
-    });
-    outputFiles.push({
-      path: requesterPath,
-      content: format(fetchStr, DEFAULT_OPTIONS)
+      path: `${rapperPath}/runtime.ts`,
+      content: format(runtimeStr, DEFAULT_OPTIONS)
     });
   }
 
@@ -139,11 +125,7 @@ export default async function({
     outputFiles.map(({ path, content }) => writeFile(path, content))
   )
     .then(() => {
-      console.log(
-        chalk.green(
-          `rapper-redux: model 生成成功！共同步:${interfaces.length} 个接口`
-        )
-      );
+      console.log(chalk.green(`rapper: 同步成功！共同步:${interfaces.length} 个接口`));
     })
     .catch(err => {
       console.log(chalk.red(err));
