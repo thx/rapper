@@ -1,3 +1,4 @@
+export default `
 /** 请求类型 */
 type REQUEST_METHOD = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD'
 
@@ -8,7 +9,7 @@ export interface AnyAction extends Action {
     [extraProps: string]: any
 }
 interface IRequestAction {
-    type: 'RAP_REDUX_REQUEST'
+    type: '$$_RAPPER_REQUEST'
     payload?: {
         modelName: string
         endpoint: string
@@ -108,3 +109,4 @@ export interface StoreCreator {
         enhancer?: StoreEnhancer<Ext>
     ): IStore<ExtendState<S, StateExt>, A, StateExt, Ext> & Ext
 }
+`

@@ -1,21 +1,10 @@
 import { Intf } from '../types'
 
-const RAP_REDUX_REQUEST = '$$_RAP_REDUX_REQUEST'
-
 /** 定义 请求types interface  */
 function getRequestTypesInterfaceStr(interfaces: Intf[]): string {
-    return `
-        export interface IRequestTypes {
+    return `interface IRequestTypes {
         ${interfaces
-            .map(({ modelName }) => {
-                return `
-                    '${modelName}': [
-                        '${modelName}_REQUEST',
-                        '${modelName}_SUCCESS',
-                        '${modelName}_FAILURE',
-                    ]
-                `
-            })
+            .map(({ modelName }) => `'${modelName}': ['${modelName}_REQUEST', '${modelName}_SUCCESS', '${modelName}_FAILURE']`)
             .join('\n\n')}
         }
     `
@@ -23,13 +12,12 @@ function getRequestTypesInterfaceStr(interfaces: Intf[]): string {
 
 /** 定义 请求action interface  */
 function getRequestActionInterfaceStr(interfaces: Intf[]): string {
-    return `
-        export interface IRequestAction {
+    return `interface IRequestAction {
         ${interfaces
             .map(({ modelName, method, url }) => {
                 return `
                     '${modelName}': (params?: ModelItf['${modelName}']['Req']) => {
-                        type: '${RAP_REDUX_REQUEST}',
+                        type: '$$RAPPER_REQUEST',
                         payload: {
                             modelName: '${modelName}'
                             endpoint: '${url}'
@@ -47,45 +35,42 @@ function getRequestActionInterfaceStr(interfaces: Intf[]): string {
 
 /** 定义 请求types */
 function getRequestTypesStr(interfaces: Intf[]): string {
-    return `
-        export const RequestTypes:IRequestTypes = {
-            ${interfaces
+    return `const RequestTypes:IRequestTypes = {
+        ${interfaces
             .map(({ modelName }) => {
                 return `
-                        '${modelName}': [
-                            '${modelName}_REQUEST',
-                            '${modelName}_SUCCESS',
-                            '${modelName}_FAILURE',
-                        ],
-                    `
+                    '${modelName}': [
+                        '${modelName}_REQUEST',
+                        '${modelName}_SUCCESS',
+                        '${modelName}_FAILURE',
+                    ],
+                `
             })
             .join('\n\n')}
-        }
-    `
+    }`
 }
 
 /** 定义 请求action */
 function getRequestActionStr(interfaces: Intf[]): string {
-    return `
-        export const RequestAction:IRequestAction = {
-            ${interfaces
+    return `const RequestAction:IRequestAction = {
+        ${interfaces
             .map(({ id, repositoryId, moduleId, name, url, modelName, method }) => {
                 return `
-                        /**
-                         * 接口名：${name}
-                         * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
-                         */
-                        '${modelName}': (params) => ({
-                            type: '${RAP_REDUX_REQUEST}',
-                            payload: {
-                                modelName: '${modelName}',
-                                endpoint: '${url}',
-                                method: '${method}',
-                                params,
-                                types: RequestTypes['${modelName}'],
-                            },
-                        }),
-                    `
+                    /**
+                     * 接口名：${name}
+                     * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
+                     */
+                    '${modelName}': (params) => ({
+                        type: RAPPER_REQUEST,
+                        payload: {
+                            modelName: '${modelName}',
+                            endpoint: '${url}',
+                            method: '${method}',
+                            params,
+                            types: RequestTypes['${modelName}'],
+                        },
+                    }),
+                `
             })
             .join('\n\n')}
         }
@@ -95,9 +80,6 @@ function getRequestActionStr(interfaces: Intf[]): string {
 /** 生成 Action 定义 */
 function createActionStr(interfaces: Intf[]): string {
     return `
-    /** request interface */
-    type RequestType = ${interfaces.reduce((a, { modelName }) => `${a} | '${modelName}'`, '')}
-
     /** 请求types interface  */
     ${getRequestTypesInterfaceStr(interfaces)}
 
@@ -115,7 +97,7 @@ function createActionStr(interfaces: Intf[]): string {
 /** 生成 fetch.ts */
 function createRequestStr(interfaces: Intf[]): string {
     return `
-    const request = {
+    export const rapperRequest = {
         ${interfaces
             .map(
                 ({ modelName, name, repositoryId, moduleId, id }) => `
@@ -158,7 +140,7 @@ function createUseRapStr(interfaces: Intf[]): string {
         [key: string]: any
     }
 
-    const useResponse = {
+    export const useResponse = {
         ${interfaces
             .map(
                 ({ modelName, name, repositoryId, moduleId, id }) => `
@@ -173,7 +155,7 @@ function createUseRapStr(interfaces: Intf[]): string {
             ): boolean }
         ): [null | ModelItf['${modelName}']['Res'], boolean] {
             const reduxData = useSelector((state: IState) => {
-                return (state[RAP_STATE_KEY] && state[RAP_STATE_KEY]['${modelName}']) || []
+                return (state[RAPPER_STATE_KEY] && state[RAPPER_STATE_KEY]['${modelName}']) || []
             })
             const initData = reduxData.length ? reduxData.slice(-1)[0] : {}
             const [filteredData, setFilteredData] = useState(initData.response || undefined)
@@ -186,9 +168,9 @@ function createUseRapStr(interfaces: Intf[]): string {
                 let resultArr = []
                 if (filter) {
                     if (typeof filter === 'function') {
-                        resultArr = reduxData.filter((item: ItemType) => utils.functionFilter<ItemType, typeof filter>(item, filter))
+                        resultArr = reduxData.filter((item: ItemType) => functionFilter<ItemType, typeof filter>(item, filter))
                     } else {
-                        resultArr = reduxData.filter((item: ItemType) => utils.paramsFilter<Req, ItemType, typeof filter>(item, filter))
+                        resultArr = reduxData.filter((item: ItemType) => paramsFilter<Req, ItemType, typeof filter>(item, filter))
                     }
                 } else {
                     resultArr = reduxData
@@ -196,7 +178,7 @@ function createUseRapStr(interfaces: Intf[]): string {
                 /** 过滤出一条最新的符合条件的数据 */
                 const result = resultArr.length ? resultArr.slice(-1)[0] : {}
 
-                if (!utils.looseEqual(result.response, filteredData)) {
+                if (!looseEqual(result.response, filteredData)) {
                     setFilteredData(result.response || undefined)
                     setIsFetching(result.isFetching || false)
                 }
@@ -208,7 +190,7 @@ function createUseRapStr(interfaces: Intf[]): string {
             .join(',\n\n')}
     }
 
-    const useAllResponse = {
+    export const useAllResponse = {
         ${interfaces
             .map(
                 ({ modelName, name, repositoryId, moduleId, id }) => `
@@ -219,7 +201,7 @@ function createUseRapStr(interfaces: Intf[]): string {
         /* tslint:disable */
         '${modelName}': function useData(): ModelItf['${modelName}']['Res'][] {
             return useSelector((state: IState) => {
-                const selectedState = (state[RAP_STATE_KEY] && state[RAP_STATE_KEY]['${modelName}']) || []
+                const selectedState = (state[RAPPER_STATE_KEY] && state[RAPPER_STATE_KEY]['${modelName}']) || []
                 return selectedState
             })
         }`
@@ -228,7 +210,7 @@ function createUseRapStr(interfaces: Intf[]): string {
     }
 
     /** 重置接口数据 */
-    const clearResponseCache = {
+    export const clearResponseCache = {
         ${interfaces
             .map(
                 ({ modelName, name, repositoryId, moduleId, id }) => `
@@ -238,9 +220,9 @@ function createUseRapStr(interfaces: Intf[]): string {
          */
         '${modelName}': (): void => {
             dispatchAction({
-                type: RAP_REDUX_CLEAR_STORE, 
+                type: RAPPER_CLEAR_STORE, 
                 payload: {
-                    ['${modelName}']: undefined,
+                    '${modelName}': undefined,
                 }
             })
         }`
@@ -258,11 +240,22 @@ function createIndexStr(projectId: number): string {
      * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
      */
 
-    import { useAPI, useAPIAll, clearAPICache } from './useRap'
-    import fetch from './fetch'
-    import { requestAction } from './redux'
+    import { rapperRequest, useResponse, useAllResponse, clearResponseCache, rapperActions } from './fetch'
+    import { rapReducers, rapEnhancer } from './runtime'
     
-    export { useAPI, useAPIAll, clearAPICache, fetch, requestAction };
+    export {
+        /** 发送rapper请求 */
+        rapperRequest,
+        /** 以Hooks的方式使用请求响应数据 */
+        useResponse,
+        /** 使用请求响应数据（包含缓存） */
+        useAllResponse,
+        /** 清除此接口的缓存 */
+        clearResponseCache,
+        rapperActions,
+        rapReducers,
+        rapEnhancer,
+    };
     `
 }
 
@@ -274,14 +267,76 @@ function createFetchStr(interfaces: Intf[], { projectId }): string {
      * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
      */
     import { ModelItf } from './model'
-    import { RAP_STATE_KEY, dispatchAction, RAP_REDUX_CLEAR_STORE, utils } from './runtime'
+    import { dispatchAction, RAPPER_REQUEST, RAPPER_CLEAR_STORE, RAPPER_STATE_KEY } from './runtime'
     import { useState, useEffect } from 'react'
     import { useSelector } from 'react-redux'
+
+    /** 深比较 */
+    function looseEqual(newData: any, oldData: any): boolean {
+        const newType = Object.prototype.toString.call(newData)
+        const oldType = Object.prototype.toString.call(oldData)
+
+        if (newType !== oldType) {
+            return false
+        }
+
+        if (newType === '[object Object]' || newType === '[object Array]') {
+            for (const key in newData) {
+                if (!looseEqual(newData[key], oldData[key])) {
+                    return false
+                }
+            }
+            for (const key in oldData) {
+                if (!looseEqual(newData[key], oldData[key])) {
+                    return false
+                }
+            }
+        } else if (newData !== oldData) {
+            return false
+        }
+
+        return true
+    }
+
+    /** 根据请求参数筛选，暂时只支持 request */
+    function paramsFilter<Req extends { [key: string]: any }, I extends { request: Req }, Fil extends { request?: Req }>(
+        item: I,
+        filter: Fil
+    ): boolean {
+        if (filter && filter.request) {
+            const filterRequest = filter.request // 这一行是解决 ts2532 报错
+            if (Object.prototype.toString.call(filter.request) === '[object Object]') {
+                const reqResult = Object.keys(filter.request).every((key): boolean => {
+                    return item.request[key] === filterRequest[key]
+                })
+                if (!reqResult) {
+                    return false
+                }
+            } else {
+                return false
+            }
+        }
+        return true
+    }
+
+    /** 根据filter函数自定义筛选 */
+    function functionFilter<I, Fil>(item: I, filter: Fil) {
+        if (filter !== undefined) {
+            if (typeof filter === 'function') {
+                return filter(item)
+            } else {
+                return false
+            }
+        }
+        return true
+    }
 
     ${createActionStr(interfaces)}
     ${createRequestStr(interfaces)}
     ${createUseRapStr(interfaces)}
+
+    export const rapperActions = RequestTypes || []
     `
 }
 
-export { createIndexStr, createFetchStr }
+export default { createIndexStr, createFetchStr }

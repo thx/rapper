@@ -2,44 +2,12 @@
 
 ## 使用手册
 
-### 第一步、配置 redux 初始化信息
-
-#### 在 createStore 的时候利用 compose 增加一个 store enhancer
+### 第一步、配置模板文件生成脚本，生成模板文件
 
 ```js
-import { applyMiddleware, createStore, compose } from 'redux'
-import { createLogger } from 'redux-logger'
-import { rapEnhancer } from '@ali/rapper-redux'
-import reducers from './reducer'
+/** rapper.js */
 
-const loggerMiddleware = createLogger()
-
-const enhancer = compose(
-    /** rapEnhancer 即为增加的 store enhancer */
-    rapEnhancer(),
-    applyMiddleware(loggerMiddleware)
-)
-
-const store = createStore(reducers, enhancer)
-```
-
-#### 在 combineReducers 的时候，增加 rapReducers （请求响应的数据就存在这里面）
-
-```js
-import { rapReducers } from '@ali/rapper-redux'
-
-combineReducers({
-    duck: DuckReducer,
-    ...rapReducers,
-})
-```
-
-### 第二步、配置模板文件生成脚本，生成模板文件
-
-```js
-/** rap-redux.js */
-
-const { rapper } = require('@ali/rapper-redux')
+const { rapper } = require('@ali/rapper')
 const { resolve } = require('path')
 
 rapper({
@@ -65,16 +33,48 @@ rapper({
 })
 ```
 
-配置好如上的配置文件后，执行 `node rap-redux.js` 就能生成模板文件了
+配置好如上的配置文件后，执行 `node rapper.js` 就能生成模板文件了
+
+### 第二步、配置 redux 初始化信息
+
+#### 在 createStore 的时候利用 compose 增加一个 store enhancer
+
+```js
+import { applyMiddleware, createStore, compose } from 'redux'
+import { createLogger } from 'redux-logger'
+import { rapEnhancer } from 'model/rapper'
+import reducers from './reducer'
+
+const loggerMiddleware = createLogger()
+
+const enhancer = compose(
+    /** rapEnhancer 即为增加的 store enhancer */
+    rapEnhancer(),
+    applyMiddleware(loggerMiddleware)
+)
+
+const store = createStore(reducers, enhancer)
+```
+
+#### 在 combineReducers 的时候，增加 rapReducers （请求响应的数据就存在这里面）
+
+```js
+import { rapReducers } from 'model/rapper'
+
+combineReducers({
+    duck: DuckReducer,
+    ...rapReducers,
+})
+```
 
 ### 第三步、愉快的使用
 
 ```js
 /** import 的目录就是上面第二步配置的 outputPath */
-import { fetch, useAPI, useAPIAll, clearAPICache } from 'requestModel'
+import { rapperRequest, useResponse, useAllResponse, clearResponseCache } from 'model/rapper'
 
 /** 发送请求，返回的是一个 promise，会把响应数据返回 */
-fetch['GET/adgroup/price/update$']({ productId: 1 })
+rapperRequest['GET/adgroup/price/update$']({ productId: 1 })
     .then(response => {
         console.log('请求成功', response)
     })
@@ -83,31 +83,31 @@ fetch['GET/adgroup/price/update$']({ productId: 1 })
     })
 
 /** 以 Hooks 的方式获取请求回来的数据 */
-const [responseData, isFetching] = useAPI['GET/adgroup/price/update$']()
+const [responseData, isFetching] = useResponse['GET/adgroup/price/update$']()
 
 responseData 是 请求响应的数据，isFetching 是请求的状态
 
 /** 以 Hooks 的方式获取请求回来的所有数据（包括历史数据） */
-const rapData = useAPIAll['GET/adgroup/price/update$']()
+const rapData = useAllResponse['GET/adgroup/price/update$']()
 
 /** 清除数据 */
-clearAPICache['GET/adgroup/price/update$']()
+clearResponseCache['GET/adgroup/price/update$']()
 ```
 
 #### 接口响应数据的缓存与使用
 
-常规情况下，`useAPI['GET/adgroup/price/update$']()` 就能满足业务需求，获取接口响应数据。但某些情况，我们希望将同一接口多次请求回来的数据缓存起来，并能够方便的获取。在这里 rap-redux 已经帮您实现了。
+常规情况下，`useResponse['GET/adgroup/price/update$']()` 就能满足业务需求，获取接口响应数据。但某些情况，我们希望将同一接口多次请求回来的数据缓存起来，并能够方便的获取。在这里 rap-redux 已经帮您实现了。
 
 首先，默认会缓存最近 2 次请求的数据，如需更多，可以按照下面 “高级配置” 中的示例进行配置；
 
-其次，取回缓存数据，我们仍然通过 `useAPI` 这个 Hooks 进行筛选读取
+其次，取回缓存数据，我们仍然通过 `useResponse` 这个 Hooks 进行筛选读取
 
 -   第一种筛选方式：配置 request 参数，根据请求参数来筛选出满足条件的最新数据
 
 ```js
-import { useAPI } from 'requestModel'
+import { useResponse } from 'model/rapper'
 
-const rapData = useAPI['GET/adgroup/price/update$']({
+const rapData = useResponse['GET/adgroup/price/update$']({
     request: {
         productId: 1,
     },
@@ -117,17 +117,17 @@ const rapData = useAPI['GET/adgroup/price/update$']({
 -   第二种筛选方式：配置 filter 函数，类似于 Array.filter()，筛选出符合条件的数据
 
 ```js
-import { useAPI } from 'requestModel'
+import { useResponse } from 'model/rapper'
 
-const rapData = useAPI['GET/adgroup/price/update$'](({ request, response }) => {
+const rapData = useResponse['GET/adgroup/price/update$'](({ request, response }) => {
     return request.productId === 2
 })
 ```
 
 ```js
-import { useAPI } from 'requestModel'
+import { useResponse } from 'model/rapper'
 
-const rapData = useAPI['GET/adgroup/price/update$'](({ request, response }) => {
+const rapData = useResponse['GET/adgroup/price/update$'](({ request, response }) => {
     return request.productId === 2
 })
 ```
@@ -137,7 +137,7 @@ const rapData = useAPI['GET/adgroup/price/update$'](({ request, response }) => {
 ### 1、后端请求路径配置
 
 ```js
-import { rapEnhancer } from '@ali/rapper-redux'
+import { rapEnhancer } from 'model/rapper'
 
 rapEnhancer({
     /** 可选，后端api地址，默认是根目录相对路径 */
@@ -148,7 +148,7 @@ rapEnhancer({
 ### 1、请求参数 Map
 
 ```js
-import { rapEnhancer } from '@ali/rapper-redux'
+import { rapEnhancer } from 'model/rapper'
 
 rapEnhancer({
     transformRequest: reqest => request.params,
@@ -181,7 +181,7 @@ rapEnhancer({
 这里，可以给 `rapEnhancer` 传一个函数作为参数，来过滤响应数据，让存入 redux store 的数据更加纯净，类似下面这样：
 
 ```js
-import { rapEnhancer } from '@ali/rapper-redux'
+import { rapEnhancer } from 'model/rapper'
 
 rapEnhancer({
     transformResponse: responseData => responseData.result,
@@ -193,7 +193,7 @@ rapEnhancer({
 我们可以将多次请求响应的数据缓存起来，默认缓存最近 2 次请求的数据，当然也可以通过配置 `maxCacheLength` 来自定义缓存长度
 
 ```js
-import { rapEnhancer } from '@ali/rapper-redux'
+import { rapEnhancer } from 'model/rapper'
 
 rapEnhancer({
     maxCacheLength: 3, // 也支持 Infinity
@@ -211,7 +211,7 @@ rapEnhancer({
 自定义的方法：
 
 ```js
-import { rapEnhancer } from '@ali/rapper-redux'
+import { rapEnhancer } from 'model/rapper'
 
 rapEnhancer({
     /**
@@ -225,12 +225,12 @@ rapEnhancer({
 }),
 ```
 
-### 5、获取请求的三个 Action： Request、Success、Failure
+### 5、获取请求的三个 Action： RequestAction、SuccessAction、FailureAction
 
 ```js
-import { getAction } from 'requestModel'
+import { rapperActions } from 'model/rapper'
 
-const [Request, Success, Failure] = getAction('GET/adgroup/price/update$')
+const [RequestAction, SuccessAction, FailureAction] = rapperActions['GET/adgroup/price/update$']
 ```
 
 # Rapper（Magix 版本）

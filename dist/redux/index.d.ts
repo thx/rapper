@@ -5,4 +5,8 @@ declare function createIndexStr(projectId: number): string;
 declare function createFetchStr(interfaces: Intf[], { projectId }: {
     projectId: any;
 }): string;
-export { createIndexStr, createFetchStr };
+declare const _default: {
+    createIndexStr: typeof createIndexStr;
+    createFetchStr: typeof createFetchStr;
+};
+export default _default;

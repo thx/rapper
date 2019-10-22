@@ -1,10 +1,9 @@
 "use strict";
 exports.__esModule = true;
 /** 生成 index.ts */
-function createIndexStr() {
+function createIndexStr(projectId) {
     return '';
 }
-exports.createIndexStr = createIndexStr;
 /** 生成 fetch.ts */
 function createFetchStr(interfaces, extr) {
     var projectId = extr.projectId, relModelPath = extr.relModelPath, relBaseFetchPath = extr.relBaseFetchPath;
@@ -15,4 +14,4 @@ function createFetchStr(interfaces, extr) {
     })
         .join(',\n\n') + "\n          };\n          export default request;\n        ";
 }
-exports.createFetchStr = createFetchStr;
+exports["default"] = { createIndexStr: createIndexStr, createFetchStr: createFetchStr };

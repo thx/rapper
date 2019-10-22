@@ -1,10 +1,10 @@
 export default `
 import { IAction, IEnhancerProps, IStore, IRequestParams, StoreEnhancer, StoreCreator, Reducer, AnyAction } from './types'
 
-export const RAP_REDUX_REQUEST = '$$_RAP_REDUX_REQUEST'
-export const RAP_REDUX_UPDATE_STORE = '$$_RAP_REDUX_UPDATE_STORE'
-export const RAP_REDUX_CLEAR_STORE = '$$_RAP_REDUX_CLEAR_STORE'
-export const RAP_STATE_KEY = '$$rapResponseData'
+export const RAPPER_REQUEST = '$$RAPPER_REQUEST'
+export const RAPPER_UPDATE_STORE = '$$RAPPER_UPDATE_STORE'
+export const RAPPER_CLEAR_STORE = '$$RAPPER_CLEAR_STORE'
+export const RAPPER_STATE_KEY = '$$rapperResponseData'
 
 /** 拼接组合request链接 */
 const getEndpoint = (requestPrefix: string, url: string): string => {
@@ -116,7 +116,7 @@ function assignData({
 }
 
 export const rapReducers = {
-    [RAP_STATE_KEY]: (state = {}) => state,
+    [RAPPER_STATE_KEY]: (state = {}) => state,
 }
 
 /** store enhancer */
@@ -132,9 +132,9 @@ export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
         /** 重新定义 reducers */
         const newReducers = (state: any, action: IAction): IStore => {
             if (state) {
-                state[RAP_STATE_KEY] || (state[RAP_STATE_KEY] = {})
+                state[RAPPER_STATE_KEY] || (state[RAPPER_STATE_KEY] = {})
             } else {
-                state = { [RAP_STATE_KEY]: {} }
+                state = { [RAPPER_STATE_KEY]: {} }
             }
 
             if (!action.hasOwnProperty('type')) {
@@ -143,21 +143,21 @@ export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
 
             switch (action.type) {
                 /** 请求成功，更新 store */
-                case RAP_REDUX_UPDATE_STORE:
+                case RAPPER_UPDATE_STORE:
                     return {
                         ...state,
-                        [RAP_STATE_KEY]: assignData({
-                            oldState: state[RAP_STATE_KEY],
+                        [RAPPER_STATE_KEY]: assignData({
+                            oldState: state[RAPPER_STATE_KEY],
                             maxCacheLength,
                             payload: action.payload,
                         }),
                     }
                 /** 用户手动清空 */
-                case RAP_REDUX_CLEAR_STORE:
+                case RAPPER_CLEAR_STORE:
                     return {
                         ...state,
-                        [RAP_STATE_KEY]: {
-                            ...state[RAP_STATE_KEY],
+                        [RAPPER_STATE_KEY]: {
+                            ...state[RAPPER_STATE_KEY],
                             ...action.payload,
                         },
                     }
@@ -169,7 +169,7 @@ export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
 
         /** 重新定义 dispatch */
         dispatch = async (action: IAction): Promise<any> => {
-            if (action.type !== RAP_REDUX_REQUEST) {
+            if (action.type !== RAPPER_REQUEST) {
                 return store.dispatch(action)
             }
 
@@ -185,7 +185,7 @@ export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
 
             store.dispatch({ type: REQUEST })
             store.dispatch({
-                type: RAP_REDUX_UPDATE_STORE,
+                type: RAPPER_UPDATE_STORE,
                 payload: {
                     interfaceKey: modelName,
                     id: requestTime,
@@ -209,9 +209,10 @@ export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
                 const reponseTime = new Date().getTime()
 
                 cb && cb(responseData)
+                store.dispatch({ type: SUCCESS, payload: responseData })
                 /** 请求成功，更新store */
                 store.dispatch({
-                    type: RAP_REDUX_UPDATE_STORE,
+                    type: RAPPER_UPDATE_STORE,
                     payload: {
                         interfaceKey: modelName,
                         id: requestTime,
@@ -222,12 +223,11 @@ export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
                         isFetching: false,
                     },
                 })
-                store.dispatch({ type: SUCCESS, payload: responseData })
                 return responseData
             } catch (e) {
                 store.dispatch({ type: FAILURE, payload: e })
                 store.dispatch({
-                    type: RAP_REDUX_UPDATE_STORE,
+                    type: RAPPER_UPDATE_STORE,
                     payload: {
                         interfaceKey: modelName,
                         id: requestTime,

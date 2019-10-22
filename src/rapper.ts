@@ -1,12 +1,13 @@
 import chalk from 'chalk'
 import { format } from 'json-schema-to-typescript/dist/src/formatter'
 import { DEFAULT_OPTIONS } from 'json-schema-to-typescript'
-import { UrlMapper, RAPPER_TYPE, TRAILING_COMMA } from './types'
+import { Intf, UrlMapper, RAPPER_TYPE, TRAILING_COMMA } from './types'
 import { createModel, getInterfaces } from './core/common'
-import * as RequesterCreator from './requester'
-import * as ReduxCreator from './redux';
+import RequesterCreator from './requester'
+import ReduxCreator from './redux';
 import { writeFile } from './utils'
 import runtimeStr from './redux/runtime'
+import reduxTypesStr from './redux/types'
 import { getIntfWithModelName, uniqueItfs } from './core/tools'
 
 interface IRapper {
@@ -82,13 +83,16 @@ export default async function ({
     getIntfWithModelName(interfaces, urlMapper)
   );
 
-  let Creator = null
+  let Creator: {
+    createIndexStr?: (projectId: number) => string
+    createFetchStr?: (interfaces: Intf[], { projectId }: { projectId: any; }) => string
+  } = {}
   switch (type) {
     case 'requester':
-      Creator = ReduxCreator
+      Creator = RequesterCreator
       break
     case 'redux':
-      Creator = RequesterCreator
+      Creator = ReduxCreator
       break
     default:
       Creator = {}
@@ -97,7 +101,7 @@ export default async function ({
   /** 生成 index.ts */
   Creator.createIndexStr && outputFiles.push({
     path: `${rapperPath}/index.ts`,
-    content: format(Creator.createIndexStr(), DEFAULT_OPTIONS)
+    content: format(Creator.createIndexStr(projectId), DEFAULT_OPTIONS)
   });
 
   /** 生成 model.ts */
@@ -118,6 +122,10 @@ export default async function ({
     outputFiles.push({
       path: `${rapperPath}/runtime.ts`,
       content: format(runtimeStr, DEFAULT_OPTIONS)
+    });
+    outputFiles.push({
+      path: `${rapperPath}/types.ts`,
+      content: format(reduxTypesStr, DEFAULT_OPTIONS)
     });
   }
 

@@ -15,7 +15,7 @@ var chalk_1 = require("chalk");
 /** 给接口增加 modelName */
 function getIntfWithModelName(intfs, urlMapper) {
     if (urlMapper === void 0) { urlMapper = function (t) { return t; }; }
-    return intfs.map(function (itf) { return (__assign(__assign({}, itf), { modelName: rap2name(itf, urlMapper) })); });
+    return intfs.map(function (itf) { return (__assign({}, itf, { modelName: rap2name(itf, urlMapper) })); });
 }
 exports.getIntfWithModelName = getIntfWithModelName;
 /**
@@ -87,60 +87,3 @@ function uniqueItfs(itfs) {
     return newItfs;
 }
 exports.uniqueItfs = uniqueItfs;
-/** 深比较 */
-function looseEqual(newData, oldData) {
-    var newType = Object.prototype.toString.call(newData);
-    var oldType = Object.prototype.toString.call(oldData);
-    if (newType !== oldType) {
-        return false;
-    }
-    if (newType === '[object Object]' || newType === '[object Array]') {
-        for (var key in newData) {
-            if (!looseEqual(newData[key], oldData[key])) {
-                return false;
-            }
-        }
-        for (var key in oldData) {
-            if (!looseEqual(newData[key], oldData[key])) {
-                return false;
-            }
-        }
-    }
-    else if (newData !== oldData) {
-        return false;
-    }
-    return true;
-}
-exports.looseEqual = looseEqual;
-/** 根据请求参数筛选，暂时只支持 request */
-function paramsFilter(item, filter) {
-    if (filter && filter.request) {
-        var filterRequest_1 = filter.request; // 这一行是解决 ts2532 报错
-        if (Object.prototype.toString.call(filter.request) === '[object Object]') {
-            var reqResult = Object.keys(filter.request).every(function (key) {
-                return item.request[key] === filterRequest_1[key];
-            });
-            if (!reqResult) {
-                return false;
-            }
-        }
-        else {
-            return false;
-        }
-    }
-    return true;
-}
-exports.paramsFilter = paramsFilter;
-/** 根据filter函数自定义筛选 */
-function functionFilter(item, filter) {
-    if (filter !== undefined) {
-        if (typeof filter === 'function') {
-            return filter(item);
-        }
-        else {
-            return false;
-        }
-    }
-    return true;
-}
-exports.functionFilter = functionFilter;

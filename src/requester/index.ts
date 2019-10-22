@@ -8,7 +8,7 @@ interface ICreateFetchParams {
 }
 
 /** 生成 index.ts */
-function createIndexStr(): string {
+function createIndexStr(projectId: number): string {
   return ''
 }
 
@@ -53,4 +53,4 @@ function createFetchStr(interfaces: Intf[], extr: ICreateFetchParams) {
         `;
 }
 
-export { createIndexStr, createFetchStr }
+export default { createIndexStr, createFetchStr }

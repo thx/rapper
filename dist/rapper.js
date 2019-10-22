@@ -11,11 +11,10 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -52,10 +51,11 @@ var formatter_1 = require("json-schema-to-typescript/dist/src/formatter");
 var json_schema_to_typescript_1 = require("json-schema-to-typescript");
 var types_1 = require("./types");
 var common_1 = require("./core/common");
-var RequesterCreator = require("./requester");
-var ReduxCreator = require("./redux");
+var requester_1 = require("./requester");
+var redux_1 = require("./redux");
 var utils_1 = require("./utils");
 var runtime_1 = require("./redux/runtime");
+var types_2 = require("./redux/types");
 var tools_1 = require("./core/tools");
 function default_1(_a) {
     var type = _a.type, projectId = _a.projectId, _b = _a.rapUrl, rapUrl = _b === void 0 ? 'http://rap2.taobao.org' : _b, _c = _a.rapperPath, rapperPath = _c === void 0 ? './rapper' : _c, _d = _a.urlMapper, urlMapper = _d === void 0 ? function (t) { return t; } : _d, codeStyle = _a.codeStyle;
@@ -75,9 +75,9 @@ function default_1(_a) {
                         return [2 /*return*/, new Promise(function () { return console.log(chalk_1["default"].red('rapper: 请配置 projectId 参数')); })];
                     }
                     if (codeStyle && typeof codeStyle === 'object') {
-                        json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign(__assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style), codeStyle);
+                        json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style, codeStyle);
                     }
-                    json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign(__assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style), { singleQuote: true, semi: false, trailingComma: types_1.TRAILING_COMMA.ES5 });
+                    json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style, { singleQuote: true, semi: false, trailingComma: types_1.TRAILING_COMMA.ES5 });
                     if (!rapperPath) {
                         return [2 /*return*/, new Promise(function () { return console.log(chalk_1["default"].red('rapper: rapperPath 配置失败，请修改')); })];
                     }
@@ -101,13 +101,13 @@ function default_1(_a) {
                         return [2 /*return*/, new Promise(function () { return console.log(chalk_1["default"].yellow('rapper: 没有课同步的 rap 接口')); })];
                     }
                     interfaces = tools_1.uniqueItfs(tools_1.getIntfWithModelName(interfaces, urlMapper));
-                    Creator = null;
+                    Creator = {};
                     switch (type) {
                         case 'requester':
-                            Creator = ReduxCreator;
+                            Creator = requester_1["default"];
                             break;
                         case 'redux':
-                            Creator = RequesterCreator;
+                            Creator = redux_1["default"];
                             break;
                         default:
                             Creator = {};
@@ -115,7 +115,7 @@ function default_1(_a) {
                     /** 生成 index.ts */
                     Creator.createIndexStr && outputFiles.push({
                         path: rapperPath + "/index.ts",
-                        content: formatter_1.format(Creator.createIndexStr(), json_schema_to_typescript_1.DEFAULT_OPTIONS)
+                        content: formatter_1.format(Creator.createIndexStr(projectId), json_schema_to_typescript_1.DEFAULT_OPTIONS)
                     });
                     return [4 /*yield*/, common_1.createModel(interfaces, { projectId: projectId })];
                 case 5:
@@ -134,6 +134,10 @@ function default_1(_a) {
                         outputFiles.push({
                             path: rapperPath + "/runtime.ts",
                             content: formatter_1.format(runtime_1["default"], json_schema_to_typescript_1.DEFAULT_OPTIONS)
+                        });
+                        outputFiles.push({
+                            path: rapperPath + "/types.ts",
+                            content: formatter_1.format(types_2["default"], json_schema_to_typescript_1.DEFAULT_OPTIONS)
                         });
                     }
                     return [2 /*return*/, Promise.all(outputFiles.map(function (_a) {

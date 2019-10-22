@@ -9,15 +9,3 @@ export declare function getIntfWithModelName(intfs: Interface.Root[], urlMapper?
 export declare function rap2name(itf: Interface.Root, urlMapper?: UrlMapper): string;
 /** 接口去重 */
 export declare function uniqueItfs(itfs: Intf[]): Intf[];
-/** 深比较 */
-export declare function looseEqual(newData: any, oldData: any): boolean;
-/** 根据请求参数筛选，暂时只支持 request */
-export declare function paramsFilter<Req extends {
-    [key: string]: any;
-}, I extends {
-    request: Req;
-}, Fil extends {
-    request?: Req;
-}>(item: I, filter: Fil): boolean;
-/** 根据filter函数自定义筛选 */
-export declare function functionFilter<I, Fil>(item: I, filter: Fil): any;
