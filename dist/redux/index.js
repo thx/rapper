@@ -45,7 +45,7 @@ function createRequestStr(interfaces) {
     return "\n    export const rapperRequest = {\n        " + interfaces
         .map(function (_a) {
         var modelName = _a.modelName, name = _a.name, repositoryId = _a.repositoryId, moduleId = _a.moduleId, id = _a.id;
-        return "\n        /**\n         * \u63A5\u53E3\u540D\uFF1A" + name + "\n         * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + repositoryId + "&mod=" + moduleId + "&itf=" + id + "\n         * @param req \u8BF7\u6C42\u53C2\u6570\n         */\n        '" + modelName + "': (req?: ModelItf['" + modelName + "']['Req']): Promise<ModelItf['" + modelName + "']['Res']> => {\n            const action = RequestAction['" + modelName + "'](req)\n            return dispatchAction(action)\n        }";
+        return "\n        /**\n         * \u63A5\u53E3\u540D\uFF1A" + name + "\n         * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + repositoryId + "&mod=" + moduleId + "&itf=" + id + "\n         * @param req \u8BF7\u6C42\u53C2\u6570\n         */\n        '" + modelName + "': (req?: ModelItf['" + modelName + "']['Req']) => {\n            const action = RequestAction['" + modelName + "'](req)\n            return dispatchAction<ModelItf['" + modelName + "']['Res']>(action)\n        }";
     })
         .join(',\n\n') + "\n    };\n    ";
 }
@@ -75,7 +75,7 @@ function createUseRapStr(interfaces) {
 }
 /** 生成 index.ts */
 function createIndexStr(projectId) {
-    return "\n    /**\n     * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n     * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "\n     */\n\n    import { rapperRequest, useResponse, useAllResponse, clearResponseCache, rapperActions } from './fetch'\n    import { rapReducers, rapEnhancer } from './runtime'\n    \n    export {\n        /** \u53D1\u9001rapper\u8BF7\u6C42 */\n        rapperRequest,\n        /** \u4EE5Hooks\u7684\u65B9\u5F0F\u4F7F\u7528\u8BF7\u6C42\u54CD\u5E94\u6570\u636E */\n        useResponse,\n        /** \u4F7F\u7528\u8BF7\u6C42\u54CD\u5E94\u6570\u636E\uFF08\u5305\u542B\u7F13\u5B58\uFF09 */\n        useAllResponse,\n        /** \u6E05\u9664\u6B64\u63A5\u53E3\u7684\u7F13\u5B58 */\n        clearResponseCache,\n        rapperActions,\n        rapReducers,\n        rapEnhancer,\n    };\n    ";
+    return "\n    /**\n     * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n     * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "\n     */\n\n    import { rapperRequest, useResponse, useAllResponse, clearResponseCache, rapperActions } from './request'\n    import { rapReducers, rapEnhancer } from './runtime'\n    \n    export {\n        /** \u53D1\u9001rapper\u8BF7\u6C42 */\n        rapperRequest,\n        /** \u4EE5Hooks\u7684\u65B9\u5F0F\u4F7F\u7528\u8BF7\u6C42\u54CD\u5E94\u6570\u636E */\n        useResponse,\n        /** \u4F7F\u7528\u8BF7\u6C42\u54CD\u5E94\u6570\u636E\uFF08\u5305\u542B\u7F13\u5B58\uFF09 */\n        useAllResponse,\n        /** \u6E05\u9664\u6B64\u63A5\u53E3\u7684\u7F13\u5B58 */\n        clearResponseCache,\n        rapperActions,\n        rapReducers,\n        rapEnhancer,\n    };\n    ";
 }
 /** 生成 fetch.ts */
 function createFetchStr(interfaces, _a) {

@@ -12,8 +12,8 @@ function createIndexStr(projectId: number): string {
   return ''
 }
 
-/** 生成 fetch.ts */
-function createFetchStr(interfaces: Intf[], extr: ICreateFetchParams) {
+/** 生成 request.ts */
+function createRequestStr(interfaces: Intf[], extr: ICreateFetchParams) {
   const {
     projectId,
     relModelPath,
@@ -53,4 +53,4 @@ function createFetchStr(interfaces: Intf[], extr: ICreateFetchParams) {
         `;
 }
 
-export default { createIndexStr, createFetchStr }
+export default { createIndexStr, createRequestStr }

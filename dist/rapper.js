@@ -54,6 +54,7 @@ var common_1 = require("./core/common");
 var requester_1 = require("./requester");
 var redux_1 = require("./redux");
 var utils_1 = require("./utils");
+var base_fetch_1 = require("./core/base-fetch");
 var runtime_1 = require("./redux/runtime");
 var types_2 = require("./redux/types");
 var tools_1 = require("./core/tools");
@@ -124,10 +125,15 @@ function default_1(_a) {
                         path: rapperPath + "/model.ts",
                         content: formatter_1.format(modelStr, json_schema_to_typescript_1.DEFAULT_OPTIONS)
                     });
-                    /** 生成 fetch.ts */
+                    /** 生成 request.ts */
                     Creator.createFetchStr && outputFiles.push({
-                        path: rapperPath + "/fetch.ts",
+                        path: rapperPath + "/request.ts",
                         content: formatter_1.format(Creator.createFetchStr(interfaces, { projectId: projectId }), json_schema_to_typescript_1.DEFAULT_OPTIONS)
+                    });
+                    /** 生成 base-fetch.ts */
+                    outputFiles.push({
+                        path: rapperPath + "/base-fetch.ts",
+                        content: formatter_1.format(base_fetch_1["default"], json_schema_to_typescript_1.DEFAULT_OPTIONS)
                     });
                     /** 生成 redux runtime.ts */
                     if (type === 'redux') {

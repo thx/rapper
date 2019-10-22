@@ -6,6 +6,7 @@ import { createModel, getInterfaces } from './core/common'
 import RequesterCreator from './requester'
 import ReduxCreator from './redux';
 import { writeFile } from './utils'
+import baseFetchStr from './core/base-fetch'
 import runtimeStr from './redux/runtime'
 import reduxTypesStr from './redux/types'
 import { getIntfWithModelName, uniqueItfs } from './core/tools'
@@ -85,7 +86,7 @@ export default async function ({
 
   let Creator: {
     createIndexStr?: (projectId: number) => string
-    createFetchStr?: (interfaces: Intf[], { projectId }: { projectId: any; }) => string
+    createRequestStr?: (interfaces: Intf[], { projectId }: { projectId: any; }) => string
   } = {}
   switch (type) {
     case 'requester':
@@ -111,10 +112,16 @@ export default async function ({
     content: format(modelStr, DEFAULT_OPTIONS)
   });
 
-  /** 生成 fetch.ts */
-  Creator.createFetchStr && outputFiles.push({
-    path: `${rapperPath}/fetch.ts`,
-    content: format(Creator.createFetchStr(interfaces, { projectId, }), DEFAULT_OPTIONS)
+  /** 生成 request.ts */
+  Creator.createRequestStr && outputFiles.push({
+    path: `${rapperPath}/request.ts`,
+    content: format(Creator.createRequestStr(interfaces, { projectId, }), DEFAULT_OPTIONS)
+  });
+
+  /** 生成 base-fetch.ts */
+  outputFiles.push({
+    path: `${rapperPath}/base-fetch.ts`,
+    content: format(baseFetchStr, DEFAULT_OPTIONS)
   });
 
   /** 生成 redux runtime.ts */

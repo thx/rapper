@@ -8,8 +8,8 @@ interface Action<T = any> {
 export interface AnyAction extends Action {
     [extraProps: string]: any
 }
-interface IRequestAction {
-    type: '$$_RAPPER_REQUEST'
+export interface IRequestAction {
+    type: '$$RAPPER_REQUEST'
     payload?: {
         modelName: string
         endpoint: string
@@ -21,24 +21,12 @@ interface IRequestAction {
 
 export type IAction = AnyAction | IRequestAction
 
-export interface IRequestParams {
-    endpoint: string
-    method?: REQUEST_METHOD
-    params?: any
-}
-
 /** store enhancer 参数 */
 export interface IEnhancerProps {
     /** 后端api地址，默认是根目录相对路径 */
     requestPrefix?: string
-    /** 请求参数处理函数 */
-    transformRequest?: (data: any) => any
-    /** 响应数据处理函数 */
-    transformResponse?: (data: any) => any
     /** 缓存数据最大长度 */
     maxCacheLength?: number
-    /** 自定义请求函数 */
-    fetch?: (params: IRequestParams) => Promise<any>
 }
 
 interface Dispatch<A = AnyAction> {

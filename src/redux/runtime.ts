@@ -1,5 +1,6 @@
 export default `
-import { IAction, IEnhancerProps, IStore, IRequestParams, StoreEnhancer, StoreCreator, Reducer, AnyAction } from './types'
+import { IAction, IEnhancerProps, IStore, StoreEnhancer, StoreCreator, Reducer, AnyAction } from './types'
+import baseFetch from './base-fetch'
 
 export const RAPPER_REQUEST = '$$RAPPER_REQUEST'
 export const RAPPER_UPDATE_STORE = '$$RAPPER_UPDATE_STORE'
@@ -7,7 +8,7 @@ export const RAPPER_CLEAR_STORE = '$$RAPPER_CLEAR_STORE'
 export const RAPPER_STATE_KEY = '$$rapperResponseData'
 
 /** 拼接组合request链接 */
-const getEndpoint = (requestPrefix: string, url: string): string => {
+const getEndpoint = (url: string, requestPrefix?: string): string => {
     if (!requestPrefix) {
         requestPrefix = ''
     }
@@ -34,57 +35,42 @@ function locationStringify(
     }, '')
 }
 
-const sendRequest = async (params: IRequestParams): Promise<any> => {
-    let requestUrl = params.endpoint
-    const requestParams: any = {
-        credentials: 'include',
-        method: params.method || 'GET',
-        headers: { 'Content-Type': 'application/json' },
-    }
-
-    if (requestParams.method === 'GET') {
-        requestUrl = requestUrl + '?' + locationStringify(params.params)
-    } else if (params.params) {
-        requestParams.body = JSON.stringify(params.params)
-    }
-    const res = await fetch(requestUrl, requestParams)
-    const retJSON = res.clone() // clone before return
-    return retJSON.json()
-}
-
-let dispatch = (action: IAction): Promise<any> => {
+let dispatch = <Res>(action: IAction): Promise<AnyAction | Res> => {
     return new Promise(() => { })
 }
 
+/** redux store存的数据结构 */
+interface IStateInterfaceItem {
+    /** 请求的唯一id，暂时等于requestTime */
+    id: number
+    /** 请求时间 */
+    requestTime: number
+    /** 请求参数*/
+    request?: any
+    /** 是否正在 fetching */
+    isFetching: boolean
+    /** 响应时间 */
+    reponseTime?: number
+    /** 请求响应数据 */
+    response?: any
+}
 interface IAssignDataProps {
     /** 合并前的State */
-    oldState: object
+    oldState: {
+        [key: string]: IStateInterfaceItem[]
+    }
     /** 最大缓存数 */
     maxCacheLength?: number
     payload: {
         /** 接口的key */
         interfaceKey: string
-        /** 请求的唯一id，暂时等于requestTime */
         id: number
-        /** 请求时间，同时也可作为本次请求的key */
         requestTime: number
-        /** 响应时间 */
         reponseTime?: number
-        /** 请求参数*/
         request?: any
-        /** 请求响应数据 */
         response?: any
-        /** 是否正在 fetching */
         isFetching: boolean
     }
-}
-interface IStateInterfaceItem {
-    id: number
-    requestTime: number
-    request?: any
-    isFetching: boolean
-    reponseTime?: number
-    response?: any
 }
 function assignData({
     oldState,
@@ -102,12 +88,7 @@ function assignData({
         if (maxCacheLength !== Infinity && data.length >= maxCacheLength) {
             data = newState[interfaceKey].slice(data.length - maxCacheLength + 1)
         }
-        newState[interfaceKey] = [].concat(data, {
-            id,
-            requestTime,
-            request,
-            isFetching,
-        })
+        newState[interfaceKey] = [...data, { id, requestTime, request, isFetching }]
     } else {
         newState[interfaceKey] = data.map((item: IStateInterfaceItem) => (item.id === id ? { ...item, reponseTime, response, isFetching } : item))
     }
@@ -122,11 +103,9 @@ export const rapReducers = {
 /** store enhancer */
 export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
     config = config || {}
-    const { requestPrefix, transformRequest = data => data, transformResponse = data => data, maxCacheLength = 2, fetch } = config
+    const { requestPrefix, maxCacheLength = 2 } = config
 
-    const request = typeof fetch === 'function' ? fetch : sendRequest
-
-    return (next: StoreCreator) => <S, A extends AnyAction>(reducers: Reducer<any, any>, ...args: any[]) => {
+    return (next: StoreCreator) => (reducers: Reducer<any, any>, ...args: any[]) => {
         const store = next(reducers, ...args)
 
         /** 重新定义 reducers */
@@ -168,7 +147,7 @@ export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
         store.replaceReducer(newReducers)
 
         /** 重新定义 dispatch */
-        dispatch = async (action: IAction): Promise<any> => {
+        dispatch = async <Res>(action: IAction): Promise<any> => {
             if (action.type !== RAPPER_REQUEST) {
                 return store.dispatch(action)
             }
@@ -195,16 +174,10 @@ export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
                 },
             })
             try {
-                /** 请求参数统一处理 */
-                let newParams = params
-                if (typeof transformRequest === 'function') {
-                    newParams = transformRequest(action.payload)
-                }
-
-                const responseData = await request({
-                    endpoint: getEndpoint(requestPrefix, endpoint),
+                const responseData = await baseFetch<Res>({
+                    endpoint: getEndpoint(endpoint, requestPrefix),
                     method,
-                    params: newParams,
+                    params,
                 })
                 const reponseTime = new Date().getTime()
 
@@ -219,7 +192,7 @@ export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
                         requestTime,
                         reponseTime,
                         request: params,
-                        response: transformResponse(responseData),
+                        response: responseData,
                         isFetching: false,
                     },
                 })
@@ -244,7 +217,7 @@ export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
 }
 
 /** 发送请求 */
-export function dispatchAction(action: IAction): Promise<any> {
-    return dispatch(action)
+export function dispatchAction<Res>(action: AnyAction) {
+    return dispatch<Res>(action)
 }
 `

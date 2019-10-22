@@ -94,8 +94,8 @@ function createActionStr(interfaces: Intf[]): string {
     `
 }
 
-/** 生成 fetch.ts */
-function createRequestStr(interfaces: Intf[]): string {
+/** 生成 rapperRequest */
+function createRapperRequestStr(interfaces: Intf[]): string {
     return `
     export const rapperRequest = {
         ${interfaces
@@ -106,9 +106,9 @@ function createRequestStr(interfaces: Intf[]): string {
          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
          * @param req 请求参数
          */
-        '${modelName}': (req?: ModelItf['${modelName}']['Req']): Promise<ModelItf['${modelName}']['Res']> => {
+        '${modelName}': (req?: ModelItf['${modelName}']['Req']) => {
             const action = RequestAction['${modelName}'](req)
-            return dispatchAction(action)
+            return dispatchAction<ModelItf['${modelName}']['Res']>(action)
         }`
             )
             .join(',\n\n')}
@@ -240,7 +240,7 @@ function createIndexStr(projectId: number): string {
      * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
      */
 
-    import { rapperRequest, useResponse, useAllResponse, clearResponseCache, rapperActions } from './fetch'
+    import { rapperRequest, useResponse, useAllResponse, clearResponseCache, rapperActions } from './request'
     import { rapReducers, rapEnhancer } from './runtime'
     
     export {
@@ -259,8 +259,8 @@ function createIndexStr(projectId: number): string {
     `
 }
 
-/** 生成 fetch.ts */
-function createFetchStr(interfaces: Intf[], { projectId }): string {
+/** 生成 request.ts */
+function createRequestStr(interfaces: Intf[], { projectId }): string {
     return `
     /**
      * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
@@ -332,11 +332,11 @@ function createFetchStr(interfaces: Intf[], { projectId }): string {
     }
 
     ${createActionStr(interfaces)}
-    ${createRequestStr(interfaces)}
+    ${createRapperRequestStr(interfaces)}
     ${createUseRapStr(interfaces)}
 
     export const rapperActions = RequestTypes || []
     `
 }
 
-export default { createIndexStr, createFetchStr }
+export default { createIndexStr, createRequestStr }
