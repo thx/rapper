@@ -108,7 +108,7 @@ function createRapperRequestStr(interfaces: Intf[]): string {
          */
         '${modelName}': (req?: ModelItf['${modelName}']['Req']) => {
             const action = RequestAction['${modelName}'](req)
-            return dispatchAction<ModelItf['${modelName}']['Res']>(action)
+            return dispatchAction(action) as ReturnType<ModelItf['${modelName}']['Res']>
         }`
             )
             .join(',\n\n')}
@@ -153,7 +153,7 @@ function createUseRapStr(interfaces: Intf[]): string {
             filter?: { request?: ModelItf['${modelName}']['Req'] } | { (
                 storeData: IStoreItem['${modelName}']
             ): boolean }
-        ): [null | ModelItf['${modelName}']['Res'], boolean] {
+        ) {
             const reduxData = useSelector((state: IState) => {
                 return (state[RAPPER_STATE_KEY] && state[RAPPER_STATE_KEY]['${modelName}']) || []
             })
@@ -184,7 +184,7 @@ function createUseRapStr(interfaces: Intf[]): string {
                 }
             }, [reduxData, filter, filteredData])
 
-            return [filteredData, isFetching]
+            return [filteredData, isFetching] as [ReturnType<ModelItf['${modelName}']['Res']>, boolean | undefined]
         }`
             )
             .join(',\n\n')}
@@ -199,10 +199,10 @@ function createUseRapStr(interfaces: Intf[]): string {
          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
          */
         /* tslint:disable */
-        '${modelName}': function useData(): ModelItf['${modelName}']['Res'][] {
+        '${modelName}': function useData() {
             return useSelector((state: IState) => {
                 const selectedState = (state[RAPPER_STATE_KEY] && state[RAPPER_STATE_KEY]['${modelName}']) || []
-                return selectedState
+                return selectedState as ReturnType<ModelItf['${modelName}']['Res']>[]
             })
         }`
             )
@@ -266,10 +266,16 @@ function createRequestStr(interfaces: Intf[], { projectId }): string {
      * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
      * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
      */
-    import { ModelItf } from './model'
-    import { dispatchAction, RAPPER_REQUEST, RAPPER_CLEAR_STORE, RAPPER_STATE_KEY } from './runtime'
     import { useState, useEffect } from 'react'
     import { useSelector } from 'react-redux'
+    import { ModelItf } from './model'
+    import { dispatchAction, RAPPER_REQUEST, RAPPER_CLEAR_STORE, RAPPER_STATE_KEY } from './runtime'
+    import baseFetch from './base-fetch'
+
+    class Helper<Req> {
+        Return = baseFetch<Req>({ endpoint: '' })
+    }
+    type ReturnType<T> = Helper<T>['Return']
 
     /** 深比较 */
     function looseEqual(newData: any, oldData: any): boolean {

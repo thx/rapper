@@ -1,4 +1,5 @@
 import chalk from 'chalk'
+import * as fs from 'fs'
 import { format } from 'json-schema-to-typescript/dist/src/formatter'
 import { DEFAULT_OPTIONS } from 'json-schema-to-typescript'
 import { Intf, UrlMapper, RAPPER_TYPE, TRAILING_COMMA } from './types'
@@ -119,10 +120,12 @@ export default async function ({
   });
 
   /** 生成 base-fetch.ts */
-  outputFiles.push({
-    path: `${rapperPath}/base-fetch.ts`,
-    content: format(baseFetchStr, DEFAULT_OPTIONS)
-  });
+  fs.exists(`${rapperPath}/request.ts`, isExist => {
+    isExist || outputFiles.push({
+      path: `${rapperPath}/base-fetch.ts`,
+      content: format(baseFetchStr, DEFAULT_OPTIONS)
+    });
+  })
 
   /** 生成 redux runtime.ts */
   if (type === 'redux') {

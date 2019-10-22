@@ -4,8 +4,8 @@ exports.__esModule = true;
 function createIndexStr(projectId) {
     return '';
 }
-/** 生成 fetch.ts */
-function createFetchStr(interfaces, extr) {
+/** 生成 request.ts */
+function createRequestStr(interfaces, extr) {
     var projectId = extr.projectId, relModelPath = extr.relModelPath, relBaseFetchPath = extr.relBaseFetchPath;
     return "\n          /**\n           * \u672C\u6587\u4EF6\u7531 Rapper \u4ECE Rap \u4E2D\u81EA\u52A8\u751F\u6210\uFF0C\u8BF7\u52FF\u4FEE\u6539\n           * Rap \u5730\u5740: http://rap2.alibaba-inc.com/repository/editor?id=" + projectId + "\n           */\n          import fetch from '" + relBaseFetchPath + "';\n          import { ModelItf } from '" + relModelPath + "';\n\n          type Extra = Parameters<typeof fetch>[3];\n          const request = {\n            " + interfaces
         .map(function (itf) {
@@ -14,4 +14,4 @@ function createFetchStr(interfaces, extr) {
     })
         .join(',\n\n') + "\n          };\n          export default request;\n        ";
 }
-exports["default"] = { createIndexStr: createIndexStr, createFetchStr: createFetchStr };
+exports["default"] = { createIndexStr: createIndexStr, createRequestStr: createRequestStr };

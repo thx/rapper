@@ -47,6 +47,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var chalk_1 = require("chalk");
+var fs = require("fs");
 var formatter_1 = require("json-schema-to-typescript/dist/src/formatter");
 var json_schema_to_typescript_1 = require("json-schema-to-typescript");
 var types_1 = require("./types");
@@ -126,14 +127,16 @@ function default_1(_a) {
                         content: formatter_1.format(modelStr, json_schema_to_typescript_1.DEFAULT_OPTIONS)
                     });
                     /** 生成 request.ts */
-                    Creator.createFetchStr && outputFiles.push({
+                    Creator.createRequestStr && outputFiles.push({
                         path: rapperPath + "/request.ts",
-                        content: formatter_1.format(Creator.createFetchStr(interfaces, { projectId: projectId }), json_schema_to_typescript_1.DEFAULT_OPTIONS)
+                        content: formatter_1.format(Creator.createRequestStr(interfaces, { projectId: projectId }), json_schema_to_typescript_1.DEFAULT_OPTIONS)
                     });
                     /** 生成 base-fetch.ts */
-                    outputFiles.push({
-                        path: rapperPath + "/base-fetch.ts",
-                        content: formatter_1.format(base_fetch_1["default"], json_schema_to_typescript_1.DEFAULT_OPTIONS)
+                    fs.exists(rapperPath + "/request.ts", function (isExist) {
+                        isExist || outputFiles.push({
+                            path: rapperPath + "/base-fetch.ts",
+                            content: formatter_1.format(base_fetch_1["default"], json_schema_to_typescript_1.DEFAULT_OPTIONS)
+                        });
                     });
                     /** 生成 redux runtime.ts */
                     if (type === 'redux') {

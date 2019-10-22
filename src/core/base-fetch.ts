@@ -26,7 +26,7 @@ interface IRequestParams {
     params?: any
 }
 
-export default async <Res>(params: IRequestParams): Promise<Res> => {
+export default async <Res extends { [x: string]: any }>(params: IRequestParams): Promise<Res> => {
     let requestUrl = params.endpoint
     const requestParams: any = {
         credentials: 'include',
