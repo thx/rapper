@@ -120,12 +120,12 @@ export default async function ({
   });
 
   /** 生成 base-fetch.ts */
-  fs.exists(`${rapperPath}/request.ts`, isExist => {
-    isExist || outputFiles.push({
+  if (!fs.existsSync(`${rapperPath}/base-fetch.ts`)) {
+    outputFiles.push({
       path: `${rapperPath}/base-fetch.ts`,
       content: format(baseFetchStr, DEFAULT_OPTIONS)
     });
-  })
+  }
 
   /** 生成 redux runtime.ts */
   if (type === 'redux') {

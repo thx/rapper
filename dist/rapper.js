@@ -11,11 +11,10 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -78,9 +77,9 @@ function default_1(_a) {
                         return [2 /*return*/, new Promise(function () { return console.log(chalk_1["default"].red('rapper: 请配置 projectId 参数')); })];
                     }
                     if (codeStyle && typeof codeStyle === 'object') {
-                        json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign(__assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style), codeStyle);
+                        json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style, codeStyle);
                     }
-                    json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign(__assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style), { singleQuote: true, semi: false, trailingComma: types_1.TRAILING_COMMA.ES5 });
+                    json_schema_to_typescript_1.DEFAULT_OPTIONS.style = __assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS.style, { singleQuote: true, semi: false, trailingComma: types_1.TRAILING_COMMA.ES5 });
                     if (!rapperPath) {
                         return [2 /*return*/, new Promise(function () { return console.log(chalk_1["default"].red('rapper: rapperPath 配置失败，请修改')); })];
                     }
@@ -133,12 +132,12 @@ function default_1(_a) {
                         content: formatter_1.format(Creator.createRequestStr(interfaces, { projectId: projectId }), json_schema_to_typescript_1.DEFAULT_OPTIONS)
                     });
                     /** 生成 base-fetch.ts */
-                    fs.exists(rapperPath + "/request.ts", function (isExist) {
-                        isExist || outputFiles.push({
+                    if (!fs.existsSync(rapperPath + "/base-fetch.ts")) {
+                        outputFiles.push({
                             path: rapperPath + "/base-fetch.ts",
                             content: formatter_1.format(base_fetch_1["default"], json_schema_to_typescript_1.DEFAULT_OPTIONS)
                         });
-                    });
+                    }
                     /** 生成 redux runtime.ts */
                     if (type === 'redux') {
                         outputFiles.push({

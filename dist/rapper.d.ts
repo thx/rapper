@@ -22,5 +22,5 @@ interface IRapper {
         trailingComma?: TRAILING_COMMA;
     };
 }
-export default function ({ type, projectId, rapUrl, rapperPath, urlMapper, codeStyle, }: IRapper): Promise<unknown>;
+export default function ({ type, projectId, rapUrl, rapperPath, urlMapper, codeStyle, }: IRapper): Promise<void | {}>;
 export {};

@@ -1,4 +1,6 @@
-# Rap-Redux
+
+
+# Rapper(requx版本)
 
 ## 使用手册
 
@@ -134,28 +136,19 @@ const rapData = useResponse['GET/adgroup/price/update$'](({ request, response })
 
 ## 高级配置
 
-### 1、后端请求路径配置
+### 1、自定义 fetch
 
-```js
-import { rapEnhancer } from 'model/rapper'
+默认使用 window.fetch 发送请求，但某些项目里面需要有自定义的请求方式，比如：
+-   自定义使用 axios、ajax 等发起请求
+-   自定义 请求成功、失败状态的判定
+-   请求成功、失败回调，增加全局 loading、全局错误提示等等
 
-rapEnhancer({
-    /** 可选，后端api地址，默认是根目录相对路径 */
-    requestPrefix: '/',
-})
-```
+#### 需求场景一：所有请求参数加上token字段
 
-### 1、请求参数 Map
+这个时候就需要自定义 `base-fetch.ts` 这个文件了，配置示例见：
 
-```js
-import { rapEnhancer } from 'model/rapper'
 
-rapEnhancer({
-    transformRequest: reqest => request.params,
-})
-```
-
-### 2、接口响应数据过滤
+### 需求场景二：接口响应数据过滤
 
 在实际业务中，我们的接口响应数据会有很多辅助参数，我们真正关心的数据可能只有部分，比如：
 
@@ -178,13 +171,18 @@ rapEnhancer({
 
 我们真正想要的数据是 `result` 参数，`error`、`errmsg`等都只是通用的辅助参数
 
-这里，可以给 `rapEnhancer` 传一个函数作为参数，来过滤响应数据，让存入 redux store 的数据更加纯净，类似下面这样：
+这个时候就需要自定义 `base-fetch.ts` 这个文件了，配置示例见：
+
+### 2、后端请求路径配置
+
+当然也可以不在这配置，直接在 自定义 base-fetch 里面配置
 
 ```js
 import { rapEnhancer } from 'model/rapper'
 
 rapEnhancer({
-    transformResponse: responseData => responseData.result,
+    /** 可选，后端api地址，默认是根目录相对路径 */
+    requestPrefix: '/',
 })
 ```
 
@@ -200,32 +198,7 @@ rapEnhancer({
 })
 ```
 
-### 4、自定义 fetch
-
-默认使用 window.fetch 发送请求，但某些项目里面需要有自定义的请求方式，比如：
-
--   自定义使用 axios、ajax 等发起请求
--   自定义 请求成功、失败状态的判定
--   请求成功、失败回调，增加全局 loading、全局错误提示等等
-
-自定义的方法：
-
-```js
-import { rapEnhancer } from 'model/rapper'
-
-rapEnhancer({
-    /**
-     * 自定义请求方法
-     * endpoint，接口地址；method，请求类型；params，请求参数
-     * 此函数返回一个 promise，同时将请求结果返回
-     */
-    fetch: ({ endpoint, method, params }) => {
-        /** 这里自定义请求逻辑 */
-    }
-}),
-```
-
-### 5、获取请求的三个 Action： RequestAction、SuccessAction、FailureAction
+### 4、获取请求的三个 Action： RequestAction、SuccessAction、FailureAction
 
 ```js
 import { rapperActions } from 'model/rapper'
@@ -233,7 +206,7 @@ import { rapperActions } from 'model/rapper'
 const [RequestAction, SuccessAction, FailureAction] = rapperActions['GET/adgroup/price/update$']
 ```
 
-# Rapper（Magix 版本）
+# Rapper（request 版本）
 
 ## 有关于数组数据类型推导的规则
 
@@ -308,3 +281,23 @@ export = function<Res extends {[x: string]: any}>(
       return myfetch(url, method)
   }
 ```
+
+# 生成文档介绍
+
+## requester
+
+- index.ts，入口文件（不建议修改，rapper() 会重置此文件）
+- base-fetch.ts，项目的公共请求方法，用户可在此加入自定义逻辑，比如请求、响应数据过滤（如有需要可以修改，项目初始化后就不会更新此文件）
+- model.ts，接口类型定义文件（不建议修改，rapper() 会重置此文件）
+- request.ts，接口请求文件（不建议修改，rapper() 会重置此文件）
+
+## rapper
+
+- index.ts，入口文件（不建议修改，rapper() 会重置此文件）
+- base-fetch.ts，项目的公共请求方法，用户可在此加入自定义逻辑，比如请求、响应数据过滤（如有需要可以修改，项目初始化后就不会更新此文件）
+- model.ts，接口类型定义文件（不建议修改，rapper() 会重置此文件）
+- request.ts，接口请求文件（不建议修改，rapper() 会重置此文件）
+- runtime.ts，redux 运行时文件（不建议修改，rapper() 会重置此文件）
+- types.ts，redux 运行时文件（不建议修改，rapper() 会重置此文件）
+
+
