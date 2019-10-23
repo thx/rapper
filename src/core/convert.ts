@@ -202,7 +202,7 @@ export default function convert(
 
   const options: Options = {
     ...DEFAULT_OPTIONS,
-    bannerComment: ''
+    bannerComment: '/* tslint:disable */'
   };
   return Promise.all([
     compile(reqJSONSchema, 'Req', options),

@@ -18,7 +18,7 @@ const getUrl = (url: string, requestPrefix?: string): string => {
 }
 
 let dispatch = <Res>(action: IAction): Promise<AnyAction | Res> => {
-    return new Promise(() => { })
+    return new Promise(() => null)
 }
 
 /** redux store存的数据结构 */
@@ -27,7 +27,7 @@ interface IStateInterfaceItem {
     id: number
     /** 请求时间 */
     requestTime: number
-    /** 请求参数*/
+    /** 请求参数 */
     request?: any
     /** 是否正在 fetching */
     isFetching: boolean
@@ -59,7 +59,7 @@ function assignData({
     payload: { interfaceKey, id, requestTime, reponseTime, request = {}, response, isFetching },
     maxCacheLength,
 }: IAssignDataProps) {
-    let newState = { ...oldState }
+    const newState = { ...oldState }
     if (typeof maxCacheLength !== 'number' || maxCacheLength < 1) {
         maxCacheLength = 2
     }

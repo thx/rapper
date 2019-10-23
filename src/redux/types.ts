@@ -29,12 +29,8 @@ export interface IEnhancerProps {
     maxCacheLength?: number
 }
 
-interface Dispatch<A = AnyAction> {
-    <T extends A>(action: T, ...extraArgs: any[]): T
-}
-interface Unsubscribe {
-    (): void
-}
+type Dispatch<A = AnyAction> = <T extends A>(action: T, ...extraArgs: any[]) => T
+type Unsubscribe = () => void
 export type Reducer<S = any, A = AnyAction> = (state: S | undefined, action: A) => S
 type ExtendState<State, Extension> = [Extension] extends [never] ? State : State & Extension
 type Observer<T> = {
