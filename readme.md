@@ -21,7 +21,7 @@ rapper({
     rapperPath: resolve(process.cwd(), './src/models/rapper/'),
     /** 可选，rap地址，默认是 http://rap2api.taobao.org */
     rapUrl: 'https://rap2api.alibaba-inc.com',
-    /** 可选，输出模板代码的格式 */
+    /** 可选，输出模板代码的格式，具体见 prettier的配置规则 https://prettier.io/docs/en/options.html */
     codeStyle: {
         /** 默认单引号 */
         singleQuote: true,

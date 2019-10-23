@@ -17,17 +17,15 @@ function locationStringify(
     }, '')
 }
 
-/** 请求类型 */
-type REQUEST_METHOD = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD'
-
 interface IRequestParams {
-    endpoint: string
-    method?: REQUEST_METHOD
+    url: string
+    /** 请求类型 */
+    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD'
     params?: any
 }
 
-export default async <Res extends { [x: string]: any }>(params: IRequestParams): Promise<Res> => {
-    let requestUrl = params.endpoint
+export default async <Res>(params: IRequestParams): Promise<Res> => {
+    let requestUrl = params.url
     const requestParams: any = {
         credentials: 'include',
         method: params.method || 'GET',

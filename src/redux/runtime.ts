@@ -8,7 +8,7 @@ export const RAPPER_CLEAR_STORE = '$$RAPPER_CLEAR_STORE'
 export const RAPPER_STATE_KEY = '$$rapperResponseData'
 
 /** 拼接组合request链接 */
-const getEndpoint = (url: string, requestPrefix?: string): string => {
+const getUrl = (url: string, requestPrefix?: string): string => {
     if (!requestPrefix) {
         requestPrefix = ''
     }
@@ -136,7 +136,7 @@ export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
 
             const {
                 modelName,
-                endpoint,
+                url,
                 method,
                 params,
                 cb,
@@ -157,7 +157,7 @@ export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
             })
             try {
                 const responseData = await baseFetch<Res>({
-                    endpoint: getEndpoint(endpoint, requestPrefix),
+                    url: getUrl(url, requestPrefix),
                     method,
                     params,
                 })

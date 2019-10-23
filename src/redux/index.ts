@@ -20,7 +20,7 @@ function getRequestActionInterfaceStr(interfaces: Intf[]): string {
                         type: '$$RAPPER_REQUEST',
                         payload: {
                             modelName: '${modelName}'
-                            endpoint: '${url}'
+                            url: '${url}'
                             method: '${method}'
                             params?: ModelItf['${modelName}']['Req']
                             types: ['${modelName}_REQUEST', '${modelName}_SUCCESS', '${modelName}_FAILURE']
@@ -64,7 +64,7 @@ function getRequestActionStr(interfaces: Intf[]): string {
                         type: RAPPER_REQUEST,
                         payload: {
                             modelName: '${modelName}',
-                            endpoint: '${url}',
+                            url: '${url}',
                             method: '${method}',
                             params,
                             types: RequestTypes['${modelName}'],
@@ -184,7 +184,7 @@ function createUseRapStr(interfaces: Intf[]): string {
                 }
             }, [reduxData, filter, filteredData])
 
-            return [filteredData, isFetching] as [ReturnType<ModelItf['${modelName}']['Res']>, boolean | undefined]
+            return [filteredData, isFetching] as [ModelItf['${modelName}']['Res'], boolean | undefined]
         }`
             )
             .join(',\n\n')}
@@ -202,7 +202,7 @@ function createUseRapStr(interfaces: Intf[]): string {
         '${modelName}': function useData() {
             return useSelector((state: IState) => {
                 const selectedState = (state[RAPPER_STATE_KEY] && state[RAPPER_STATE_KEY]['${modelName}']) || []
-                return selectedState as ReturnType<ModelItf['${modelName}']['Res']>[]
+                return selectedState as ModelItf['${modelName}']['Res'][]
             })
         }`
             )
@@ -273,9 +273,11 @@ function createRequestStr(interfaces: Intf[], { projectId }): string {
     import baseFetch from './base-fetch'
 
     class Helper<Req> {
-        Return = baseFetch<Req>({ endpoint: '' })
+        Return = baseFetch<Req>({ url: '' })
+        R = baseFetch<Req>({ url: '' }).then(response => response)
     }
     type ReturnType<T> = Helper<T>['Return']
+    type ReturnTypeNo<T> = Helper<T>['R']
 
     /** 深比较 */
     function looseEqual(newData: any, oldData: any): boolean {

@@ -12,7 +12,7 @@ export interface IRequestAction {
     type: '$$RAPPER_REQUEST'
     payload?: {
         modelName: string
-        endpoint: string
+        url: string
         method?: REQUEST_METHOD
         params?: any
         types: string[]

@@ -24,16 +24,7 @@ interface IRapper {
   /** 选填，url映射，可用来将复杂的url映射为简单的url */
   urlMapper?: UrlMapper;
   /** 选填，输出模板代码的格式 */
-  codeStyle?: {
-    /** 默认单引号 */
-    singleQuote?: boolean;
-    /** 默认2个空格 */
-    tabWidth?: number;
-    /** 分号结尾，默认true */
-    semi?: boolean;
-    /** 逗号 */
-    trailingComma?: TRAILING_COMMA;
-  };
+  codeStyle?: {};
 }
 export default async function ({
   type,
@@ -52,15 +43,16 @@ export default async function ({
   if (!projectId) {
     return new Promise(() => console.log(chalk.red('rapper: 请配置 projectId 参数')))
   }
-  if (codeStyle && typeof codeStyle === 'object') {
-    DEFAULT_OPTIONS.style = { ...DEFAULT_OPTIONS.style, ...codeStyle };
-  }
+
   DEFAULT_OPTIONS.style = {
     ...DEFAULT_OPTIONS.style,
     singleQuote: true,
     semi: false,
     trailingComma: TRAILING_COMMA.ES5,
   };
+  if (codeStyle && typeof codeStyle === 'object') {
+    DEFAULT_OPTIONS.style = { ...DEFAULT_OPTIONS.style, ...codeStyle };
+  }
 
   if (!rapperPath) {
     return new Promise(() => console.log(chalk.red('rapper: rapperPath 配置失败，请修改')))

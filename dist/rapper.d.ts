@@ -1,4 +1,4 @@
-import { UrlMapper, RAPPER_TYPE, TRAILING_COMMA } from './types';
+import { UrlMapper, RAPPER_TYPE } from './types';
 interface IRapper {
     /** 必填，redux、requester 等 */
     type: RAPPER_TYPE;
@@ -11,16 +11,7 @@ interface IRapper {
     /** 选填，url映射，可用来将复杂的url映射为简单的url */
     urlMapper?: UrlMapper;
     /** 选填，输出模板代码的格式 */
-    codeStyle?: {
-        /** 默认单引号 */
-        singleQuote?: boolean;
-        /** 默认2个空格 */
-        tabWidth?: number;
-        /** 分号结尾，默认true */
-        semi?: boolean;
-        /** 逗号 */
-        trailingComma?: TRAILING_COMMA;
-    };
+    codeStyle?: {};
 }
-export default function ({ type, projectId, rapUrl, rapperPath, urlMapper, codeStyle, }: IRapper): Promise<void | {}>;
+export default function ({ type, projectId, rapUrl, rapperPath, urlMapper, codeStyle, }: IRapper): Promise<unknown>;
 export {};
