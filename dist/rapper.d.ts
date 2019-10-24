@@ -13,5 +13,5 @@ interface IRapper {
     /** 选填，输出模板代码的格式 */
     codeStyle?: {};
 }
-export default function ({ type, projectId, rapUrl, rapperPath, urlMapper, codeStyle, }: IRapper): Promise<unknown>;
+export default function ({ type, projectId, rapUrl, rapperPath, urlMapper, codeStyle, }: IRapper): Promise<void | {}>;
 export {};

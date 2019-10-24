@@ -73,7 +73,7 @@ combineReducers({
 
 ```js
 /** import 的目录就是上面第二步配置的 outputPath */
-import { rapperRequest, useResponse, useAllResponse, clearResponseCache } from 'model/rapper'
+import { rapperRequest, useResponse, useAllResponse, clearResponseCache, rapperActions } from 'model/rapper'
 
 /** 发送请求，返回的是一个 promise，会把响应数据返回 */
 rapperRequest['GET/adgroup/price/update$']({ productId: 1 })
@@ -94,6 +94,10 @@ const rapData = useAllResponse['GET/adgroup/price/update$']()
 
 /** 清除数据 */
 clearResponseCache['GET/adgroup/price/update$']()
+
+/** 获取请求的三个 Action： RequestAction、SuccessAction、FailureAction */
+const [RequestAction, SuccessAction, FailureAction] = rapperActions['GET/adgroup/price/update$']
+
 ```
 
 #### 接口响应数据的缓存与使用
@@ -136,7 +140,7 @@ const rapData = useResponse['GET/adgroup/price/update$'](({ request, response })
 
 ## 高级配置
 
-### 1、自定义 fetch
+### 1、自定义 fetch (更改 base-fetch.ts )
 
 默认使用 window.fetch 发送请求，但某些项目里面需要有自定义的请求方式，比如：
 -   自定义使用 axios、ajax 等发起请求
@@ -148,7 +152,7 @@ const rapData = useResponse['GET/adgroup/price/update$'](({ request, response })
 这个时候就需要自定义 `base-fetch.ts` 这个文件了，配置示例见：
 
 
-### 需求场景二：接口响应数据过滤
+#### 需求场景二：接口响应数据过滤
 
 在实际业务中，我们的接口响应数据会有很多辅助参数，我们真正关心的数据可能只有部分，比如：
 
@@ -173,20 +177,9 @@ const rapData = useResponse['GET/adgroup/price/update$'](({ request, response })
 
 这个时候就需要自定义 `base-fetch.ts` 这个文件了，配置示例见：
 
-### 2、后端请求路径配置
+#### 需求场景三：后端请求路径配置
 
-当然也可以不在这配置，直接在 自定义 base-fetch 里面配置
-
-```js
-import { rapEnhancer } from 'model/rapper'
-
-rapEnhancer({
-    /** 可选，后端api地址，默认是根目录相对路径 */
-    requestPrefix: '/',
-})
-```
-
-### 3、请求响应数据缓存长度设置
+### 2、请求响应数据缓存长度设置
 
 我们可以将多次请求响应的数据缓存起来，默认缓存最近 2 次请求的数据，当然也可以通过配置 `maxCacheLength` 来自定义缓存长度
 
@@ -196,14 +189,6 @@ import { rapEnhancer } from 'model/rapper'
 rapEnhancer({
     maxCacheLength: 3, // 也支持 Infinity
 })
-```
-
-### 4、获取请求的三个 Action： RequestAction、SuccessAction、FailureAction
-
-```js
-import { rapperActions } from 'model/rapper'
-
-const [RequestAction, SuccessAction, FailureAction] = rapperActions['GET/adgroup/price/update$']
 ```
 
 # Rapper（request 版本）

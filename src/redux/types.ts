@@ -23,8 +23,6 @@ export type IAction = AnyAction | IRequestAction
 
 /** store enhancer 参数 */
 export interface IEnhancerProps {
-    /** 后端api地址，默认是根目录相对路径 */
-    requestPrefix?: string
     /** 缓存数据最大长度 */
     maxCacheLength?: number
 }

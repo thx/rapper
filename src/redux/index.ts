@@ -108,7 +108,7 @@ function createRapperRequestStr(interfaces: Intf[]): string {
          */
         '${modelName}': (req?: ModelItf['${modelName}']['Req']) => {
             const action = RequestAction['${modelName}'](req)
-            return dispatchAction(action) as ReturnType<ModelItf['${modelName}']['Res']>
+            return dispatchAction(action) as ResponsePromiseType<ModelItf['${modelName}']['Res']>
         }`
             )
             .join(',\n\n')}
@@ -140,6 +140,37 @@ function createUseRapStr(interfaces: Intf[]): string {
         [key: string]: any
     }
 
+    function useResponseData<Req, Res, Item extends { request: Req }>(modelName: string, filter) {
+        const reduxData = useSelector((state: IState) => {
+          return (state[RAPPER_STATE_KEY] && state[RAPPER_STATE_KEY][modelName]) || []
+        })
+        const initData = reduxData.length ? reduxData.slice(-1)[0] : {}
+        const [filteredData, setFilteredData] = useState(initData.response || undefined)
+        const [isFetching, setIsFetching] = useState(initData.isFetching || false)
+      
+        useEffect(() => {
+          let resultArr = []
+          if (filter) {
+            if (typeof filter === 'function') {
+              resultArr = reduxData.filter((item: Item) => functionFilter<Item, typeof filter>(item, filter))
+            } else {
+              resultArr = reduxData.filter((item: Item) => paramsFilter<Req, Item, typeof filter>(item, filter))
+            }
+          } else {
+            resultArr = reduxData
+          }
+          /** 过滤出一条最新的符合条件的数据 */
+          const result = resultArr.length ? resultArr.slice(-1)[0] : {}
+      
+          if (!looseEqual(result.response, filteredData)) {
+            setFilteredData(result.response || undefined)
+            setIsFetching(result.isFetching || false)
+          }
+        }, [reduxData, filter, filteredData])
+      
+        return [filteredData, isFetching] as [ResponseType<Res>, boolean | undefined]
+    }
+
     export const useResponse = {
         ${interfaces
             .map(
@@ -154,37 +185,10 @@ function createUseRapStr(interfaces: Intf[]): string {
                 storeData: IStoreItem['${modelName}']
             ): boolean }
         ) {
-            const reduxData = useSelector((state: IState) => {
-                return (state[RAPPER_STATE_KEY] && state[RAPPER_STATE_KEY]['${modelName}']) || []
-            })
-            const initData = reduxData.length ? reduxData.slice(-1)[0] : {}
-            const [filteredData, setFilteredData] = useState(initData.response || undefined)
-            const [isFetching, setIsFetching] = useState(initData.isFetching || false)
-
             type Req = ModelItf['${modelName}']['Req']
-            type ItemType = IStoreItem['${modelName}']
-
-            useEffect(() => {
-                let resultArr = []
-                if (filter) {
-                    if (typeof filter === 'function') {
-                        resultArr = reduxData.filter((item: ItemType) => functionFilter<ItemType, typeof filter>(item, filter))
-                    } else {
-                        resultArr = reduxData.filter((item: ItemType) => paramsFilter<Req, ItemType, typeof filter>(item, filter))
-                    }
-                } else {
-                    resultArr = reduxData
-                }
-                /** 过滤出一条最新的符合条件的数据 */
-                const result = resultArr.length ? resultArr.slice(-1)[0] : {}
-
-                if (!looseEqual(result.response, filteredData)) {
-                    setFilteredData(result.response || undefined)
-                    setIsFetching(result.isFetching || false)
-                }
-            }, [reduxData, filter, filteredData])
-
-            return [filteredData, isFetching] as [ModelItf['${modelName}']['Res'], boolean | undefined]
+            type Res = ModelItf['${modelName}']['Res']
+            type Item = IStoreItem['${modelName}']
+            return useResponseData<Req, Res, Item>('${modelName}', filter)
         }`
             )
             .join(',\n\n')}
@@ -274,10 +278,11 @@ function createRequestStr(interfaces: Intf[], { projectId }): string {
 
     class Helper<Req> {
         Return = baseFetch<Req>({ url: '' })
-        R = baseFetch<Req>({ url: '' }).then(response => response)
     }
-    type ReturnType<T> = Helper<T>['Return']
-    type ReturnTypeNo<T> = Helper<T>['R']
+    type ResponsePromiseType<T> = Helper<T>['Return']
+    
+    type ThenArg<T> = T extends Promise<infer U> ? U : T
+    type ResponseType<T> = ThenArg<Helper<T>['Return']>
 
     /** 深比较 */
     function looseEqual(newData: any, oldData: any): boolean {

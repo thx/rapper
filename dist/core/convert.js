@@ -157,7 +157,7 @@ function interfaceToJSONSchema(itf, scope) {
 function convert(itf) {
     var reqJSONSchema = interfaceToJSONSchema(itf, 'request');
     var resJSONSchema = interfaceToJSONSchema(itf, 'response');
-    var options = __assign(__assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS), { bannerComment: '/* tslint:disable */' });
+    var options = __assign({}, json_schema_to_typescript_1.DEFAULT_OPTIONS, { bannerComment: '/* tslint:disable */' });
     return Promise.all([
         json_schema_to_typescript_1.compile(reqJSONSchema, 'Req', options),
         json_schema_to_typescript_1.compile(resJSONSchema, 'Res', options)

@@ -7,16 +7,6 @@ export const RAPPER_UPDATE_STORE = '$$RAPPER_UPDATE_STORE'
 export const RAPPER_CLEAR_STORE = '$$RAPPER_CLEAR_STORE'
 export const RAPPER_STATE_KEY = '$$rapperResponseData'
 
-/** 拼接组合request链接 */
-const getUrl = (url: string, requestPrefix?: string): string => {
-    if (!requestPrefix) {
-        requestPrefix = ''
-    }
-    requestPrefix = requestPrefix.replace(/\\/$/, '')
-    url = url.replace(/^\\//, '')
-    return requestPrefix + '/' + url
-}
-
 let dispatch = <Res>(action: IAction): Promise<AnyAction | Res> => {
     return new Promise(() => null)
 }
@@ -85,17 +75,15 @@ export const rapReducers = {
 /** store enhancer */
 export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
     config = config || {}
-    const { requestPrefix, maxCacheLength = 2 } = config
+    const { maxCacheLength = 2 } = config
 
     return (next: StoreCreator) => (reducers: Reducer<any, any>, ...args: any[]) => {
         const store = next(reducers, ...args)
 
         /** 重新定义 reducers */
         const newReducers = (state: any, action: IAction): IStore => {
-            if (state) {
-                state[RAPPER_STATE_KEY] || (state[RAPPER_STATE_KEY] = {})
-            } else {
-                state = { [RAPPER_STATE_KEY]: {} }
+            if (state && !state[RAPPER_STATE_KEY]) {
+                throw Error('rapper初始化配置失败，rootReducer应该加入rapReducers，具体请查看demo配置')
             }
 
             if (!action.hasOwnProperty('type')) {
@@ -156,11 +144,7 @@ export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
                 },
             })
             try {
-                const responseData = await baseFetch<Res>({
-                    url: getUrl(url, requestPrefix),
-                    method,
-                    params,
-                })
+                const responseData = await baseFetch<Res>({ url, method, params })
                 const reponseTime = new Date().getTime()
 
                 cb && cb(responseData)

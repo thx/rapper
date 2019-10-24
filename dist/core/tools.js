@@ -15,7 +15,7 @@ var chalk_1 = require("chalk");
 /** 给接口增加 modelName */
 function getIntfWithModelName(intfs, urlMapper) {
     if (urlMapper === void 0) { urlMapper = function (t) { return t; }; }
-    return intfs.map(function (itf) { return (__assign(__assign({}, itf), { modelName: rap2name(itf, urlMapper) })); });
+    return intfs.map(function (itf) { return (__assign({}, itf, { modelName: rap2name(itf, urlMapper) })); });
 }
 exports.getIntfWithModelName = getIntfWithModelName;
 /**
