@@ -76,5 +76,4 @@ typings/
 # FuseBox cache
 .fusebox/
 
-.vscode
 .mx-plugin
