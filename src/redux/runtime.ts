@@ -117,7 +117,7 @@ export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
         store.replaceReducer(newReducers)
 
         /** 重新定义 dispatch */
-        dispatch = async <Res>(action: IAction): Promise<any> => {
+        dispatch = async <Res>(action: IAction) => {
             if (action.type !== RAPPER_REQUEST) {
                 return store.dispatch(action)
             }
