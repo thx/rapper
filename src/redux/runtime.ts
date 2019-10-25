@@ -186,4 +186,4 @@ export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
 export function dispatchAction<Res>(action: AnyAction) {
     return dispatch<Res>(action)
 }
-`
+`;

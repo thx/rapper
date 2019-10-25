@@ -2,7 +2,7 @@ import { rapper } from '../index';
 import { resolve } from 'path';
 
 rapper({
-  type: 'redux',
+  type: 'requester',
   /** rap项目id */
   projectId: 3564,
   /** 输出文件的目录，默认是 ./model */

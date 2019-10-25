@@ -1,4 +1,5 @@
 test_data
+dist
 # Logs
 logs
 *.log
@@ -76,4 +77,4 @@ typings/
 # FuseBox cache
 .fusebox/
 
-.vscode
+.mx-plugin

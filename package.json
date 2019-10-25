@@ -1,47 +1,53 @@
 {
-    "name": "@ali/rapper-redux",
-    "version": "0.1.1",
-    "description": "rapper, use http api as a function",
-    "main": "./dist/index.js",
-    "scripts": {
-        "build": "./node_modules/typescript/bin/tsc -p tsconfig.json",
-        "clean": "rm -rf test_data/model test_data/api",
-        "api": "node ./dist/test",
-        "test": "npm run build && npm run api"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git@gitlab.alibaba-inc.com:mm/rapper.git"
-    },
-    "keywords": [
-        "api"
-    ],
-    "author": "chibing.fy",
-    "license": "ISC",
-    "dependencies": {
-        "axios": "^0.19.0",
-        "chalk": "^2.4.2",
-        "json-schema-to-typescript": "^7.1.0",
-        "json5": "^2.1.0",
-        "lodash": "^4.17.15",
-        "mkdirp": "^0.5.1"
-    },
-    "files": [
-        "dist"
-    ],
-    "publishConfig": {
-        "registry": "http://registry.npm.alibaba-inc.com"
-    },
-    "devDependencies": {
-        "@types/json5": "0.0.30",
-        "@types/react": "^16.9.2",
-        "@types/react-redux": "^7.1.2",
-        "@typescript-eslint/parser": "^2.5.0",
-        "eslint": "^6.1.0",
-        "react": "^16.9.0",
-        "react-redux": "^7.1.1",
-        "redux": "^4.0.4",
-        "typescript": "^3.1.6"
-    },
-    "types": "./dist/index.d.ts"
+  "name": "@ali/rapper-redux",
+  "version": "0.1.1",
+  "description": "rapper, use http api as a function",
+  "main": "./dist/index.js",
+  "scripts": {
+    "lint": "eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
+    "build": "./node_modules/typescript/bin/tsc -p tsconfig.json",
+    "clean": "rm -rf test_data/model test_data/api",
+    "api": "node ./dist/test",
+    "test": "npm run build && npm run api"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.alibaba-inc.com:mm/rapper.git"
+  },
+  "keywords": [
+    "api"
+  ],
+  "author": "chibing.fy",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.0",
+    "chalk": "^2.4.2",
+    "json-schema-to-typescript": "^7.1.0",
+    "json5": "^2.1.0",
+    "lodash": "^4.17.15",
+    "mkdirp": "^0.5.1"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "registry": "http://registry.npm.alibaba-inc.com"
+  },
+  "devDependencies": {
+    "@types/json5": "0.0.30",
+    "@types/lodash": "^4.14.144",
+    "@types/react": "^16.9.2",
+    "@types/react-redux": "^7.1.2",
+    "@typescript-eslint/eslint-plugin": "^2.5.0",
+    "@typescript-eslint/parser": "^2.5.0",
+    "eslint": "^6.5.1",
+    "eslint-config-prettier": "^6.4.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "prettier": "^1.18.2",
+    "react": "^16.9.0",
+    "react-redux": "^7.1.1",
+    "redux": "^4.0.4",
+    "typescript": "^3.1.6"
+  },
+  "types": "./dist/index.d.ts"
 }

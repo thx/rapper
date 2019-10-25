@@ -91,4 +91,4 @@ export interface StoreCreator {
         enhancer?: StoreEnhancer<Ext>
     ): IStore<ExtendState<S, StateExt>, A, StateExt, Ext> & Ext
 }
-`
+`;
