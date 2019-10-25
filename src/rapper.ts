@@ -74,8 +74,8 @@ export default async function({
 
   let Creator: {
     createIndexStr?: (projectId: number) => string;
-    createDynamicStr?: (interfaces: Intf[], { projectId }: { projectId: any }) => string;
-    createLibStr?: (interfaces: Intf[], { projectId }: { projectId: any }) => string;
+    createDynamicStr?: (interfaces: Intf[], { projectId }: { projectId: number }) => string;
+    createLibStr?: (interfaces: Intf[], { projectId }: { projectId: number }) => string;
   } = {};
   switch (type) {
     case 'redux':
