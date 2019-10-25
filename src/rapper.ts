@@ -3,14 +3,11 @@ import * as fs from 'fs';
 import { format } from 'json-schema-to-typescript/dist/src/formatter';
 import { DEFAULT_OPTIONS } from 'json-schema-to-typescript';
 import { Intf, UrlMapper, RAPPER_TYPE, TRAILING_COMMA } from './types';
-import { createRequest, getInterfaces } from './core/common';
-import RequesterCreator from './requester';
+import { createBaseRequestStr, createBaseIndexStr } from './core/base-creator';
 import ReduxCreator from './redux';
 import { writeFile } from './utils';
-import baseFetchStr from './core/base-fetch';
-import runtimeStr from './redux/runtime';
-import reduxTypesStr from './redux/types';
-import { getIntfWithModelName, uniqueItfs } from './core/tools';
+import baseFetchStr from './core/base-fetch-str';
+import { getInterfaces, getIntfWithModelName, uniqueItfs } from './core/tools';
 
 interface Rapper {
   /** 必填，redux、requester 等 */
@@ -77,12 +74,10 @@ export default async function({
 
   let Creator: {
     createIndexStr?: (projectId: number) => string;
-    createRequestStr?: (interfaces: Intf[], { projectId }: { projectId: any }) => string;
+    createDynamicStr?: (interfaces: Intf[], { projectId }: { projectId: any }) => string;
+    createLibStr?: (interfaces: Intf[], { projectId }: { projectId: any }) => string;
   } = {};
   switch (type) {
-    case 'requester':
-      Creator = RequesterCreator;
-      break;
     case 'redux':
       Creator = ReduxCreator;
       break;
@@ -91,27 +86,40 @@ export default async function({
   }
 
   /** 生成 index.ts */
-  Creator.createIndexStr &&
+  if (Creator.createIndexStr) {
+    /** 定制的 */
     outputFiles.push({
       path: `${rapperPath}/index.ts`,
       content: format(Creator.createIndexStr(projectId), DEFAULT_OPTIONS),
     });
+  } else {
+    /** 默认的 */
+    outputFiles.push({
+      path: `${rapperPath}/index.ts`,
+      content: format(createBaseIndexStr(projectId), DEFAULT_OPTIONS),
+    });
+  }
 
-  /** 生成 model.ts */
-  const modelStr = await createRequest(interfaces, {
+  /** 生成基础的 request.ts 请求函数和类型声明 */
+  const requestStr = await createBaseRequestStr(interfaces, {
     projectId,
-    relBaseFetchPath: 'user_fetch',
   });
   outputFiles.push({
-    path: `${rapperPath}/model.ts`,
-    content: format(modelStr, DEFAULT_OPTIONS),
+    path: `${rapperPath}/request.ts`,
+    content: format(requestStr, DEFAULT_OPTIONS),
   });
 
-  /** 生成 request.ts */
-  Creator.createRequestStr &&
+  /** 生成 ${type}.ts 动态的 */
+  Creator.createDynamicStr &&
     outputFiles.push({
-      path: `${rapperPath}/request.ts`,
-      content: format(Creator.createRequestStr(interfaces, { projectId }), DEFAULT_OPTIONS),
+      path: `${rapperPath}/${type}.ts`,
+      content: format(Creator.createDynamicStr(interfaces, { projectId }), DEFAULT_OPTIONS),
+    });
+
+  Creator.createLibStr &&
+    outputFiles.push({
+      path: `${rapperPath}/lib.ts`,
+      content: format(Creator.createDynamicStr(interfaces, { projectId }), DEFAULT_OPTIONS),
     });
 
   /** 生成 base-fetch.ts */
@@ -122,17 +130,18 @@ export default async function({
     });
   }
 
-  /** 生成 redux runtime.ts */
-  if (type === 'redux') {
-    outputFiles.push({
-      path: `${rapperPath}/runtime.ts`,
-      content: format(runtimeStr, DEFAULT_OPTIONS),
-    });
-    outputFiles.push({
-      path: `${rapperPath}/types.ts`,
-      content: format(reduxTypesStr, DEFAULT_OPTIONS),
-    });
-  }
+  /** 生成 redux runtime.ts
+   *  todo 这里重构分别放到 redux.ts 和 lib.ts 里面 */
+  // if (type === 'redux') {
+  //   outputFiles.push({
+  //     path: `${rapperPath}/runtime.ts`,
+  //     content: format(runtimeStr, DEFAULT_OPTIONS),
+  //   });
+  //   outputFiles.push({
+  //     path: `${rapperPath}/types.ts`,
+  //     content: format(reduxTypesStr, DEFAULT_OPTIONS),
+  //   });
+  // }
 
   return Promise.all(outputFiles.map(({ path, content }) => writeFile(path, content)))
     .then(() => {

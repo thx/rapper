@@ -1,7 +1,31 @@
-import * as _ from 'lodash';
 import chalk from 'chalk';
-import { Interface, Intf, UrlMapper } from '../types';
+import axios from 'axios';
+import * as _ from 'lodash';
 
+import { Modules, Collaborator, Interface, Intf, UrlMapper } from '../types';
+
+/** 从rap查询所有接口数据 */
+export async function getInterfaces(rapUrl: string, projectId: number) {
+  const response = await axios.get(`${rapUrl}/repository/get?id=${projectId}`);
+
+  const data = response.data.data;
+  const modules: Modules[] = data.modules;
+  const collaborators: Collaborator[] = data.collaborators;
+
+  let interfaces = _(modules)
+    .map(m => m.interfaces)
+    .flatten()
+    .value();
+
+  if (collaborators.length) {
+    const collaboratorsInterfaces = await Promise.all(
+      collaborators.map(e => getInterfaces(rapUrl, e.id)),
+    );
+    interfaces = interfaces.concat(collaboratorsInterfaces.flat());
+  }
+
+  return interfaces;
+}
 /**
  * 转换rap接口名称
  * 比如 magix 将 / 转换成 _ ，RESTful接口，清除占位符

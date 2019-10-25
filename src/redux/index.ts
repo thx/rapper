@@ -267,7 +267,7 @@ function createIndexStr(projectId: number): string {
 }
 
 /** 生成 request.ts */
-function createRequestStr(interfaces: Intf[], { projectId }): string {
+function createDynamicStr(interfaces: Intf[], { projectId }): string {
   return `
     /**
      * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
@@ -355,4 +355,4 @@ function createRequestStr(interfaces: Intf[], { projectId }): string {
     `;
 }
 
-export default { createIndexStr, createRequestStr };
+export default { createIndexStr, createDynamicStr };

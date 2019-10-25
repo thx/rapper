@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "outDir": "dist", //输出目录
+    "lib": ["esnext", "dom"],
+    /** 自动生成声明文件.d.ts */
+    "declaration": true
+  },
+  "include": ["src"]
+}

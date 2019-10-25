@@ -1,4 +1,5 @@
 test_data
+dist
 # Logs
 logs
 *.log
