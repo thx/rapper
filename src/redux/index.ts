@@ -136,11 +136,17 @@ function createUseRapStr(interfaces: Intf[]): string {
             .join(',\n\n')}
     }
 
+    interface FilterObj<Req> {
+        request?: Req
+    }
+    type FilterFunc<Item> = (storeData: Item) => boolean
     interface IState {
         [key: string]: any
     }
-
-    function useResponseData<Req, Res, Item extends { request: Req }>(modelName: string, filter) {
+    function useResponseData<Req, Res, Item extends { request: Req }>(
+        modelName: string,
+        filter?: FilterObj<Req> | FilterFunc<Item>
+    ) {
         const reduxData = useSelector((state: IState) => {
           return (state[RAPPER_STATE_KEY] && state[RAPPER_STATE_KEY][modelName]) || []
         })
