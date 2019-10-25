@@ -8,14 +8,17 @@ export default `
 /** 服务端api地址，默认是根目录相对路径 */
 const requestPrefix = 'https://rap2api.alibaba-inc.com/app/mock/3402'
 
-interface IRequestParams {
+interface RequestParams {
     url: string
     /** 请求类型 */
     method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD'
     params?: any
+    extra?: {
+        [k: string]: any
+    }
 }
 
-export default async <Res>(params: IRequestParams): Promise<Res> => {
+export default async <Res>(params: RequestParams): Promise<Res> => {
     let requestUrl = getUrl(params.url, requestPrefix)
     const requestParams: any = {
         credentials: 'include',

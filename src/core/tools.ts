@@ -28,8 +28,6 @@ export async function getInterfaces(rapUrl: string, projectId: number) {
 }
 /**
  * 转换rap接口名称
- * 比如 magix 将 / 转换成 _ ，RESTful接口，清除占位符
- * 参数 noTransform 用来配置是否 将 / 转换成 _ ，默认转换
  */
 export function rap2name(itf: Interface.Root, urlMapper: UrlMapper = t => t) {
   // copy from http://gitlab.alibaba-inc.com/thx/magix-cli/blob/master/util/rap.js

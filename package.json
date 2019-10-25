@@ -6,9 +6,9 @@
   "scripts": {
     "lint": "eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
     "build": "./node_modules/typescript/bin/tsc -p tsconfig.json",
-    "clean": "rm -rf test_data/model test_data/api",
-    "requester": "npm run build && node ./dist/test/requester",
-    "redux": "npm run build && node ./dist/test/redux"
+    "clean": "rm -rf test_data/model",
+    "requester": "npm run build && npm run clean && node ./dist/test/requester",
+    "redux": "npm run build && npm run clean && node ./dist/test/redux"
   },
   "repository": {
     "type": "git",
