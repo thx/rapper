@@ -2,7 +2,7 @@ import { Intf } from '../types';
 
 /** 定义 请求types interface  */
 function getRequestTypesInterfaceStr(interfaces: Intf[]): string {
-  return `interface IRequestTypes {
+  return `interface RequestTypes {
           ${interfaces
             .map(
               ({ modelName }) =>
@@ -15,7 +15,7 @@ function getRequestTypesInterfaceStr(interfaces: Intf[]): string {
 
 /** 定义 请求action interface  */
 function getRequestActionInterfaceStr(interfaces: Intf[]): string {
-  return `interface IRequestAction {
+  return `interface RequestAction {
           ${interfaces
             .map(({ modelName, method, url }) => {
               return `
@@ -38,7 +38,7 @@ function getRequestActionInterfaceStr(interfaces: Intf[]): string {
 
 /** 定义 请求types */
 function getRequestTypesStr(interfaces: Intf[]): string {
-  return `const RequestTypes:IRequestTypes = {
+  return `const RequestTypes:RequestTypes = {
           ${interfaces
             .map(({ modelName }) => {
               return `
@@ -55,7 +55,7 @@ function getRequestTypesStr(interfaces: Intf[]): string {
 
 /** 定义 请求action */
 function getRequestActionStr(interfaces: Intf[]): string {
-  return `const RequestAction:IRequestAction = {
+  return `const RequestAction: RequestAction = {
           ${interfaces
             .map(({ id, repositoryId, moduleId, name, url, modelName, method }) => {
               return `
@@ -123,7 +123,7 @@ export function createRapperRequestStr(interfaces: Intf[]): string {
 export function createUseRapStr(interfaces: Intf[]): string {
   return `
       /** store中存储的数据结构 */
-      interface IStoreItem {
+      interface StoreItem {
           ${interfaces
             .map(
               ({ modelName }) => `
@@ -139,47 +139,6 @@ export function createUseRapStr(interfaces: Intf[]): string {
             .join(',\n\n')}
       }
   
-      interface FilterObj<Req> {
-          request?: Req
-      }
-      type FilterFunc<Item> = (storeData: Item) => boolean
-      interface IState {
-          [key: string]: any
-      }
-      function useResponseData<Req, Res, Item extends { request: Req }>(
-          modelName: string,
-          filter?: FilterObj<Req> | FilterFunc<Item>
-      ) {
-          const reduxData = useSelector((state: IState) => {
-            return (state[RAPPER_STATE_KEY] && state[RAPPER_STATE_KEY][modelName]) || []
-          })
-          const initData = reduxData.length ? reduxData.slice(-1)[0] : {}
-          const [filteredData, setFilteredData] = useState(initData.response || undefined)
-          const [isFetching, setIsFetching] = useState(initData.isFetching || false)
-        
-          useEffect(() => {
-            let resultArr = []
-            if (filter) {
-              if (typeof filter === 'function') {
-                resultArr = reduxData.filter((item: Item) => functionFilter<Item, typeof filter>(item, filter))
-              } else {
-                resultArr = reduxData.filter((item: Item) => paramsFilter<Req, Item, typeof filter>(item, filter))
-              }
-            } else {
-              resultArr = reduxData
-            }
-            /** 过滤出一条最新的符合条件的数据 */
-            const result = resultArr.length ? resultArr.slice(-1)[0] : {}
-        
-            if (!looseEqual(result.response, filteredData)) {
-              setFilteredData(result.response || undefined)
-              setIsFetching(result.isFetching || false)
-            }
-          }, [reduxData, filter, filteredData])
-        
-          return [filteredData, isFetching] as [ResponseType<Res>, boolean | undefined]
-      }
-  
       export const useResponse = {
           ${interfaces
             .map(
@@ -191,12 +150,12 @@ export function createUseRapStr(interfaces: Intf[]): string {
           /* tslint:disable */
           '${modelName}': function useData(
               filter?: { request?: Models['${modelName}']['Req'] } | { (
-                  storeData: IStoreItem['${modelName}']
+                  storeData: StoreItem['${modelName}']
               ): boolean }
           ) {
               type Req = Models['${modelName}']['Req']
               type Res = Models['${modelName}']['Res']
-              type Item = IStoreItem['${modelName}']
+              type Item = StoreItem['${modelName}']
               return useResponseData<Req, Res, Item>('${modelName}', filter)
           }`,
             )
@@ -213,7 +172,7 @@ export function createUseRapStr(interfaces: Intf[]): string {
            */
           /* tslint:disable */
           '${modelName}': function useData() {
-              return useSelector((state: IState) => {
+              return useSelector((state: State) => {
                   const selectedState = (state[RAPPER_STATE_KEY] && state[RAPPER_STATE_KEY]['${modelName}']) || []
                   return selectedState as Models['${modelName}']['Res'][]
               })
@@ -257,7 +216,7 @@ export function createTypesStr(): string {
     export interface AnyAction extends Action {
         [extraProps: string]: any
     }
-    export interface IRequestAction {
+    export interface RequestAction {
         type: '$$RAPPER_REQUEST'
         payload?: {
             modelName: string
@@ -268,10 +227,10 @@ export function createTypesStr(): string {
         }
     }
     
-    export type IAction = AnyAction | IRequestAction
+    export type IAction = AnyAction | RequestAction
     
     /** store enhancer 参数 */
-    export interface IEnhancerProps {
+    export interface EnhancerProps {
         /** 缓存数据最大长度 */
         maxCacheLength?: number
     }
@@ -293,20 +252,20 @@ export function createTypesStr(): string {
     export type StoreEnhancerStoreCreator<Ext = {}, StateExt = {}> = <S = any, A extends Action = AnyAction>(
         reducer: Reducer<S, A>,
         preloadedState?: DeepPartial<S>
-    ) => IStore<S & StateExt, A> & Ext
+    ) => Store<S & StateExt, A> & Ext
     
     export type DeepPartial<T> = {
         [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K]
     }
     
     /** Store */
-    export interface IStore<S = any, A = IAction, StateExt = never, Ext = {}> {
+    export interface Store<S = any, A = IAction, StateExt = never, Ext = {}> {
         dispatch: Dispatch<A>
         getState(): S
         subscribe(listener: () => void): Unsubscribe
         replaceReducer<NewState, NewActions>(
             nextReducer: Reducer<NewState, NewActions>
-        ): IStore<ExtendState<NewState, StateExt>, NewActions, StateExt, Ext> & Ext
+        ): Store<ExtendState<NewState, StateExt>, NewActions, StateExt, Ext> & Ext
         [Symbol.observable](): Observable<S>
     }
     
@@ -327,7 +286,7 @@ export function createTypesStr(): string {
         }
     
     export interface StoreCreator {
-        <S, A extends Action, Ext = {}, StateExt = never>(reducer: Reducer<S, A>, enhancer?: StoreEnhancer<Ext, StateExt>): IStore<
+        <S, A extends Action, Ext = {}, StateExt = never>(reducer: Reducer<S, A>, enhancer?: StoreEnhancer<Ext, StateExt>): Store<
             ExtendState<S, StateExt>,
             A,
             StateExt,
@@ -338,7 +297,24 @@ export function createTypesStr(): string {
             reducer: Reducer<S, A>,
             preloadedState?: PreloadedState<S>,
             enhancer?: StoreEnhancer<Ext>
-        ): IStore<ExtendState<S, StateExt>, A, StateExt, Ext> & Ext
+        ): Store<ExtendState<S, StateExt>, A, StateExt, Ext> & Ext
+    }
+    
+    class Helper<Req> {
+        Return = baseFetch<Req>({ url: '' })
+    }
+    export type ResponsePromiseType<T> = Helper<T>['Return']
+    
+    type ThenArg<T> = T extends Promise<infer U> ? U : T
+    export type ResponseType<T> = ThenArg<Helper<T>['Return']>
+  
+    interface FilterObj<Req> {
+      request?: Req
+    }
+    type FilterFunc<Item> = (storeData: Item) => boolean
+    
+    export interface State {
+      [key: string]: any
     }
     `;
 }
@@ -346,17 +322,12 @@ export function createTypesStr(): string {
 /** 生成 redux 运行时依赖 */
 export function createReduxRuntime(): string {
   return `
-export const RAPPER_REQUEST = '$$RAPPER_REQUEST'
-export const RAPPER_UPDATE_STORE = '$$RAPPER_UPDATE_STORE'
-export const RAPPER_CLEAR_STORE = '$$RAPPER_CLEAR_STORE'
-export const RAPPER_STATE_KEY = '$$rapperResponseData'
-
 let dispatch = <Res>(action: IAction): Promise<AnyAction | Res> => {
     return new Promise(() => null)
 }
 
 /** redux store存的数据结构 */
-interface IStateInterfaceItem {
+interface StateInterfaceItem {
     /** 请求的唯一id，暂时等于requestTime */
     id: number
     /** 请求时间 */
@@ -370,10 +341,10 @@ interface IStateInterfaceItem {
     /** 请求响应数据 */
     response?: any
 }
-interface IAssignDataProps {
+interface AssignDataProps {
     /** 合并前的State */
     oldState: {
-        [key: string]: IStateInterfaceItem[]
+        [key: string]: StateInterfaceItem[]
     }
     /** 最大缓存数 */
     maxCacheLength?: number
@@ -392,7 +363,7 @@ function assignData({
     oldState,
     payload: { interfaceKey, id, requestTime, reponseTime, request = {}, response, isFetching },
     maxCacheLength,
-}: IAssignDataProps) {
+}: AssignDataProps) {
     const newState = { ...oldState }
     if (typeof maxCacheLength !== 'number' || maxCacheLength < 1) {
         maxCacheLength = 2
@@ -406,7 +377,7 @@ function assignData({
         }
         newState[interfaceKey] = [...data, { id, requestTime, request, isFetching }]
     } else {
-        newState[interfaceKey] = data.map((item: IStateInterfaceItem) => (item.id === id ? { ...item, reponseTime, response, isFetching } : item))
+        newState[interfaceKey] = data.map((item: StateInterfaceItem) => (item.id === id ? { ...item, reponseTime, response, isFetching } : item))
     }
 
     return newState
@@ -417,7 +388,7 @@ export const rapReducers = {
 }
 
 /** store enhancer */
-export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
+export function rapEnhancer(config?: EnhancerProps): StoreEnhancer<any> {
     config = config || {}
     const { maxCacheLength = 2 } = config
 
@@ -425,7 +396,7 @@ export function rapEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
         const store = next(reducers, ...args)
 
         /** 重新定义 reducers */
-        const newReducers = (state: any, action: IAction): IStore => {
+        const newReducers = (state: any, action: IAction): Store => {
             if (state && !state[RAPPER_STATE_KEY]) {
                 throw Error('rapper初始化配置失败，rootReducer应该加入rapReducers，具体请查看demo配置')
             }
@@ -531,4 +502,101 @@ export function dispatchAction<Res>(action: AnyAction) {
     return dispatch<Res>(action)
 }
 `;
+}
+
+/** 生成工具函数 */
+export function createTools(): string {
+  return `
+    /** 深比较 */
+    function looseEqual(newData: any, oldData: any): boolean {
+        const newType = Object.prototype.toString.call(newData)
+        const oldType = Object.prototype.toString.call(oldData)
+
+        if (newType !== oldType) {
+            return false
+        }
+
+        if (newType === '[object Object]' || newType === '[object Array]') {
+            for (const key in newData) {
+                if (!looseEqual(newData[key], oldData[key])) {
+                    return false
+                }
+            }
+            for (const key in oldData) {
+                if (!looseEqual(newData[key], oldData[key])) {
+                    return false
+                }
+            }
+        } else if (newData !== oldData) {
+            return false
+        }
+
+        return true
+    }
+
+    /** 根据请求参数筛选，暂时只支持 request */
+    function paramsFilter<Req extends { [key: string]: any }, I extends { request: Req },
+    Fil extends { request?: Req }>(item: I, filter: Fil): boolean {
+      if (filter && filter.request) {
+        const filterRequest = filter.request; // 这一行是解决 ts2532 报错
+        if (Object.prototype.toString.call(filter.request) === '[object Object]') {
+          const reqResult = Object.keys(filter.request).every((key): boolean => {
+            return item.request[key] === filterRequest[key];
+          });
+          if (!reqResult) {
+              return false;
+          }
+        } else {
+          return false;
+        }
+      }
+      return true;
+    }
+    
+    /** 根据filter函数自定义筛选 */
+    function functionFilter<I, Fil>(item: I, filter: Fil) {
+      if (filter !== undefined) {
+        if (typeof filter === 'function') {
+          return filter(item)
+        } else {
+          return false
+        }
+      }
+      return true
+    }
+
+    export function useResponseData<Req, Res, Item extends { request: Req }>(
+        modelName: string,
+        filter?: FilterObj<Req> | FilterFunc<Item>
+    ) {
+        const reduxData = useSelector((state: State) => {
+          return (state[RAPPER_STATE_KEY] && state[RAPPER_STATE_KEY][modelName]) || []
+        })
+        const initData = reduxData.length ? reduxData.slice(-1)[0] : {}
+        const [filteredData, setFilteredData] = useState(initData.response || undefined)
+        const [isFetching, setIsFetching] = useState(initData.isFetching || false)
+      
+        useEffect(() => {
+          let resultArr = []
+          if (filter) {
+            if (typeof filter === 'function') {
+              resultArr = reduxData.filter((item: Item) => functionFilter<Item, typeof filter>(item, filter))
+            } else {
+              resultArr = reduxData.filter((item: Item) => paramsFilter<Req, Item, typeof filter>(item, filter))
+            }
+          } else {
+            resultArr = reduxData
+          }
+          /** 过滤出一条最新的符合条件的数据 */
+          const result = resultArr.length ? resultArr.slice(-1)[0] : {}
+      
+          if (!looseEqual(result.response, filteredData)) {
+            setFilteredData(result.response || undefined)
+            setIsFetching(result.isFetching || false)
+          }
+        }, [reduxData, filter, filteredData])
+      
+        return [filteredData, isFetching] as [ResponseType<Res>, boolean | undefined]
+    }
+  `;
 }
