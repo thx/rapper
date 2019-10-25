@@ -1,6 +1,9 @@
 import { Interface, Intf, UrlMapper } from '../types';
 /** 给接口增加 modelName */
-export declare function getIntfWithModelName(intfs: Interface.Root[], urlMapper?: UrlMapper): Intf[];
+export declare function getIntfWithModelName(
+  intfs: Interface.Root[],
+  urlMapper?: UrlMapper,
+): Intf[];
 /**
  * 转换rap接口名称
  * 比如 magix 将 / 转换成 _ ，RESTful接口，清除占位符

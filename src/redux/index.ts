@@ -1,61 +1,64 @@
-import { Intf } from '../types'
+import { Intf } from '../types';
 
 /** 定义 请求types interface  */
 function getRequestTypesInterfaceStr(interfaces: Intf[]): string {
-    return `interface IRequestTypes {
+  return `interface IRequestTypes {
         ${interfaces
-            .map(({ modelName }) => `'${modelName}': ['${modelName}_REQUEST', '${modelName}_SUCCESS', '${modelName}_FAILURE']`)
-            .join('\n\n')}
+          .map(
+            ({ modelName }) =>
+              `'${modelName}': ['${modelName}_REQUEST', '${modelName}_SUCCESS', '${modelName}_FAILURE']`,
+          )
+          .join('\n\n')}
         }
-    `
+    `;
 }
 
 /** 定义 请求action interface  */
 function getRequestActionInterfaceStr(interfaces: Intf[]): string {
-    return `interface IRequestAction {
+  return `interface IRequestAction {
         ${interfaces
-            .map(({ modelName, method, url }) => {
-                return `
-                    '${modelName}': (params?: ModelItf['${modelName}']['Req']) => {
+          .map(({ modelName, method, url }) => {
+            return `
+                    '${modelName}': (params?: Models['${modelName}']['Req']) => {
                         type: '$$RAPPER_REQUEST',
                         payload: {
                             modelName: '${modelName}'
                             url: '${url}'
                             method: '${method}'
-                            params?: ModelItf['${modelName}']['Req']
+                            params?: Models['${modelName}']['Req']
                             types: ['${modelName}_REQUEST', '${modelName}_SUCCESS', '${modelName}_FAILURE']
                         }
                     },
-                `
-            })
-            .join('\n\n')}
+                `;
+          })
+          .join('\n\n')}
         }
-    `
+    `;
 }
 
 /** 定义 请求types */
 function getRequestTypesStr(interfaces: Intf[]): string {
-    return `const RequestTypes:IRequestTypes = {
+  return `const RequestTypes:IRequestTypes = {
         ${interfaces
-            .map(({ modelName }) => {
-                return `
+          .map(({ modelName }) => {
+            return `
                     '${modelName}': [
                         '${modelName}_REQUEST',
                         '${modelName}_SUCCESS',
                         '${modelName}_FAILURE',
                     ],
-                `
-            })
-            .join('\n\n')}
-    }`
+                `;
+          })
+          .join('\n\n')}
+    }`;
 }
 
 /** 定义 请求action */
 function getRequestActionStr(interfaces: Intf[]): string {
-    return `const RequestAction:IRequestAction = {
+  return `const RequestAction:IRequestAction = {
         ${interfaces
-            .map(({ id, repositoryId, moduleId, name, url, modelName, method }) => {
-                return `
+          .map(({ id, repositoryId, moduleId, name, url, modelName, method }) => {
+            return `
                     /**
                      * 接口名：${name}
                      * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
@@ -70,16 +73,16 @@ function getRequestActionStr(interfaces: Intf[]): string {
                             types: RequestTypes['${modelName}'],
                         },
                     }),
-                `
-            })
-            .join('\n\n')}
+                `;
+          })
+          .join('\n\n')}
         }
-    `
+    `;
 }
 
 /** 生成 Action 定义 */
 function createActionStr(interfaces: Intf[]): string {
-    return `
+  return `
     /** 请求types interface  */
     ${getRequestTypesInterfaceStr(interfaces)}
 
@@ -91,49 +94,49 @@ function createActionStr(interfaces: Intf[]): string {
 
     /** 请求action */
     ${getRequestActionStr(interfaces)}
-    `
+    `;
 }
 
 /** 生成 rapperRequest */
 function createRapperRequestStr(interfaces: Intf[]): string {
-    return `
+  return `
     export const rapperRequest = {
         ${interfaces
-            .map(
-                ({ modelName, name, repositoryId, moduleId, id }) => `
+          .map(
+            ({ modelName, name, repositoryId, moduleId, id }) => `
         /**
          * 接口名：${name}
          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
          * @param req 请求参数
          */
-        '${modelName}': (req?: ModelItf['${modelName}']['Req']) => {
+        '${modelName}': (req?: Models['${modelName}']['Req']) => {
             const action = RequestAction['${modelName}'](req)
-            return dispatchAction(action) as ResponsePromiseType<ModelItf['${modelName}']['Res']>
-        }`
-            )
-            .join(',\n\n')}
+            return dispatchAction(action) as ResponsePromiseType<Models['${modelName}']['Res']>
+        }`,
+          )
+          .join(',\n\n')}
     };
-    `
+    `;
 }
 
 /** 生成 useResponse，useAllResponse */
 function createUseRapStr(interfaces: Intf[]): string {
-    return `
+  return `
     /** store中存储的数据结构 */
     interface IStoreItem {
         ${interfaces
-            .map(
-                ({ modelName }) => `
+          .map(
+            ({ modelName }) => `
         '${modelName}': {
-            request: ModelItf['${modelName}']['Req']
-            response: ModelItf['${modelName}']['Res']
+            request: Models['${modelName}']['Req']
+            response: Models['${modelName}']['Res']
             id: number
             requestTime: number
             responseTime: number
             isFetching: boolean
-        }`
-            )
-            .join(',\n\n')}
+        }`,
+          )
+          .join(',\n\n')}
     }
 
     interface IState {
@@ -173,31 +176,31 @@ function createUseRapStr(interfaces: Intf[]): string {
 
     export const useResponse = {
         ${interfaces
-            .map(
-                ({ modelName, name, repositoryId, moduleId, id }) => `
+          .map(
+            ({ modelName, name, repositoryId, moduleId, id }) => `
         /**
          * 接口名：${name}
          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
          */
         /* tslint:disable */
         '${modelName}': function useData(
-            filter?: { request?: ModelItf['${modelName}']['Req'] } | { (
+            filter?: { request?: Models['${modelName}']['Req'] } | { (
                 storeData: IStoreItem['${modelName}']
             ): boolean }
         ) {
-            type Req = ModelItf['${modelName}']['Req']
-            type Res = ModelItf['${modelName}']['Res']
+            type Req = Models['${modelName}']['Req']
+            type Res = Models['${modelName}']['Res']
             type Item = IStoreItem['${modelName}']
             return useResponseData<Req, Res, Item>('${modelName}', filter)
-        }`
-            )
-            .join(',\n\n')}
+        }`,
+          )
+          .join(',\n\n')}
     }
 
     export const useAllResponse = {
         ${interfaces
-            .map(
-                ({ modelName, name, repositoryId, moduleId, id }) => `
+          .map(
+            ({ modelName, name, repositoryId, moduleId, id }) => `
         /**
          * 接口名：${name}
          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
@@ -206,18 +209,18 @@ function createUseRapStr(interfaces: Intf[]): string {
         '${modelName}': function useData() {
             return useSelector((state: IState) => {
                 const selectedState = (state[RAPPER_STATE_KEY] && state[RAPPER_STATE_KEY]['${modelName}']) || []
-                return selectedState as ModelItf['${modelName}']['Res'][]
+                return selectedState as Models['${modelName}']['Res'][]
             })
-        }`
-            )
-            .join(',\n\n')}
+        }`,
+          )
+          .join(',\n\n')}
     }
 
     /** 重置接口数据 */
     export const clearResponseCache = {
         ${interfaces
-            .map(
-                ({ modelName, name, repositoryId, moduleId, id }) => `
+          .map(
+            ({ modelName, name, repositoryId, moduleId, id }) => `
         /**
          * 接口名：${name}
          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
@@ -229,16 +232,16 @@ function createUseRapStr(interfaces: Intf[]): string {
                     '${modelName}': undefined,
                 }
             })
-        }`
-            )
-            .join(',\n\n')}
+        }`,
+          )
+          .join(',\n\n')}
     }
-    `
+    `;
 }
 
 /** 生成 index.ts */
 function createIndexStr(projectId: number): string {
-    return `
+  return `
     /**
      * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
      * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
@@ -260,19 +263,19 @@ function createIndexStr(projectId: number): string {
         rapReducers,
         rapEnhancer,
     };
-    `
+    `;
 }
 
 /** 生成 request.ts */
 function createRequestStr(interfaces: Intf[], { projectId }): string {
-    return `
+  return `
     /**
      * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
      * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
      */
     import { useState, useEffect } from 'react'
     import { useSelector } from 'react-redux'
-    import { ModelItf } from './model'
+    import { Models } from './model'
     import { dispatchAction, RAPPER_REQUEST, RAPPER_CLEAR_STORE, RAPPER_STATE_KEY } from './runtime'
     import baseFetch from './base-fetch'
 
@@ -349,7 +352,7 @@ function createRequestStr(interfaces: Intf[], { projectId }): string {
     ${createUseRapStr(interfaces)}
 
     export const rapperActions = RequestTypes || []
-    `
+    `;
 }
 
-export default { createIndexStr, createRequestStr }
+export default { createIndexStr, createRequestStr };

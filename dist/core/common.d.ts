@@ -3,7 +3,7 @@ import { Intf } from '../types';
 export declare function getInterfaces(rapUrl: string, projectId: number): Promise<any>;
 /** 生成 model.ts 文件 */
 interface ICreateModelParams {
-    projectId: number;
+  projectId: number;
 }
 export declare function createModel(interfaces: Intf[], extr: ICreateModelParams): Promise<string>;
 export {};

@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 function inferArraySchema(
   p: Interface.Property,
   childProperties: JSONSchema4,
-  common: Object
+  common: Record<string, any>,
 ) {
   const rule = (p.rule && p.rule.trim()) || '';
   if (Object.keys(childProperties).length !== 0) {
@@ -20,8 +20,8 @@ function inferArraySchema(
           type: 'object',
           properties: childProperties,
         },
-        ...common
-      }
+        ...common,
+      },
     ];
   } else if (['+1', '1'].includes(rule) && p.value) {
     // 当 rule 为 +1 时 mockjs 从属性值 array 中顺序选取 1 个元素，作为最终值。
@@ -39,8 +39,8 @@ function inferArraySchema(
           p.name,
           {
             type,
-            ...common
-          }
+            ...common,
+          },
         ];
       } else {
         // 解析失败，返回 any
@@ -48,8 +48,8 @@ function inferArraySchema(
           p.name,
           {
             type: ['string', 'number', 'boolean', 'object'],
-            ...common
-          }
+            ...common,
+          },
         ];
       }
     } catch (error) {
@@ -58,8 +58,8 @@ function inferArraySchema(
         p.name,
         {
           type: ['string', 'number', 'boolean', 'object'],
-          ...common
-        }
+          ...common,
+        },
       ];
     }
   } else if (rule === '' && p.value) {
@@ -80,10 +80,10 @@ function inferArraySchema(
           {
             type: 'array',
             items: {
-              type
+              type,
             },
-            ...common
-          }
+            ...common,
+          },
         ];
       } else {
         // 如果不是数组直接使用 value 类型
@@ -93,10 +93,10 @@ function inferArraySchema(
           {
             type: 'array',
             items: {
-              type
+              type,
             },
-            ...common
-          }
+            ...common,
+          },
         ];
       }
     } catch (error) {
@@ -105,8 +105,8 @@ function inferArraySchema(
         p.name,
         {
           type: 'array',
-          ...common
-        }
+          ...common,
+        },
       ];
     }
   } else {
@@ -115,8 +115,8 @@ function inferArraySchema(
       p.name,
       {
         type: 'array',
-        ...common
-      }
+        ...common,
+      },
     ];
   }
 }
@@ -125,10 +125,7 @@ type Scope = 'request' | 'response';
 
 const removeComment = (str: string) => str.replace(/\/\*|\*\//g, '');
 
-function interfaceToJSONSchema(
-  itf: Interface.Root,
-  scope: Scope,
-): JSONSchema4 {
+function interfaceToJSONSchema(itf: Interface.Root, scope: Scope): JSONSchema4 {
   const properties = itf.properties.filter(p => p.scope === scope);
   function findChildProperties(parentId: number) {
     return _.chain(properties)
@@ -138,7 +135,7 @@ function interfaceToJSONSchema(
         const childProperties = findChildProperties(p.id);
         const childItfs = properties.filter(x => x.parentId === p.id);
         const common: { description?: string; required: string[] } = {
-          required: childItfs.filter(e => e.required).map(e => e.name)
+          required: childItfs.filter(e => e.required).map(e => e.name),
         };
         if (p.description) common.description = removeComment(p.description);
         if (['string', 'number', 'integer', 'boolean', 'null'].includes(type)) {
@@ -146,8 +143,8 @@ function interfaceToJSONSchema(
             p.name,
             {
               type,
-              ...common
-            }
+              ...common,
+            },
           ];
         } else if (type === 'object') {
           return [
@@ -155,15 +152,11 @@ function interfaceToJSONSchema(
             {
               type,
               properties: childProperties,
-              ...common
-            }
+              ...common,
+            },
           ];
         } else if (type === 'array') {
-          return inferArraySchema(
-            p,
-            childProperties,
-            common
-          );
+          return inferArraySchema(p, childProperties, common);
         } else {
           throw `type: ${type}
           parentID: ${parentId}
@@ -188,24 +181,16 @@ function interfaceToJSONSchema(
   }
 }
 
-export default function convert(
-  itf: Interface.Root,
-): Promise<Array<string>> {
-  const reqJSONSchema = interfaceToJSONSchema(
-    itf,
-    'request',
-  );
-  const resJSONSchema = interfaceToJSONSchema(
-    itf,
-    'response',
-  );
+export default function convert(itf: Interface.Root): Promise<Array<string>> {
+  const reqJSONSchema = interfaceToJSONSchema(itf, 'request');
+  const resJSONSchema = interfaceToJSONSchema(itf, 'response');
 
   const options: Options = {
     ...DEFAULT_OPTIONS,
-    bannerComment: '/* tslint:disable */'
+    bannerComment: '/* tslint:disable */',
   };
   return Promise.all([
     compile(reqJSONSchema, 'Req', options),
-    compile(resJSONSchema, 'Res', options)
+    compile(resJSONSchema, 'Res', options),
   ]);
 }

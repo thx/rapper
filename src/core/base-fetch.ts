@@ -60,4 +60,4 @@ const getUrl = (url: string, requestPrefix?: string): string => {
   url = url.replace(/^\\//, '')
   return requestPrefix + '/' + url
 }
-`
+`;
