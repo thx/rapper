@@ -58,7 +58,7 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreateFetch
      * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
      */
     import fetch from './base-fetch';
-    type Extra = Parameters<typeof fetch>[3];
+    type Extra = Parameters<typeof fetch>[0]['extra'];
 
     ${modelStr}
 
@@ -75,10 +75,13 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreateFetch
         * @param req 请求参数
         * @param extra 请求配置项
         */
-        '${modelName}': (req: Models['${modelName}']['Req'], extra: Extra) => {
-            return fetch<Models['${modelName}']['Res']>('${
-              itf.url
-            }','${itf.method.toUpperCase()}', req, extra);
+        '${modelName}': (req: Models['${modelName}']['Req'], extra?: Extra) => {
+            return fetch<Models['${modelName}']['Res']>({
+              url: '${itf.url}',
+              method: '${itf.method.toUpperCase()}',
+              params: req, 
+              extra
+            });
         }`;
           })
           .join(',\n\n')}
@@ -94,5 +97,15 @@ export function createBaseIndexStr(projectId: number): string {
      */
      import { request, Models } from './request'
      export { request, Models }
+  `;
+}
+
+export function createBaseLibStr(projectId: number): string {
+  return `
+  /**
+   * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
+   * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
+   */
+  
   `;
 }

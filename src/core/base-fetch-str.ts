@@ -41,6 +41,9 @@ interface RequestParams {
     /** 请求类型 */
     method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD'
     params?: any
+    extra?: {
+        [k: string]: any
+    }
 }
 
 export default async <Res>(params: RequestParams): Promise<Res> => {
