@@ -5,36 +5,7 @@ export default `
  * (如有需要可以修改，项目初始化后就不会更新此文件)
  */
 
-/** 服务端api地址，默认是根目录相对路径 */
-const requestPrefix = 'https://rap2api.alibaba-inc.com/app/mock/3402'
-
-/**
- * search 参数转换，比如 { a: 1, b: 2, c: undefined } 转换成 "a=1&b=2"
- * 会自动删除 undefined
- */
-function locationStringify(
-    obj: {
-        [key: string]: any
-    } = {}
-): string {
-    return Object.entries(obj).reduce((str, [key, value]) => {
-        if (value === undefined) {
-            return str
-        }
-        str = str ? str + '&' : str
-        return str + key + '=' + value
-    }, '')
-}
-
-/** 拼接组合request链接 */
-function getUrl(url: string, requestPrefix?: string): string {
-  if (!requestPrefix) {
-    requestPrefix = ''
-  }
-  requestPrefix = requestPrefix.replace(/\\/$/, '')
-  url = url.replace(/^\\//, '')
-  return requestPrefix + '/' + url
-}
+import { defaultFetch } from './lib'
 
 interface RequestParams {
     url: string
@@ -46,21 +17,7 @@ interface RequestParams {
     }
 }
 
-export default async <Res>(params: RequestParams): Promise<Res> => {
-    let requestUrl = getUrl(params.url, requestPrefix)
-    const requestParams: any = {
-        credentials: 'include',
-        method: params.method || 'GET',
-        headers: { 'Content-Type': 'application/json' },
-    }
-
-    if (requestParams.method === 'GET') {
-        requestUrl = requestUrl + '?' + locationStringify(params.params)
-    } else if (params.params) {
-        requestParams.body = JSON.stringify(params.params)
-    }
-    const res = await fetch(requestUrl, requestParams)
-    const retJSON = res.clone() // clone before return
-    return retJSON.json()
+export default async function<Res>(params: RequestParams): Promise<Res> {
+    return defaultFetch(params)
 }
 `;

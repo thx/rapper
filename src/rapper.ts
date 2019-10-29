@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import { format } from 'json-schema-to-typescript/dist/src/formatter';
 import { DEFAULT_OPTIONS } from 'json-schema-to-typescript';
 import { Intf, UrlMapper, RAPPER_TYPE, TRAILING_COMMA } from './types';
-import { createBaseRequestStr, createBaseIndexStr } from './core/base-creator';
+import { createBaseRequestStr, createBaseIndexStr, createBaseLibStr } from './core/base-creator';
 import ReduxCreator from './redux';
 import { writeFile } from './utils';
 import baseFetchStr from './core/base-fetch-str';
@@ -115,6 +115,13 @@ export default async function({
       path: `${rapperPath}/${type}.ts`,
       content: format(Creator.createDynamicStr(interfaces, { projectId }), DEFAULT_OPTIONS),
     });
+
+  /** 生成静态的 lib */
+
+  outputFiles.push({
+    path: `${rapperPath}/lib.ts`,
+    content: format(createBaseLibStr(interfaces, { projectId }), DEFAULT_OPTIONS),
+  });
 
   Creator.createLibStr &&
     outputFiles.push({

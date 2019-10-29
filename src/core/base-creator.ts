@@ -100,12 +100,51 @@ export function createBaseIndexStr(projectId: number): string {
   `;
 }
 
-export function createBaseLibStr(projectId: number): string {
+export function createBaseLibStr(
+  _interfaces: Intf[],
+  { projectId }: { projectId: number },
+): string {
   return `
   /**
    * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
    * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
    */
-  
+  /** 服务端api地址，默认是根目录相对路径 */
+
+  /**
+   * search 参数转换，比如 { a: 1, b: 2, c: undefined } 转换成 "a=1&b=2"
+   * 会自动删除 undefined
+   */
+  function locationStringify(
+      obj: {
+          [key: string]: any
+      } = {}
+  ): string {
+      return Object.entries(obj).reduce((str, [key, value]) => {
+          if (value === undefined) {
+              return str
+          }
+          str = str ? str + '&' : str
+          return str + encodeURIComponent(key) + '=' + encodeURIComponent(value)
+      }, '')
+  }
+
+  export async function defaultFetch(params: any) {
+      let requestUrl = params.url
+      const requestParams: any = {
+          credentials: 'include',
+          method: params.method || 'GET',
+          headers: { 'Content-Type': 'application/json' },
+      }
+
+      if (requestParams.method === 'GET') {
+          requestUrl = requestUrl + '?' + locationStringify(params.params)
+      } else if (params.params) {
+          requestParams.body = JSON.stringify(params.params)
+      }
+      const res = await fetch(requestUrl, requestParams)
+      const retJSON = res.clone() // clone before return
+      return retJSON.json()
+  }
   `;
 }
