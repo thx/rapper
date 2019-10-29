@@ -1,6 +1,4 @@
-
-
-# Rapper(requx版本)
+# Rapper(requx 版本)
 
 ## 使用手册
 
@@ -9,30 +7,30 @@
 ```js
 /** rapper.js */
 
-const { rapper } = require('@ali/rapper')
-const { resolve } = require('path')
+const { rapper } = require('@ali/rapper');
+const { resolve } = require('path');
 
 rapper({
-    /** 必须配置 */
-    type: 'redux',
-    /** 必须配置，rap项目id */
-    projectId: 3564,
-    /** 可选，输出文件的目录，默认是 ./src/models/rapper/ */
-    rapperPath: resolve(process.cwd(), './src/models/rapper/'),
-    /** 可选，rap地址，默认是 http://rap2api.taobao.org */
-    rapUrl: 'https://rap2api.alibaba-inc.com',
-    /** 可选，输出模板代码的格式，具体见 prettier的配置规则 https://prettier.io/docs/en/options.html */
-    codeStyle: {
-        /** 默认单引号 */
-        singleQuote: true,
-        /** 默认2个空格 */
-        tabWidth: 2,
-        /** 分号结尾，默认false */
-        semi: false,
-        /** 逗号 */
-        trailingComma: 'es5',
-    },
-})
+  /** 必须配置 */
+  type: 'redux',
+  /** 必须配置，rap项目id */
+  projectId: 3564,
+  /** 可选，输出文件的目录，默认是 ./src/models/rapper/ */
+  rapperPath: resolve(process.cwd(), './src/models/rapper/'),
+  /** 可选，rap地址，默认是 http://rap2api.taobao.org */
+  rapUrl: 'https://rap2api.alibaba-inc.com',
+  /** 可选，输出模板代码的格式，具体见 prettier的配置规则 https://prettier.io/docs/en/options.html */
+  codeStyle: {
+    /** 默认单引号 */
+    singleQuote: true,
+    /** 默认2个空格 */
+    tabWidth: 2,
+    /** 分号结尾，默认false */
+    semi: false,
+    /** 逗号 */
+    trailingComma: 'es5',
+  },
+});
 ```
 
 配置好如上的配置文件后，执行 `node rapper.js` 就能生成模板文件了
@@ -42,41 +40,41 @@ rapper({
 #### 在 createStore 的时候利用 compose 增加一个 store enhancer
 
 ```js
-import { applyMiddleware, createStore, compose } from 'redux'
-import { createLogger } from 'redux-logger'
-import { rapEnhancer } from 'model/rapper'
-import reducers from './reducer'
+import { applyMiddleware, createStore, compose } from 'redux';
+import { createLogger } from 'redux-logger';
+import { rapEnhancer } from 'model/rapper';
+import reducers from './reducer';
 
-const loggerMiddleware = createLogger()
+const loggerMiddleware = createLogger();
 
 const enhancer = compose(
-    /** rapEnhancer 即为增加的 store enhancer */
-    rapEnhancer(),
-    applyMiddleware(loggerMiddleware)
-)
+  /** rapEnhancer 即为增加的 store enhancer */
+  rapEnhancer(),
+  applyMiddleware(loggerMiddleware),
+);
 
-const store = createStore(reducers, enhancer)
+const store = createStore(reducers, enhancer);
 ```
 
 #### 在 combineReducers 的时候，增加 rapReducers （请求响应的数据就存在这里面）
 
 ```js
-import { rapReducers } from 'model/rapper'
+import { rapReducers } from 'model/rapper';
 
 combineReducers({
-    duck: DuckReducer,
-    ...rapReducers,
-})
+  duck: DuckReducer,
+  ...rapReducers,
+});
 ```
 
 ### 第三步、愉快的使用
 
 ```js
 /** import 的目录就是上面第二步配置的 outputPath */
-import { rapperRequest, useResponse, useAllResponse, clearResponseCache, rapperActions } from 'model/rapper'
+import { fetch, useResponse, useAllResponse, clearResponseCache, rapperActions } from 'model/rapper'
 
 /** 发送请求，返回的是一个 promise，会把响应数据返回 */
-rapperRequest['GET/adgroup/price/update$']({ productId: 1 })
+fetch['GET/adgroup/price/update$']({ productId: 1 })
     .then(response => {
         console.log('请求成功', response)
     })
@@ -108,34 +106,34 @@ const [RequestAction, SuccessAction, FailureAction] = rapperActions['GET/adgroup
 
 其次，取回缓存数据，我们仍然通过 `useResponse` 这个 Hooks 进行筛选读取
 
--   第一种筛选方式：配置 request 参数，根据请求参数来筛选出满足条件的最新数据
+- 第一种筛选方式：配置 request 参数，根据请求参数来筛选出满足条件的最新数据
 
 ```js
-import { useResponse } from 'model/rapper'
+import { useResponse } from 'model/rapper';
 
 const rapData = useResponse['GET/adgroup/price/update$']({
-    request: {
-        productId: 1,
-    },
-})
+  request: {
+    productId: 1,
+  },
+});
 ```
 
--   第二种筛选方式：配置 filter 函数，类似于 Array.filter()，筛选出符合条件的数据
+- 第二种筛选方式：配置 filter 函数，类似于 Array.filter()，筛选出符合条件的数据
 
 ```js
-import { useResponse } from 'model/rapper'
+import { useResponse } from 'model/rapper';
 
 const rapData = useResponse['GET/adgroup/price/update$'](({ request, response }) => {
-    return request.productId === 2
-})
+  return request.productId === 2;
+});
 ```
 
 ```js
-import { useResponse } from 'model/rapper'
+import { useResponse } from 'model/rapper';
 
 const rapData = useResponse['GET/adgroup/price/update$'](({ request, response }) => {
-    return request.productId === 2
-})
+  return request.productId === 2;
+});
 ```
 
 ## 高级配置
@@ -143,14 +141,14 @@ const rapData = useResponse['GET/adgroup/price/update$'](({ request, response })
 ### 1、自定义 fetch (更改 base-fetch.ts )
 
 默认使用 window.fetch 发送请求，但某些项目里面需要有自定义的请求方式，比如：
--   自定义使用 axios、ajax 等发起请求
--   自定义 请求成功、失败状态的判定
--   请求成功、失败回调，增加全局 loading、全局错误提示等等
 
-#### 需求场景一：所有请求参数加上token字段
+- 自定义使用 axios、ajax 等发起请求
+- 自定义 请求成功、失败状态的判定
+- 请求成功、失败回调，增加全局 loading、全局错误提示等等
+
+#### 需求场景一：所有请求参数加上 token 字段
 
 这个时候就需要自定义 `base-fetch.ts` 这个文件了，配置示例见：
-
 
 #### 需求场景二：接口响应数据过滤
 
@@ -158,18 +156,18 @@ const rapData = useResponse['GET/adgroup/price/update$'](({ request, response })
 
 ```json
 {
-    "errno": 0,
-    "errmsg": "",
-    "result": {
-        "tableData": [
-            {
-                "id": 1
-            },
-            {
-                "id": 2
-            }
-        ]
-    }
+  "errno": 0,
+  "errmsg": "",
+  "result": {
+    "tableData": [
+      {
+        "id": 1
+      },
+      {
+        "id": 2
+      }
+    ]
+  }
 }
 ```
 
@@ -184,11 +182,11 @@ const rapData = useResponse['GET/adgroup/price/update$'](({ request, response })
 我们可以将多次请求响应的数据缓存起来，默认缓存最近 2 次请求的数据，当然也可以通过配置 `maxCacheLength` 来自定义缓存长度
 
 ```js
-import { rapEnhancer } from 'model/rapper'
+import { rapEnhancer } from 'model/rapper';
 
 rapEnhancer({
-    maxCacheLength: 3, // 也支持 Infinity
-})
+  maxCacheLength: 3, // 也支持 Infinity
+});
 ```
 
 # Rapper（request 版本）
@@ -284,5 +282,3 @@ export = function<Res extends {[x: string]: any}>(
 - request.ts，接口请求文件（不建议修改，rapper() 会重置此文件）
 - runtime.ts，redux 运行时文件（不建议修改，rapper() 会重置此文件）
 - types.ts，redux 运行时文件（不建议修改，rapper() 会重置此文件）
-
-

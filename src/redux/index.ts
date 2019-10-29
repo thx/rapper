@@ -1,12 +1,12 @@
 import { Intf } from '../types';
 import {
-  createTools,
   createActionStr,
-  createRapperRequestStr,
+  createFetchStr,
   createUseRapStr,
-  createTypesStr,
-  createReduxRuntime,
-} from './creator';
+  createGetResponseStr,
+  createConnectStr,
+} from './reduxCreator';
+import { createTools, createTypesStr, createReduxRuntime } from './libCreator';
 
 /** 生成 index.ts */
 function createIndexStr(projectId: number): string {
@@ -16,18 +16,20 @@ function createIndexStr(projectId: number): string {
      * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
      */
 
-    import { rapperRequest, useResponse, useAllResponse, clearResponseCache, rapperActions } from './redux'
+    import { fetch, useResponse, useAllResponse, clearResponseCache, rapperActions } from './redux'
     import { rapReducers, rapEnhancer } from './lib'
+    import { Models } from './request'
     
     export {
         /** 发送rapper请求 */
-        rapperRequest,
+        fetch,
         /** 以Hooks的方式使用请求响应数据 */
         useResponse,
         /** 使用请求响应数据（包含缓存） */
         useAllResponse,
         /** 清除此接口的缓存 */
         clearResponseCache,
+        Models,
         rapperActions,
         rapReducers,
         rapEnhancer,
@@ -42,13 +44,15 @@ function createDynamicStr(interfaces: Intf[], { projectId }: { projectId: number
          * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
          */
-        import { useSelector } from 'react-redux'
+        import { connect as defaultConnect, useSelector } from 'react-redux'
         import { Models } from './request'
         import { dispatchAction, useResponseData, RAPPER_REQUEST, RAPPER_CLEAR_STORE, RAPPER_STATE_KEY, ResponsePromiseType, State } from './lib'
     
         ${createActionStr(interfaces)}
-        ${createRapperRequestStr(interfaces)}
+        ${createFetchStr(interfaces)}
         ${createUseRapStr(interfaces)}
+        ${createGetResponseStr()}
+        ${createConnectStr()}
     
         export const rapperActions = RequestTypes || []
         `;
