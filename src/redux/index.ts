@@ -3,7 +3,7 @@ import {
   createActionStr,
   createFetchStr,
   createUseRapStr,
-  createGetResponseStr,
+  createSelectorStr,
   createConnectStr,
 } from './reduxCreator';
 import { createTools, createTypesStr, createReduxRuntime } from './libCreator';
@@ -16,7 +16,7 @@ function createIndexStr(projectId: number): string {
      * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
      */
 
-    import { fetch, useResponse, useAllResponse, clearResponseCache, rapperActions } from './redux'
+    import { fetch, useResponse, useAllResponse, clearResponseCache, rapperActions, rapperSelector, connect, RapperProps } from './redux'
     import { rapReducers, rapEnhancer } from './lib'
     import { Models } from './request'
     
@@ -29,11 +29,17 @@ function createIndexStr(projectId: number): string {
         useAllResponse,
         /** 清除此接口的缓存 */
         clearResponseCache,
-        Models,
+        connect,
+        rapperSelector,
         rapperActions,
         rapReducers,
         rapEnhancer,
     };
+
+    /** 所有接口的类型定义 */
+    export type Models = Models
+    /** class component 默认 props */
+    export type RapperProps = RapperProps
     `;
 }
 
@@ -45,13 +51,14 @@ function createDynamicStr(interfaces: Intf[], { projectId }: { projectId: number
          * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
          */
         import { connect as defaultConnect, useSelector } from 'react-redux'
+        import { createSelector } from 'reselect'
         import { Models } from './request'
-        import { dispatchAction, useResponseData, RAPPER_REQUEST, RAPPER_CLEAR_STORE, RAPPER_STATE_KEY, ResponsePromiseType, State } from './lib'
+        import { dispatchAction, useResponseData, connectGetResponse, RAPPER_REQUEST, RAPPER_CLEAR_STORE, RAPPER_STATE_KEY, ResponsePromiseType, State } from './lib'
     
         ${createActionStr(interfaces)}
         ${createFetchStr(interfaces)}
         ${createUseRapStr(interfaces)}
-        ${createGetResponseStr()}
+        ${createSelectorStr(interfaces)}
         ${createConnectStr()}
     
         export const rapperActions = RequestTypes || []

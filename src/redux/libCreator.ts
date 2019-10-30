@@ -359,38 +359,45 @@ export function createTools(): string {
         return true
       }
   
+      /** 以Hooks方式获取response数据 */
       export function useResponseData<Req, Res, Item extends { request: Req }>(
-          modelName: string,
-          filter?: FilterObj<Req> | FilterFunc<Item>
+        modelName: string,
+        filter?: FilterObj<Req> | FilterFunc<Item>
       ) {
-          const reduxData = useSelector((state: State) => {
-            return (state[RAPPER_STATE_KEY] && state[RAPPER_STATE_KEY][modelName]) || []
-          })
-          const initData = reduxData.length ? reduxData.slice(-1)[0] : {}
-          const [filteredData, setFilteredData] = useState(initData.response || undefined)
-          const [isFetching, setIsFetching] = useState(initData.isFetching || false)
+        const reduxData = useSelector((state: State) => {
+          return (state[RAPPER_STATE_KEY] && state[RAPPER_STATE_KEY][modelName]) || []
+        })
+        const initData = reduxData.length ? reduxData.slice(-1)[0] : {}
+        const [filteredData, setFilteredData] = useState(initData.response || undefined)
+        const [isFetching, setIsFetching] = useState(initData.isFetching || false)
         
-          useEffect(() => {
-            let resultArr = []
-            if (filter) {
-              if (typeof filter === 'function') {
-                resultArr = reduxData.filter((item: Item) => functionFilter<Item, typeof filter>(item, filter))
-              } else {
-                resultArr = reduxData.filter((item: Item) => paramsFilter<Req, Item, typeof filter>(item, filter))
-              }
+        useEffect(() => {
+          let resultArr = []
+          if (filter) {
+            if (typeof filter === 'function') {
+              resultArr = reduxData.filter((item: Item) => functionFilter<Item, typeof filter>(item, filter))
             } else {
-              resultArr = reduxData
+              resultArr = reduxData.filter((item: Item) => paramsFilter<Req, Item, typeof filter>(item, filter))
             }
-            /** 过滤出一条最新的符合条件的数据 */
-            const result = resultArr.length ? resultArr.slice(-1)[0] : {}
+          } else {
+            resultArr = reduxData
+          }
+          /** 过滤出一条最新的符合条件的数据 */
+          const result = resultArr.length ? resultArr.slice(-1)[0] : {}
+      
+          if (!looseEqual(result.response, filteredData)) {
+            setFilteredData(result.response || undefined)
+            setIsFetching(result.isFetching || false)
+          }
+        }, [reduxData, filter, filteredData])
         
-            if (!looseEqual(result.response, filteredData)) {
-              setFilteredData(result.response || undefined)
-              setIsFetching(result.isFetching || false)
-            }
-          }, [reduxData, filter, filteredData])
-        
-          return [filteredData, isFetching] as [ResponseType<Res>, boolean | undefined]
+        return [filteredData, isFetching] as [ResponseType<Res>, boolean | undefined]
+      }
+
+      /** 以connect方式获取response数据 */
+      export function connectGetResponse(responseData: any) {
+        const current = Array.isArray(responseData) ? responseData.slice(-1) : []
+        return (current[0] ? current[0].response : undefined)
       }
     `;
 }

@@ -133,13 +133,14 @@ export default async function({
   //     content: format(Creator.createLibStr(interfaces, { projectId }), DEFAULT_OPTIONS),
   //   });
 
-  /** 生成 base-fetch.ts */
-  // if (!fs.existsSync(`${rapperPath}/base-fetch.ts`)) {
-  //   outputFiles.push({
-  //     path: `${rapperPath}/base-fetch.ts`,
-  //     content: format(baseFetchStr, DEFAULT_OPTIONS),
-  //   });
-  // }
+  // const libStr = `
+  //   ${Creator.createLibStr ? Creator.createLibStr(interfaces, { projectId }) : ''}
+  //   ${createBaseLibStr(interfaces, { projectId })}
+  // `;
+  // outputFiles.push({
+  //   path: `${rapperPath}/lib.ts`,
+  //   content: format(libStr, DEFAULT_OPTIONS),
+  // });
 
   /** 生成 redux runtime.ts
    *  todo 这里重构分别放到 redux.ts 和 lib.ts 里面 */
