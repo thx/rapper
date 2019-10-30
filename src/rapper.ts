@@ -1,12 +1,10 @@
 import chalk from 'chalk';
-import * as fs from 'fs';
 import { format } from 'json-schema-to-typescript/dist/src/formatter';
 import { DEFAULT_OPTIONS } from 'json-schema-to-typescript';
-import { Intf, UrlMapper, RAPPER_TYPE, TRAILING_COMMA } from './types';
-import { createBaseRequestStr, createBaseIndexStr, createBaseLibStr } from './core/base-creator';
+import { Intf, UrlMapper, RAPPER_TYPE, TRAILING_COMMA, GeneratedCode } from './types';
+import { createBaseRequestStr, createBaseIndexCode, createBaseLibCode } from './core/base-creator';
 import ReduxCreator from './redux';
-import { writeFile } from './utils';
-import baseFetchStr from './core/base-fetch-str';
+import { writeFile, mixGeneratedCode } from './utils';
 import { getInterfaces, getIntfWithModelName, uniqueItfs } from './core/tools';
 
 interface Rapper {
@@ -48,7 +46,7 @@ export default async function({
     trailingComma: TRAILING_COMMA.ES5,
   };
   if (codeStyle && typeof codeStyle === 'object') {
-    DEFAULT_OPTIONS.style = { ...DEFAULT_OPTIONS.style, ...codeStyle };
+    DEFAULT_OPTIONS.style = { ...codeStyle };
   }
 
   if (!rapperPath) {
@@ -86,19 +84,23 @@ export default async function({
   }
 
   /** 生成 index.ts */
-  if (Creator.createIndexStr) {
-    /** 定制的 */
-    outputFiles.push({
-      path: `${rapperPath}/index.ts`,
-      content: format(Creator.createIndexStr(projectId), DEFAULT_OPTIONS),
-    });
-  } else {
-    /** 默认的 */
-    outputFiles.push({
-      path: `${rapperPath}/index.ts`,
-      content: format(createBaseIndexStr(projectId), DEFAULT_OPTIONS),
-    });
-  }
+  const indexCodeArr: GeneratedCode[] = [createBaseIndexCode()];
+  // if (Creator.createIndexStr) {
+  //   /** 定制的 */
+  //   indexCodeArr.push(Creator.createIndexStr(projectId), DEFAULT_OPTIONS))
+
+  // } else {
+  //   /** 默认的 */
+  //   outputFiles.push({
+  //     path: `${rapperPath}/index.ts`,
+  //     content: format(createBaseIndexStr(projectId), DEFAULT_OPTIONS),
+  //   });
+  // }
+
+  outputFiles.push({
+    path: `${rapperPath}/index.ts`,
+    content: format(mixGeneratedCode(indexCodeArr), DEFAULT_OPTIONS),
+  });
 
   /** 生成基础的 request.ts 请求函数和类型声明 */
   const requestStr = await createBaseRequestStr(interfaces, {
@@ -118,24 +120,26 @@ export default async function({
 
   /** 生成静态的 lib */
 
+  const libCodeArr = [createBaseLibCode()];
+
   outputFiles.push({
     path: `${rapperPath}/lib.ts`,
-    content: format(createBaseLibStr(interfaces, { projectId }), DEFAULT_OPTIONS),
+    content: format(mixGeneratedCode(libCodeArr), DEFAULT_OPTIONS),
   });
 
-  Creator.createLibStr &&
-    outputFiles.push({
-      path: `${rapperPath}/lib.ts`,
-      content: format(Creator.createLibStr(interfaces, { projectId }), DEFAULT_OPTIONS),
-    });
+  // Creator.createLibStr &&
+  //   outputFiles.push({
+  //     path: `${rapperPath}/lib.ts`,
+  //     content: format(Creator.createLibStr(interfaces, { projectId }), DEFAULT_OPTIONS),
+  //   });
 
   /** 生成 base-fetch.ts */
-  if (!fs.existsSync(`${rapperPath}/base-fetch.ts`)) {
-    outputFiles.push({
-      path: `${rapperPath}/base-fetch.ts`,
-      content: format(baseFetchStr, DEFAULT_OPTIONS),
-    });
-  }
+  // if (!fs.existsSync(`${rapperPath}/base-fetch.ts`)) {
+  //   outputFiles.push({
+  //     path: `${rapperPath}/base-fetch.ts`,
+  //     content: format(baseFetchStr, DEFAULT_OPTIONS),
+  //   });
+  // }
 
   /** 生成 redux runtime.ts
    *  todo 这里重构分别放到 redux.ts 和 lib.ts 里面 */

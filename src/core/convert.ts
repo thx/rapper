@@ -19,6 +19,8 @@ function inferArraySchema(
         items: {
           type: 'object',
           properties: childProperties,
+          required: Object.keys(childProperties),
+          additionalProperties: false,
         },
         ...common,
       },
@@ -134,8 +136,14 @@ function interfaceToJSONSchema(itf: Interface.Root, scope: Scope): JSONSchema4 {
         const type = p.type.toLowerCase().replace(/regexp|function/, 'string');
         const childProperties = findChildProperties(p.id);
         const childItfs = properties.filter(x => x.parentId === p.id);
-        const common: { description?: string; required: string[] } = {
-          required: childItfs.filter(e => e.required).map(e => e.name),
+        const common: {
+          description?: string;
+          required: string[];
+          additionalProperties: boolean;
+        } = {
+          // 这里默认所有的属性都有值
+          additionalProperties: false,
+          required: childItfs.map(e => e.name),
         };
         if (p.description) common.description = removeComment(p.description);
         if (['string', 'number', 'integer', 'boolean', 'null'].includes(type)) {
@@ -169,6 +177,7 @@ function interfaceToJSONSchema(itf: Interface.Root, scope: Scope): JSONSchema4 {
   }
 
   const propertyChildren = findChildProperties(-1);
+
   if (_.isEmpty(properties)) {
     return {
       type: 'object',
@@ -177,6 +186,8 @@ function interfaceToJSONSchema(itf: Interface.Root, scope: Scope): JSONSchema4 {
     return {
       type: 'object',
       properties: propertyChildren,
+      required: Object.keys(propertyChildren),
+      additionalProperties: false,
     };
   }
 }

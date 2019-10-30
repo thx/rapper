@@ -84,3 +84,10 @@ export enum TRAILING_COMMA {
   ALL = 'all',
   ES5 = 'es5',
 }
+
+/** 生成出的代码 */
+export interface GeneratedCode {
+  import: string;
+  body: string;
+  export: string;
+}

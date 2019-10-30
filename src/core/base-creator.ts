@@ -1,14 +1,9 @@
 import chalk from 'chalk';
 import convert from './convert';
-import { Intf } from '../types';
+import { Intf, GeneratedCode } from '../types';
 
 /** 生成 model.ts 文件 */
-interface CreateModelParams {
-  projectId: number;
-}
-
-async function createModel(interfaces: Intf[], extr: CreateModelParams) {
-  const { projectId } = extr;
+async function createModel(interfaces: Intf[]) {
   const itfStrs = await Promise.all(
     interfaces.map(async itf => {
       try {
@@ -33,10 +28,6 @@ async function createModel(interfaces: Intf[], extr: CreateModelParams) {
     }),
   );
   return `
-        /**
-         * 本接口类型由 Rapper 从 Rap 中自动生成，请勿修改
-         * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
-         */
         export interface Models {
             ${itfStrs.join('\n\n')}
         };
@@ -49,20 +40,22 @@ interface CreateFetchParams {
 
 export async function createBaseRequestStr(interfaces: Intf[], extr: CreateFetchParams) {
   const { projectId } = extr;
-  const modelStr = await createModel(interfaces, {
-    projectId: extr.projectId,
-  });
+  const modelStr = await createModel(interfaces);
   return `
     /**
      * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
      * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
      */
-    import fetch from './base-fetch';
-    type Extra = Parameters<typeof fetch>[0]['extra'];
+    import { defaultFetch } from './lib'
 
     ${modelStr}
 
-    export const request = {
+    export function createRequester(option: {
+      fetch: <T>(params: { url: string; method: string; params: any; extra: any }) => Promise<T>;
+    } = {
+      fetch: defaultFetch,
+    }) {
+      return {
         ${interfaces
           .map(itf => {
             const modelName = itf.modelName;
@@ -75,8 +68,8 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreateFetch
         * @param req 请求参数
         * @param extra 请求配置项
         */
-        '${modelName}': (req: Models['${modelName}']['Req'], extra?: Extra) => {
-            return fetch<Models['${modelName}']['Res']>({
+        '${modelName}': (req: Models['${modelName}']['Req'], extra?: any) => {
+            return option.fetch<Models['GET/example/1565269104015']['Res']>({
               url: '${itf.url}',
               method: '${itf.method.toUpperCase()}',
               params: req, 
@@ -85,32 +78,25 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreateFetch
         }`;
           })
           .join(',\n\n')}
-    };
+      };
+    }
     `;
 }
 
-export function createBaseIndexStr(projectId: number): string {
-  return `
-    /**
-     * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
-     * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
-     */
-     import { request, Models } from './request'
-     export { request, Models }
-  `;
+export function createBaseIndexCode(): GeneratedCode {
+  return {
+    import: `
+    import { createRequester, Models } from './request'
+    import { defaultFetch } from './lib'`,
+    body: ``,
+    export: `export { defaultFetch, createRequester, Models }`,
+  };
 }
 
-export function createBaseLibStr(
-  _interfaces: Intf[],
-  { projectId }: { projectId: number },
-): string {
-  return `
-  /**
-   * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
-   * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
-   */
-  /** 服务端api地址，默认是根目录相对路径 */
-
+export function createBaseLibCode(): GeneratedCode {
+  return {
+    import: ``,
+    body: `
   /**
    * search 参数转换，比如 { a: 1, b: 2, c: undefined } 转换成 "a=1&b=2"
    * 会自动删除 undefined
@@ -146,5 +132,7 @@ export function createBaseLibStr(
       const retJSON = res.clone() // clone before return
       return retJSON.json()
   }
-  `;
+  `,
+    export: '',
+  };
 }
