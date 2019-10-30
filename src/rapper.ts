@@ -74,9 +74,9 @@ export default async function({
   interfaces = uniqueItfs(getIntfWithModelName(interfaces, urlMapper));
 
   let Creator: {
-    createIndexStr?: (projectId: number) => string;
+    createIndexStr?: (projectId: number) => GeneratedCode;
     createDynamicStr?: (interfaces: Intf[], { projectId }: { projectId: number }) => string;
-    createLibStr?: (interfaces: Intf[], { projectId }: { projectId: number }) => string;
+    createLibStr?: (interfaces: Intf[], { projectId }: { projectId: number }) => GeneratedCode;
   } = {};
   switch (type) {
     case 'redux':
@@ -88,18 +88,9 @@ export default async function({
 
   /** 生成 index.ts */
   const indexCodeArr: GeneratedCode[] = [createBaseIndexCode()];
-  // if (Creator.createIndexStr) {
-  //   /** 定制的 */
-  //   indexCodeArr.push(Creator.createIndexStr(projectId), DEFAULT_OPTIONS))
-
-  // } else {
-  //   /** 默认的 */
-  //   outputFiles.push({
-  //     path: `${rapperPath}/index.ts`,
-  //     content: format(createBaseIndexStr(projectId), DEFAULT_OPTIONS),
-  //   });
-  // }
-
+  if (Creator.createIndexStr) {
+    indexCodeArr.push(Creator.createIndexStr(projectId));
+  }
   outputFiles.push({
     path: `${rapperPath}/index.ts`,
     content: format(mixGeneratedCode(indexCodeArr), DEFAULT_OPTIONS),
@@ -123,41 +114,14 @@ export default async function({
     });
 
   /** 生成静态的 lib */
-
-  const libCodeArr = [createBaseLibCode()];
-
+  const libCodeArr: GeneratedCode[] = [createBaseLibCode()];
+  if (Creator.createLibStr) {
+    libCodeArr.push(Creator.createLibStr(interfaces, { projectId }));
+  }
   outputFiles.push({
     path: `${rapperPath}/lib.ts`,
     content: format(mixGeneratedCode(libCodeArr), DEFAULT_OPTIONS),
   });
-
-  // Creator.createLibStr &&
-  //   outputFiles.push({
-  //     path: `${rapperPath}/lib.ts`,
-  //     content: format(Creator.createLibStr(interfaces, { projectId }), DEFAULT_OPTIONS),
-  //   });
-
-  // const libStr = `
-  //   ${Creator.createLibStr ? Creator.createLibStr(interfaces, { projectId }) : ''}
-  //   ${createBaseLibStr(interfaces, { projectId })}
-  // `;
-  // outputFiles.push({
-  //   path: `${rapperPath}/lib.ts`,
-  //   content: format(libStr, DEFAULT_OPTIONS),
-  // });
-
-  /** 生成 redux runtime.ts
-   *  todo 这里重构分别放到 redux.ts 和 lib.ts 里面 */
-  // if (type === 'redux') {
-  //   outputFiles.push({
-  //     path: `${rapperPath}/runtime.ts`,
-  //     content: format(runtimeStr, DEFAULT_OPTIONS),
-  //   });
-  //   outputFiles.push({
-  //     path: `${rapperPath}/types.ts`,
-  //     content: format(reduxTypesStr, DEFAULT_OPTIONS),
-  //   });
-  // }
 
   return Promise.all(outputFiles.map(({ path, content }) => writeFile(path, content)))
     .then(() => {
