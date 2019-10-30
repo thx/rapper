@@ -20,6 +20,8 @@ interface Rapper {
   urlMapper?: UrlMapper;
   /** 选填，输出模板代码的格式 */
   codeStyle?: {};
+  /** 选填，类型变换 type Selector<T> = T */
+  resSelector?: string;
 }
 export default async function({
   type,
@@ -28,6 +30,7 @@ export default async function({
   rapperPath = './rapper',
   urlMapper = t => t,
   codeStyle,
+  resSelector = 'type ResSelector<T> = T',
 }: Rapper) {
   /** 参数校验 */
   if (!type) {
@@ -105,6 +108,7 @@ export default async function({
   /** 生成基础的 request.ts 请求函数和类型声明 */
   const requestStr = await createBaseRequestStr(interfaces, {
     projectId,
+    resSelector,
   });
   outputFiles.push({
     path: `${rapperPath}/request.ts`,

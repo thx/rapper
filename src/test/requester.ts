@@ -16,6 +16,7 @@ rapper({
     printWidth: 100,
     tabWidth: 2,
   },
+  resSelector: `type ResSelector<T extends { result: any }> = T['result']`,
 });
 // .then(() => {
 //     console.log('rapper:generate model success')

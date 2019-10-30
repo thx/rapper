@@ -36,10 +36,11 @@ async function createModel(interfaces: Intf[]) {
 
 interface CreateFetchParams {
   projectId: number;
+  resSelector: string;
 }
 
 export async function createBaseRequestStr(interfaces: Intf[], extr: CreateFetchParams) {
-  const { projectId } = extr;
+  const { projectId, resSelector } = extr;
   const modelStr = await createModel(interfaces);
   return `
     /**
@@ -49,6 +50,8 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreateFetch
     import { defaultFetch } from './lib'
 
     ${modelStr}
+
+    ${resSelector}
 
     export function createRequester(option: {
       fetch: <T>(params: { url: string; method: string; params: any; extra: any }) => Promise<T>;
@@ -69,7 +72,8 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreateFetch
         * @param extra 请求配置项
         */
         '${modelName}': (req: Models['${modelName}']['Req'], extra?: any) => {
-            return option.fetch<Models['GET/example/1565269104015']['Res']>({
+            type Res = ResSelector<Models['${modelName}']['Res']>;
+            return option.fetch<Res>({
               url: '${itf.url}',
               method: '${itf.method.toUpperCase()}',
               params: req, 
