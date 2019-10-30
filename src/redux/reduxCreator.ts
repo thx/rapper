@@ -116,6 +116,10 @@ export function createFetchStr(interfaces: Intf[]): string {
               )
               .join(',\n\n')}
         };
+
+        export interface RapperProps {
+          fetch: typeof fetch;
+        }
         `;
 }
 
@@ -204,30 +208,39 @@ export function createUseRapStr(interfaces: Intf[]): string {
         `;
 }
 
-export function createGetResponseStr(): string {
+export function createSelectorStr(interfaces: Intf[]): string {
   return `
-      export const getResponse = (state, modelName) => {
-        return state[RAPPER_STATE_KEY] ? state[RAPPER_STATE_KEY][modelName] : undefined
-      }
-    `;
+    export const rapperSelector = {
+    ${interfaces
+      .map(
+        ({ modelName }) => `
+      '${modelName}': createSelector(
+        (state: State) => state[RAPPER_STATE_KEY]['${modelName}'],
+        responseData => {
+          return connectGetResponse(responseData) as Models['${modelName}']['Res']
+        }
+      )
+    `,
+      )
+      .join(',\n\n')}
+    }
+  `;
 }
+
 /** 生成 connect */
 export function createConnectStr(): string {
   return `
       type ConnectProps = Parameters<typeof defaultConnect>;
       export const connect = (
         mapStateToProps: ConnectProps[0],
-        mapDispatchToProps: ConnectProps[1],
-        mergeProps: ConnectProps[2],
-        options: ConnectProps[3],
+        mapDispatchToProps?: any,
+        mergeProps?: any,
+        options?: ConnectProps[3],
       ) => {
-        const newMapStateToProps: ConnectProps[0] = (state, ownProps?: object) => {
-          return mapStateToProps((modelName: string) => getResponse(state, modelName), state, ownProps);
-        };
-        const newMapDispatchToProps: ConnectProps[1] = dispatch => {
+        const newMapDispatchToProps: ConnectProps[1] = (dispatch: any) => {
           return { ...mapDispatchToProps(dispatch), fetch };
         };
-        return defaultConnect(newMapStateToProps, newMapDispatchToProps, mergeProps, options);
+        return defaultConnect(mapStateToProps, newMapDispatchToProps, mergeProps, options);
       };
     `;
 }

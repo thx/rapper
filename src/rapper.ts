@@ -117,17 +117,14 @@ export default async function({
     });
 
   /** 生成静态的 lib */
-
+  const libStr = `
+    ${Creator.createLibStr ? Creator.createLibStr(interfaces, { projectId }) : ''}
+    ${createBaseLibStr(interfaces, { projectId })}
+  `;
   outputFiles.push({
     path: `${rapperPath}/lib.ts`,
-    content: format(createBaseLibStr(interfaces, { projectId }), DEFAULT_OPTIONS),
+    content: format(libStr, DEFAULT_OPTIONS),
   });
-
-  Creator.createLibStr &&
-    outputFiles.push({
-      path: `${rapperPath}/lib.ts`,
-      content: format(Creator.createLibStr(interfaces, { projectId }), DEFAULT_OPTIONS),
-    });
 
   /** 生成 base-fetch.ts */
   if (!fs.existsSync(`${rapperPath}/base-fetch.ts`)) {
