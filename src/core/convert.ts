@@ -128,7 +128,19 @@ type Scope = 'request' | 'response';
 const removeComment = (str: string) => str.replace(/\/\*|\*\//g, '');
 
 function interfaceToJSONSchema(itf: Interface.Root, scope: Scope): JSONSchema4 {
-  const properties = itf.properties.filter(p => p.scope === scope);
+  let properties = itf.properties.filter(p => p.scope === scope);
+
+  properties = [
+    ...properties,
+    {
+      name: 'dummyroot',
+      parentId: -2,
+      id: -1,
+      scope,
+      type: 'object',
+    } as any,
+  ];
+
   function findChildProperties(parentId: number) {
     return _.chain(properties)
       .filter(p => p.parentId === parentId)
@@ -143,7 +155,11 @@ function interfaceToJSONSchema(itf: Interface.Root, scope: Scope): JSONSchema4 {
         } = {
           // 这里默认所有的属性都有值
           additionalProperties: false,
-          required: childItfs.map(e => e.name),
+          // request 的时候按照实际标注，response 全部默认存在
+          required:
+            scope === 'request'
+              ? childItfs.filter(e => e.required).map(e => e.name)
+              : childItfs.map(e => e.name),
         };
         if (p.description) common.description = removeComment(p.description);
         if (['string', 'number', 'integer', 'boolean', 'null'].includes(type)) {
@@ -176,20 +192,9 @@ function interfaceToJSONSchema(itf: Interface.Root, scope: Scope): JSONSchema4 {
       .value();
   }
 
-  const propertyChildren = findChildProperties(-1);
+  const propertyChildren = findChildProperties(-2);
 
-  if (_.isEmpty(properties)) {
-    return {
-      type: 'object',
-    };
-  } else {
-    return {
-      type: 'object',
-      properties: propertyChildren,
-      required: Object.keys(propertyChildren),
-      additionalProperties: false,
-    };
-  }
+  return propertyChildren['dummyroot'];
 }
 
 export default function convert(itf: Interface.Root): Promise<Array<string>> {
