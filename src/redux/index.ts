@@ -5,6 +5,7 @@ import {
   createUseRapStr,
   createSelectorStr,
   createConnectStr,
+  createRequestStr,
 } from './reduxCreator';
 import { createTools, createTypesStr, createReduxRuntime } from './libCreator';
 
@@ -81,4 +82,4 @@ export const RAPPER_REQUEST = '$$RAPPER_REQUEST';
 export const RAPPER_CLEAR_STORE = '$$RAPPER_CLEAR_STORE';
 export const RAPPER_UPDATE_STORE = '$$RAPPER_UPDATE_STORE';
 export const RAPPER_STATE_KEY = '$$rapperResponseData';
-export default { createIndexStr, createDynamicStr, createLibStr };
+export default { createIndexStr, createDynamicStr, createLibStr, createRequestStr };

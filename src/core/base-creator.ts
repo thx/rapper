@@ -3,7 +3,7 @@ import convert from './convert';
 import { Intf, GeneratedCode } from '../types';
 
 /** 生成 model.ts 文件 */
-async function createModel(interfaces: Intf[]) {
+export async function createModel(interfaces: Intf[]) {
   const itfStrs = await Promise.all(
     interfaces.map(async itf => {
       try {
@@ -34,7 +34,7 @@ async function createModel(interfaces: Intf[]) {
     `;
 }
 
-interface CreateFetchParams {
+export interface CreateFetchParams {
   projectId: number;
   resSelector: string;
 }

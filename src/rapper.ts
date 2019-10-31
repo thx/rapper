@@ -77,6 +77,10 @@ export default async function({
     createIndexStr?: (projectId: number) => GeneratedCode;
     createDynamicStr?: (interfaces: Intf[], { projectId }: { projectId: number }) => string;
     createLibStr?: (interfaces: Intf[], { projectId }: { projectId: number }) => GeneratedCode;
+    createRequestStr?: (
+      interfaces: Intf[],
+      extr: { projectId: number; resSelector: string },
+    ) => Promise<string>;
   } = {};
   switch (type) {
     case 'redux':
@@ -97,10 +101,18 @@ export default async function({
   });
 
   /** 生成基础的 request.ts 请求函数和类型声明 */
-  const requestStr = await createBaseRequestStr(interfaces, {
-    projectId,
-    resSelector,
-  });
+  let requestStr = '';
+  if (Creator.createRequestStr) {
+    requestStr = await Creator.createRequestStr(interfaces, {
+      projectId,
+      resSelector,
+    });
+  } else {
+    requestStr = await createBaseRequestStr(interfaces, {
+      projectId,
+      resSelector,
+    });
+  }
   outputFiles.push({
     path: `${rapperPath}/request.ts`,
     content: format(requestStr, DEFAULT_OPTIONS),
