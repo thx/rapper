@@ -87,6 +87,7 @@ export enum TRAILING_COMMA {
 
 /** 生成出的代码 */
 export interface GeneratedCode {
+  /** 顶部 import */
   import: string;
   body: string;
   export: string;

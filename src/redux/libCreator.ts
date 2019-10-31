@@ -1,3 +1,5 @@
+import { RAPPER_STATE_KEY, RAPPER_UPDATE_STORE, RAPPER_CLEAR_STORE, RAPPER_REQUEST } from './index';
+
 /** 生成 types 定义 */
 export function createTypesStr(): string {
   return `
@@ -11,7 +13,7 @@ export function createTypesStr(): string {
           [extraProps: string]: any
       }
       export interface RequestAction {
-          type: '$$RAPPER_REQUEST'
+          type: '${RAPPER_REQUEST}'
           payload?: {
               modelName: string
               url: string
@@ -178,7 +180,7 @@ export function createReduxRuntime(): string {
   }
   
   export const rapReducers = {
-      [RAPPER_STATE_KEY]: (state = {}) => state,
+    '${RAPPER_STATE_KEY}': (state = {}) => state,
   }
   
   /** store enhancer */
@@ -191,7 +193,7 @@ export function createReduxRuntime(): string {
   
           /** 重新定义 reducers */
           const newReducers = (state: any, action: IAction): Store => {
-              if (state && !state[RAPPER_STATE_KEY]) {
+              if (state && !state['${RAPPER_STATE_KEY}']) {
                   throw Error('rapper初始化配置失败，rootReducer应该加入rapReducers，具体请查看demo配置')
               }
   
@@ -201,21 +203,21 @@ export function createReduxRuntime(): string {
   
               switch (action.type) {
                   /** 请求成功，更新 store */
-                  case RAPPER_UPDATE_STORE:
+                  case '${RAPPER_UPDATE_STORE}':
                       return {
                           ...state,
-                          [RAPPER_STATE_KEY]: assignData({
-                              oldState: state[RAPPER_STATE_KEY],
+                          '${RAPPER_STATE_KEY}': assignData({
+                              oldState: state['${RAPPER_STATE_KEY}'],
                               maxCacheLength,
                               payload: action.payload,
                           }),
                       }
                   /** 用户手动清空 */
-                  case RAPPER_CLEAR_STORE:
+                  case '${RAPPER_CLEAR_STORE}':
                       return {
                           ...state,
-                          [RAPPER_STATE_KEY]: {
-                              ...state[RAPPER_STATE_KEY],
+                          '${RAPPER_STATE_KEY}': {
+                              ...state['${RAPPER_STATE_KEY}'],
                               ...action.payload,
                           },
                       }
@@ -227,7 +229,7 @@ export function createReduxRuntime(): string {
   
           /** 重新定义 dispatch */
           dispatch = async <Res>(action: IAction) => {
-              if (action.type !== RAPPER_REQUEST) {
+              if (action.type !== '${RAPPER_REQUEST}') {
                   return store.dispatch(action)
               }
   
@@ -243,7 +245,7 @@ export function createReduxRuntime(): string {
   
               store.dispatch({ type: REQUEST })
               store.dispatch({
-                  type: RAPPER_UPDATE_STORE,
+                  type: '${RAPPER_UPDATE_STORE}',
                   payload: {
                       interfaceKey: modelName,
                       id: requestTime,
@@ -260,7 +262,7 @@ export function createReduxRuntime(): string {
                   store.dispatch({ type: SUCCESS, payload: responseData })
                   /** 请求成功，更新store */
                   store.dispatch({
-                      type: RAPPER_UPDATE_STORE,
+                      type: '${RAPPER_UPDATE_STORE}',
                       payload: {
                           interfaceKey: modelName,
                           id: requestTime,
@@ -275,7 +277,7 @@ export function createReduxRuntime(): string {
               } catch (e) {
                   store.dispatch({ type: FAILURE, payload: e })
                   store.dispatch({
-                      type: RAPPER_UPDATE_STORE,
+                      type: '${RAPPER_UPDATE_STORE}',
                       payload: {
                           interfaceKey: modelName,
                           id: requestTime,
@@ -360,12 +362,12 @@ export function createTools(): string {
       }
   
       /** 以Hooks方式获取response数据 */
-      export function useResponseData<Req, Res, Item extends { request: Req }>(
-        modelName: string,
+      export function useResponseData<S, M, Req, Item extends { request: Req }>(
+        modelName: M,
         filter?: FilterObj<Req> | FilterFunc<Item>
       ) {
-        const reduxData = useSelector((state: State) => {
-          return (state[RAPPER_STATE_KEY] && state[RAPPER_STATE_KEY][modelName]) || []
+        const reduxData = useSelector((state: S) => {
+          return (state['${RAPPER_STATE_KEY}'] && state['${RAPPER_STATE_KEY}'][modelName]) || []
         })
         const initData = reduxData.length ? reduxData.slice(-1)[0] : {}
         const [filteredData, setFilteredData] = useState(initData.response || undefined)
@@ -391,7 +393,7 @@ export function createTools(): string {
           }
         }, [reduxData, filter, filteredData])
         
-        return [filteredData, isFetching] as [ResponseType<Res>, boolean | undefined]
+        return [filteredData, isFetching]
       }
 
       /** 以connect方式获取response数据 */
