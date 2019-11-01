@@ -1,4 +1,4 @@
-import { createModel, CreateFetchParams } from '../core/base-creator';
+import { createModel, CreateFetchParams, createResponseTypes } from '../core/base-creator';
 import { Intf } from '../types';
 
 export async function createBaseRequestStr(interfaces: Intf[], extr: CreateFetchParams) {
@@ -16,6 +16,8 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreateFetch
 
     ${resSelector}
   
+    ${createResponseTypes(interfaces)}
+
     interface FetchParams {
       url: string
       method: string
@@ -84,17 +86,16 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreateFetch
       * @param extra 请求配置项
       */
       '${modelName}': (req?: Models['${modelName}']['Req'], extra?: any) => {
-        type Res = ResSelector<Models['${modelName}']['Res']>;
         if(extra && extra.type === 'normal') {
           return rapperFetch({
             url: '${itf.url}',
             method: '${itf.method.toUpperCase()}',
             params: req, 
             extra
-          }) as Promise<Res>;
+          }) as Promise<ResponseTypes['${modelName}']>
         } else {
           const action = RequestAction['${modelName}'](req)
-          return dispatchAction(action, rapperFetch) as Promise<Res>
+          return dispatchAction(action, rapperFetch) as Promise<ResponseTypes['${modelName}']>
         }
       }`;
         })

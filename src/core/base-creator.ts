@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import convert from './convert';
 import { Intf, GeneratedCode } from '../types';
 
-/** 生成 model.ts 文件 */
+/** 生成 Models 文件 */
 export async function createModel(interfaces: Intf[]) {
   const itfStrs = await Promise.all(
     interfaces.map(async itf => {
@@ -32,6 +32,19 @@ export async function createModel(interfaces: Intf[]) {
             ${itfStrs.join('\n\n')}
         };
     `;
+}
+
+/** 生成 ResponseTypes */
+export function createResponseTypes(interfaces: Intf[]) {
+  return `
+    export interface ResponseTypes {
+      ${interfaces.map(
+        ({ modelName }) => `
+        '${modelName}': ResSelector<Models['${modelName}']['Res']>
+      `,
+      )}
+    }
+  `;
 }
 
 export interface CreateFetchParams {
@@ -122,13 +135,12 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreateFetch
           * @param extra 请求配置项
           */
         '${modelName}': (req?: Models['${modelName}']['Req'], extra?: any) => {
-          type Res = ResSelector<Models['${modelName}']['Res']>;
           return rapperFetch({
             url: '${itf.url}',
             method: '${itf.method.toUpperCase()}',
             params: req, 
             extra
-          }) as Promise<Res>;
+          }) as Promise<ResponseTypes['${modelName}']>;
         }`;
           })
           .join(',\n\n')}

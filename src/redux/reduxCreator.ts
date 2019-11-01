@@ -60,21 +60,21 @@ function getRequestActionStr(interfaces: Intf[]): string {
     ${interfaces
       .map(({ id, repositoryId, moduleId, name, url, modelName, method }) => {
         return `
-                /**
-                 * 接口名：${name}
-                 * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
-                 */
-                '${modelName}': (params) => ({
-                    type: '${RAPPER_REQUEST}',
-                    payload: {
-                        modelName: '${modelName}',
-                        url: '${url}',
-                        method: '${method}',
-                        params,
-                        types: RequestTypes['${modelName}'],
-                    },
-                }),
-            `;
+          /**
+           * 接口名：${name}
+           * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
+           */
+          '${modelName}': (params) => ({
+            type: '${RAPPER_REQUEST}',
+            payload: {
+                modelName: '${modelName}',
+                url: '${url}',
+                method: '${method}',
+                params,
+                types: RequestTypes['${modelName}'],
+            },
+          }),
+      `;
       })
       .join('\n\n')}
     }
@@ -137,7 +137,7 @@ export function createUseRapStr(interfaces: Intf[]): string {
         type M = keyof RapperStore['${RAPPER_STATE_KEY}']
         type Req = Models['${modelName}']['Req']
         type Item = RapperStore['${RAPPER_STATE_KEY}']['${modelName}'][0]
-        type Res = ResSelector<Models['${modelName}']['Res']>
+        type Res = ResponseTypes['${modelName}']
         return useResponseData<RapperStore, M, Req, Item>('${modelName}', filter) as [Res, boolean | undefined]
       }`,
         )
@@ -154,11 +154,10 @@ export function createUseRapStr(interfaces: Intf[]): string {
        */
       /* tslint:disable */
       '${modelName}': function useData() {
-          return useSelector((state: State) => {
-              const selectedState = (state['${RAPPER_STATE_KEY}'] && state['${RAPPER_STATE_KEY}']['${modelName}']) || []
-              type Res = ResSelector<Models['${modelName}']['Res']>
-              return selectedState as Res[]
-          })
+        return useSelector((state: State) => {
+          const selectedState = (state['${RAPPER_STATE_KEY}'] && state['${RAPPER_STATE_KEY}']['${modelName}']) || []
+          return selectedState as ResponseTypes['${modelName}'][]
+        })
       }`,
         )
         .join(',\n\n')}
@@ -196,8 +195,7 @@ export function createSelectorStr(interfaces: Intf[]): string {
       '${modelName}': createSelector(
         (state: State) => state['${RAPPER_STATE_KEY}']['${modelName}'],
         responseData => {
-          type Res = ResSelector<Models['${modelName}']['Res']>
-          return connectGetResponse(responseData) as Res
+          return connectGetResponse(responseData) as ResponseTypes['${modelName}']
         }
       )
     `,

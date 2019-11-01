@@ -14,7 +14,7 @@ function createIndexStr(projectId: number): GeneratedCode {
     import: `
       import { useResponse, useAllResponse, clearResponseCache, rapperActions, rapperSelector, connect } from './redux'
       import { rapReducers, rapEnhancer } from './lib'
-      import { RapperProps } from './request'
+      import { RapperProps, ResponseTypes } from './request'
     `,
     body: '',
     export: `
@@ -34,6 +34,8 @@ function createIndexStr(projectId: number): GeneratedCode {
 
       /** class component 默认 props */
       export type RapperProps = RapperProps
+      /** 响应类型 */
+      export type ResponseTypes = ResponseTypes
     `,
   };
 }
@@ -43,10 +45,8 @@ function createDynamicStr(interfaces: Intf[], { resSelector }): string {
   return `
     import { connect as defaultConnect, useSelector } from 'react-redux'
     import { createSelector } from 'reselect'
-    import { Models } from './request'
+    import { Models, ResponseTypes } from './request'
     import { dispatchAction, useResponseData, connectGetResponse, State } from './lib'
-
-    ${resSelector}
 
     ${createActionStr(interfaces)}
     ${createUseRapStr(interfaces)}
