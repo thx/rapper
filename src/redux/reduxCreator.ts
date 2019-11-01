@@ -1,64 +1,5 @@
 import { Intf } from '../types';
 import { RAPPER_STATE_KEY, RAPPER_CLEAR_STORE, RAPPER_REQUEST } from './index';
-import { createModel } from '../core/base-creator';
-interface CreateFetchParams {
-  projectId: number;
-  resSelector: string;
-}
-/**  */
-export async function createRequestStr(interfaces: Intf[], extr: CreateFetchParams) {
-  const { projectId, resSelector } = extr;
-  const modelStr = await createModel(interfaces);
-  return `
-      /**
-       * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
-       * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
-       */
-      import { RequestAction } from './redux'
-      import { defaultFetch, dispatchAction } from './lib'
-  
-      ${modelStr}
-  
-      ${resSelector}
-  
-      export function createRequester(option: {
-        fetch: <T>(params: { url: string; method: string; params: any; extra: any }) => Promise<T>;
-      } = {
-        fetch: defaultFetch,
-      }) {
-        return {
-          ${interfaces
-            .map(itf => {
-              const modelName = itf.modelName;
-              return `
-          /**
-           * 接口名：${itf.name}
-           * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${itf.repositoryId}&mod=${
-                itf.moduleId
-              }&itf=${itf.id}
-          * @param req 请求参数
-          * @param extra 请求配置项
-          */
-          '${modelName}': (req: Models['${modelName}']['Req'], extra?: any) => {
-              type Res = ResSelector<Models['${modelName}']['Res']>;
-              if(extra && extra.type === 'normal') {
-                return option.fetch<Res>({
-                  url: '${itf.url}',
-                  method: '${itf.method.toUpperCase()}',
-                  params: req, 
-                  extra
-                });
-              } else {
-                const action = RequestAction['${modelName}'](req)
-                return dispatchAction(action, option.fetch) as Promise<Res>
-              }
-          }`;
-            })
-            .join(',\n\n')}
-        };
-      }
-      `;
-}
 
 /** 定义 请求types interface  */
 function getRequestTypesInterfaceStr(interfaces: Intf[]): string {
@@ -115,29 +56,29 @@ function getRequestTypesStr(interfaces: Intf[]): string {
 
 /** 定义 请求action */
 function getRequestActionStr(interfaces: Intf[]): string {
-  return `const RequestAction: RequestAction = {
-            ${interfaces
-              .map(({ id, repositoryId, moduleId, name, url, modelName, method }) => {
-                return `
-                        /**
-                         * 接口名：${name}
-                         * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
-                         */
-                        '${modelName}': (params) => ({
-                            type: '${RAPPER_REQUEST}',
-                            payload: {
-                                modelName: '${modelName}',
-                                url: '${url}',
-                                method: '${method}',
-                                params,
-                                types: RequestTypes['${modelName}'],
-                            },
-                        }),
-                    `;
-              })
-              .join('\n\n')}
-            }
-        `;
+  return `export const RequestAction: RequestAction = {
+    ${interfaces
+      .map(({ id, repositoryId, moduleId, name, url, modelName, method }) => {
+        return `
+                /**
+                 * 接口名：${name}
+                 * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
+                 */
+                '${modelName}': (params) => ({
+                    type: '${RAPPER_REQUEST}',
+                    payload: {
+                        modelName: '${modelName}',
+                        url: '${url}',
+                        method: '${method}',
+                        params,
+                        types: RequestTypes['${modelName}'],
+                    },
+                }),
+            `;
+      })
+      .join('\n\n')}
+    }
+`;
 }
 
 /** 生成 Action 定义 */
@@ -154,32 +95,6 @@ export function createActionStr(interfaces: Intf[]): string {
     
         /** 请求action */
         ${getRequestActionStr(interfaces)}
-        `;
-}
-
-/** 生成 fetch */
-export function createFetchStr(interfaces: Intf[]): string {
-  return `
-        export const fetch = {
-            ${interfaces
-              .map(
-                ({ modelName, name, repositoryId, moduleId, id }) => `
-            /**
-             * 接口名：${name}
-             * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
-             * @param req 请求参数
-             */
-            '${modelName}': (req?: Models['${modelName}']['Req']) => {
-                const action = RequestAction['${modelName}'](req)
-                return dispatchAction(action) as ResponsePromiseType<Models['${modelName}']['Res']>
-            }`,
-              )
-              .join(',\n\n')}
-        };
-
-        export interface RapperProps {
-          fetch: typeof fetch;
-        }
         `;
 }
 
@@ -222,7 +137,8 @@ export function createUseRapStr(interfaces: Intf[]): string {
         type M = keyof RapperStore['${RAPPER_STATE_KEY}']
         type Req = Models['${modelName}']['Req']
         type Item = RapperStore['${RAPPER_STATE_KEY}']['${modelName}'][0]
-        return useResponseData<RapperStore, M, Req, Item>('${modelName}', filter)
+        type Res = ResSelector<Models['${modelName}']['Res']>
+        return useResponseData<RapperStore, M, Req, Item>('${modelName}', filter) as [Res, boolean | undefined]
       }`,
         )
         .join(',\n\n')}
@@ -240,7 +156,8 @@ export function createUseRapStr(interfaces: Intf[]): string {
       '${modelName}': function useData() {
           return useSelector((state: State) => {
               const selectedState = (state['${RAPPER_STATE_KEY}'] && state['${RAPPER_STATE_KEY}']['${modelName}']) || []
-              return selectedState as Models['${modelName}']['Res'][]
+              type Res = ResSelector<Models['${modelName}']['Res']>
+              return selectedState as Res[]
           })
       }`,
         )
@@ -279,7 +196,8 @@ export function createSelectorStr(interfaces: Intf[]): string {
       '${modelName}': createSelector(
         (state: State) => state['${RAPPER_STATE_KEY}']['${modelName}'],
         responseData => {
-          return connectGetResponse(responseData) as Models['${modelName}']['Res']
+          type Res = ResSelector<Models['${modelName}']['Res']>
+          return connectGetResponse(responseData) as Res
         }
       )
     `,

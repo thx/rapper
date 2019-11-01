@@ -95,14 +95,6 @@ export function createTypesStr(): string {
               enhancer?: StoreEnhancer<Ext>
           ): Store<ExtendState<S, StateExt>, A, StateExt, Ext> & Ext
       }
-      
-      class Helper<Req> {
-          Return = baseFetch<Req>({ url: '' })
-      }
-      export type ResponsePromiseType<T> = Helper<T>['Return']
-      
-      type ThenArg<T> = T extends Promise<infer U> ? U : T
-      export type ResponseType<T> = ThenArg<Helper<T>['Return']>
     
       interface FilterObj<Req> {
         request?: Req
@@ -121,6 +113,16 @@ export function createReduxRuntime(): string {
   let dispatch = <Res>(action: IAction): Promise<AnyAction | Res> => {
       return new Promise(() => null)
   }
+  interface RequestParams {
+    url: string;
+    /** 请求类型 */
+    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD';
+    params?: any;
+    extra?: {
+      [k: string]: any;
+    };
+  }
+  let fetchFunc: (params: RequestParams) => Promise<any>;
   
   /** redux store存的数据结构 */
   interface StateInterfaceItem {
@@ -255,7 +257,7 @@ export function createReduxRuntime(): string {
                   },
               })
               try {
-                  const responseData = await baseFetch<Res>({ url, method, params })
+                  const responseData = await fetchFunc({ url, method, params })
                   const reponseTime = new Date().getTime()
   
                   cb && cb(responseData)
@@ -294,8 +296,9 @@ export function createReduxRuntime(): string {
   }
   
   /** 发送请求 */
-  export function dispatchAction<Res>(action: AnyAction) {
-      return dispatch<Res>(action)
+  export function dispatchAction<Res>(action: AnyAction, fetch?: any) {
+    fetch && (fetchFunc = fetch)
+    return dispatch<Res>(action)
   }
   `;
 }
@@ -362,7 +365,7 @@ export function createTools(): string {
       }
   
       /** 以Hooks方式获取response数据 */
-      export function useResponseData<S, M, Req, Item extends { request: Req }>(
+      export function useResponseData<S extends { '${RAPPER_STATE_KEY}': any }, M, Req, Item extends { request: Req }>(
         modelName: M,
         filter?: FilterObj<Req> | FilterFunc<Item>
       ) {

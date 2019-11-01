@@ -75,9 +75,12 @@ export default async function({
 
   let Creator: {
     createIndexStr?: (projectId: number) => GeneratedCode;
-    createDynamicStr?: (interfaces: Intf[], { projectId }: { projectId: number }) => string;
-    createLibStr?: (interfaces: Intf[], { projectId }: { projectId: number }) => GeneratedCode;
-    createRequestStr?: (
+    createDynamicStr?: (
+      interfaces: Intf[],
+      extr: { projectId: number; resSelector: string },
+    ) => string;
+    createLibStr?: (interfaces: Intf[], extr: { projectId: number }) => GeneratedCode;
+    createBaseRequestStr?: (
       interfaces: Intf[],
       extr: { projectId: number; resSelector: string },
     ) => Promise<string>;
@@ -102,8 +105,8 @@ export default async function({
 
   /** 生成基础的 request.ts 请求函数和类型声明 */
   let requestStr = '';
-  if (Creator.createRequestStr) {
-    requestStr = await Creator.createRequestStr(interfaces, {
+  if (Creator.createBaseRequestStr) {
+    requestStr = await Creator.createBaseRequestStr(interfaces, {
       projectId,
       resSelector,
     });
@@ -122,7 +125,10 @@ export default async function({
   Creator.createDynamicStr &&
     outputFiles.push({
       path: `${rapperPath}/${type}.ts`,
-      content: format(Creator.createDynamicStr(interfaces, { projectId }), DEFAULT_OPTIONS),
+      content: format(
+        Creator.createDynamicStr(interfaces, { projectId, resSelector }),
+        DEFAULT_OPTIONS,
+      ),
     });
 
   /** 生成静态的 lib */
