@@ -107,14 +107,14 @@ export function createUseRapStr(interfaces: Intf[]): string {
         ${interfaces
           .map(
             ({ modelName }) => `
-        '${modelName}': {
+        '${modelName}': Array<{
           request: Models['${modelName}']['Req']
           response: Models['${modelName}']['Res']
           id: number
           requestTime: number
           responseTime: number
           isFetching: boolean
-        }[]`,
+        }>`,
           )
           .join(',\n\n')}
       }

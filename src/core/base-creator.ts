@@ -60,65 +60,31 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreateFetch
      * 本文件由 Rapper 从 Rap 中自动生成，请勿修改
      * Rap 地址: http://rap2.alibaba-inc.com/repository/editor?id=${projectId}
      */
-    import { locationStringify, parseUrl } from './lib'
+    import { parseUrl, defaultFetch, defaultConfig, RequesterOption, FetchConfigObj } from './lib'
     ${modelStr}
 
     ${resSelector}
+  
+    ${createResponseTypes(interfaces)}
 
-    interface FetchParams {
-      url: string
-      method: string
-      params?: any
-      extra?: any
-    }
-    type FetchConfigFunc = <T>(params: FetchParams) => Promise<T>
-    interface RequesterOption {
-      fetchConfig: {
-        /** 'prefix' 前缀，统一设置 url 前缀，默认是 '' */
-        prefix?: string,
-        /** 'headers' 请求头，默认 { 'Content-Type': 'application/json' } */
-        headers?: any,
-        /**
-         * credentials 用于设置是否发送带凭据的请求，默认值 'same-origin'
-         * credentials: 'include'，浏览器发送包含凭据的请求（即使是跨域源）
-         * credentials: 'same-origin'，只在请求URL与调用脚本位于同一起源处时发送凭据
-         * credentials: 'omit'，浏览器不在请求中包含凭据
-         */
-        credentials?: 'include' | 'same-origin' | 'omit',
-      } | FetchConfigFunc
-    };
-
-    const defaultConfig = {
-      prefix: '',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'same-origin',
-    }
     export function createRequester(options: RequesterOption) {
-      let rapperFetch = undefined
+      let rapperFetch: any;
       if (options && typeof options.fetchConfig === 'function') {
-        rapperFetch = options.fetchConfig
+        rapperFetch = options.fetchConfig;
       } else {
-        let fetchConfig = undefined
+        let fetchConfig: FetchConfigObj = {};
         if (options && typeof options.fetchConfig === 'object') {
-          fetchConfig = { ...defaultConfig, ...options.fetchConfig }
-        } else {
-          fetchConfig = options.fetchConfig
+          fetchConfig = { ...defaultConfig, ...options.fetchConfig };
         }
-        rapperFetch = async ({ url, method, params, extra }: FetchParams) => {
-          let requestUrl = parseUrl(url, fetchConfig.prefix)
-          const requestParams: any = {
-            method,
-            headers: fetchConfig.headers,
-            credentials: fetchConfig.credentials,
-          }
-          if (requestParams.method === 'GET') {
-            requestUrl = requestUrl + '?' + locationStringify(params)
-          } else if (params) {
-            requestParams.body = JSON.stringify(params)
-          }
-          const res = await fetch(requestUrl, requestParams)
-          return res.json()
-        }
+        rapperFetch = async (requestParams: {
+          url: string;
+          method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD';
+          params?: any;
+          extra?: { [key: string]: any };
+        }) => {
+          requestParams.url = parseUrl(requestParams.url, fetchConfig.prefix);
+          return await defaultFetch({ ...fetchConfig, ...requestParams });
+        };
       }
 
       return {
@@ -153,13 +119,64 @@ export function createBaseIndexCode(): GeneratedCode {
   return {
     import: `
       import { createRequester, Models } from './request'
+      import { defaultFetch } from './lib'
     `,
     body: ``,
     export: `
-      export { createRequester }
+      export { createRequester, defaultFetch }
       export type Models = Models
     `,
   };
+}
+
+/** 生成 defaultFetch */
+function createDefaultFetch() {
+  return `interface FetchParams {
+      url: string;
+      method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD';
+      headers?: any;
+      credentials?: 'include' | 'same-origin' | 'omit';
+      params?: any;
+      body?: any;
+      extra?: { [key: string]: any };
+    }
+    type FetchConfigFunc = <T>(params: FetchParams) => Promise<T>;
+    export interface FetchConfigObj {
+      /** 'prefix' 前缀，统一设置 url 前缀，默认是 '' */
+      prefix?: string;
+      /** 'headers' 请求头，默认 { 'Content-Type': 'application/json' } */
+      headers?: any;
+      /**
+       * credentials 用于设置是否发送带凭据的请求，默认值 'same-origin'
+       * credentials: 'include'，浏览器发送包含凭据的请求（即使是跨域源）
+       * credentials: 'same-origin'，只在请求URL与调用脚本位于同一起源处时发送凭据
+       * credentials: 'omit'，浏览器不在请求中包含凭据
+       */
+      credentials?: 'include' | 'same-origin' | 'omit';
+    }
+    export interface RequesterOption {
+      fetchConfig: FetchConfigObj | FetchConfigFunc;
+    }
+    export const defaultConfig: FetchConfigObj = {
+      prefix: '',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+    };
+    export const defaultFetch = async ({ url, params, extra, ...otherParams }: FetchParams) => {
+      if (otherParams.method === 'GET') {
+        url = url + '?' + locationStringify(params);
+      } else if (params && otherParams.body) {
+        otherParams.body = typeof params === 'object' ? JSON.stringify(params) : params;
+      }
+      const res = await fetch(url, otherParams);
+      const responseType = res.headers.get('Content-Type')
+      if (responseType && responseType.includes('application/json')) {
+        return res.json()
+      } else {
+        throw Error('rapper 仅支持响应数据类型为 application/json 的接口')
+      }
+    }
+  `;
 }
 
 export function createBaseLibCode(): GeneratedCode {
@@ -193,6 +210,9 @@ export function createBaseLibCode(): GeneratedCode {
     url = url.replace(/^\\//, '')
     return requestPrefix + '/' + url
   }
+
+  /** defaultFetch */
+  ${createDefaultFetch()}
   `,
     export: '',
   };

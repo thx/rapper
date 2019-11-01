@@ -203,7 +203,7 @@ export default function convert(itf: Interface.Root): Promise<Array<string>> {
 
   const options: Options = {
     ...DEFAULT_OPTIONS,
-    bannerComment: '',
+    bannerComment: '/* tslint:disable */',
   };
   return Promise.all([
     compile(reqJSONSchema, 'Req', options),

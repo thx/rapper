@@ -195,7 +195,7 @@ export function createReduxRuntime(): string {
   
           /** 重新定义 reducers */
           const newReducers = (state: any, action: IAction): Store => {
-              if (state && !state['${RAPPER_STATE_KEY}']) {
+              if (state && !state.${RAPPER_STATE_KEY}) {
                   throw Error('rapper初始化配置失败，rootReducer应该加入rapReducers，具体请查看demo配置')
               }
   
@@ -209,7 +209,7 @@ export function createReduxRuntime(): string {
                       return {
                           ...state,
                           '${RAPPER_STATE_KEY}': assignData({
-                              oldState: state['${RAPPER_STATE_KEY}'],
+                              oldState: state.${RAPPER_STATE_KEY},
                               maxCacheLength,
                               payload: action.payload,
                           }),
@@ -219,7 +219,7 @@ export function createReduxRuntime(): string {
                       return {
                           ...state,
                           '${RAPPER_STATE_KEY}': {
-                              ...state['${RAPPER_STATE_KEY}'],
+                              ...state.${RAPPER_STATE_KEY},
                               ...action.payload,
                           },
                       }
@@ -370,7 +370,7 @@ export function createTools(): string {
         filter?: FilterObj<Req> | FilterFunc<Item>
       ) {
         const reduxData = useSelector((state: S) => {
-          return (state['${RAPPER_STATE_KEY}'] && state['${RAPPER_STATE_KEY}'][modelName]) || []
+          return (state.${RAPPER_STATE_KEY} && state.${RAPPER_STATE_KEY}[modelName]) || []
         })
         const initData = reduxData.length ? reduxData.slice(-1)[0] : {}
         const [filteredData, setFilteredData] = useState(initData.response || undefined)
