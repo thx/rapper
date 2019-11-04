@@ -67,7 +67,7 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreateFetch
   
     ${createResponseTypes(interfaces)}
 
-    export function createRequester(options: RequesterOption) {
+    export function createRequester(options?: RequesterOption) {
       let rapperFetch: any;
       if (options && typeof options.fetchConfig === 'function') {
         rapperFetch = options.fetchConfig;
@@ -121,9 +121,11 @@ export function createBaseIndexCode(): GeneratedCode {
       import { createRequester, Models } from './request'
       import { defaultFetch } from './lib'
     `,
-    body: ``,
+    body: `
+      const request = createRequester()
+    `,
     export: `
-      export { createRequester, defaultFetch }
+      export { request, createRequester, defaultFetch }
       export type Models = Models
     `,
   };

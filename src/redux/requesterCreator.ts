@@ -18,7 +18,7 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreateFetch
   
     ${createResponseTypes(interfaces)}
 
-    export function createRequester(options: RequesterOption) {
+    export function createRequester(options?: RequesterOption) {
       let rapperFetch: any;
       if (options && typeof options.fetchConfig === 'function') {
         rapperFetch = options.fetchConfig;
