@@ -35,6 +35,8 @@ rapper({
 
 配置好如上的配置文件后，执行 `node rapper.js` 就能生成模板文件了
 
+`rapper.js` 强烈建议放在项目根目录，因为 Rapper 会帮你进行依赖检测，扫描项目中是否引用了已被从 Rap 平台删除的接口，避免运行时 bug
+
 ### 第二步、配置 redux 初始化信息
 
 #### 在 createStore 的时候利用 compose 增加一个 store enhancer
