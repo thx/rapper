@@ -95,11 +95,9 @@ function scanAllfiles(interfaces: Intf[], fileList: Array<string>): Array<ErrorL
  */
 export default function(interfaces: Intf[], excludePaths: string[]) {
   let fileList = getFiles('./');
-  console.log(fileList);
   fileList = fileList.filter(file => {
     file = resolve(process.cwd(), file);
     return !excludePaths.find(exclude => file.indexOf(resolve(process.cwd(), exclude)) > -1);
   });
-  console.log(fileList);
   return scanAllfiles(interfaces, fileList);
 }

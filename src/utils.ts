@@ -46,3 +46,12 @@ export function moveFile(from: string, to: string) {
     });
   });
 }
+
+/**
+ * 命令是否在根目录执行
+ */
+export function isInRoot() {
+  const cwd = process.cwd();
+  const flag = fs.existsSync(path.resolve(cwd, 'package.json'));
+  return flag;
+}
