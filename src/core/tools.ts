@@ -1,12 +1,11 @@
 import chalk from 'chalk';
 import axios from 'axios';
 import * as _ from 'lodash';
-
 import { Modules, Collaborator, Interface, Intf, UrlMapper } from '../types';
 
 /** 从rap查询所有接口数据 */
-export async function getInterfaces(rapUrl: string, projectId: number) {
-  const response = await axios.get(`${rapUrl}/repository/get?id=${projectId}`);
+export async function getInterfaces(rapApiUrl: string, projectId: number) {
+  const response = await axios.get(`${rapApiUrl}/repository/get?id=${projectId}`);
 
   const data = response.data.data;
   const modules: Modules[] = data.modules;
@@ -19,7 +18,7 @@ export async function getInterfaces(rapUrl: string, projectId: number) {
 
   if (collaborators.length) {
     const collaboratorsInterfaces = await Promise.all(
-      collaborators.map(e => getInterfaces(rapUrl, e.id)),
+      collaborators.map(e => getInterfaces(rapApiUrl, e.id)),
     );
     interfaces = interfaces.concat(collaboratorsInterfaces.flat());
   }
@@ -113,4 +112,38 @@ export function uniqueItfs(itfs: Intf[]) {
     }
   });
   return newItfs;
+}
+
+/** 生成提示文案 */
+export function creatHeadHelpStr(rapUrl: string, projectId: number): string {
+  return `
+  /**
+   * 本文件由 Rapper 同步 Rap 平台接口，自动生成，请勿修改
+   * Rap仓库 地址: ${rapUrl}/repository/editor?id=${projectId}
+   */
+  `;
+}
+
+/**
+ * 生成接口提示文案
+ * @param rapUrl Rap平台地址
+ * @param itf 接口信息
+ * @param extra 额外信息
+ */
+export function creatInterfaceHelpStr(rapUrl: string, itf: Intf, extra?: string): string {
+  const { name, repositoryId, moduleId, id } = itf;
+  if (extra) {
+    return `
+    /**
+     * 接口名：${name}
+     * Rap 地址: ${rapUrl}/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
+     ${extra}
+     */`;
+  }
+
+  return `
+    /**
+     * 接口名：${name}
+     * Rap 地址: ${rapUrl}/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}
+     */`;
 }

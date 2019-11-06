@@ -1,4 +1,4 @@
-import { Intf, GeneratedCode } from '../types';
+import { Intf, GeneratedCode, CreatorExtr } from '../types';
 import {
   createActionStr,
   createUseRapStr,
@@ -9,7 +9,7 @@ import { createTools, createTypesStr, createReduxRuntime } from './libCreator';
 import { createBaseRequestStr } from './requesterCreator';
 
 /** 生成 index.ts */
-function createIndexStr(projectId: number): GeneratedCode {
+function createIndexStr(): GeneratedCode {
   return {
     import: `
       import { useResponse, useAllResponse, clearResponseCache, rapperActions, rapperSelector, connect } from './redux'
@@ -41,15 +41,15 @@ function createIndexStr(projectId: number): GeneratedCode {
 }
 
 /** 生成 redux.ts */
-function createDynamicStr(interfaces: Intf[], { resSelector }): string {
+function createDynamicStr(interfaces: Intf[], extr: CreatorExtr): string {
   return `
     import { connect as defaultConnect, useSelector } from 'react-redux'
     import { createSelector } from 'reselect'
     import { Models, ResponseTypes } from './request'
     import { dispatchAction, useResponseData, connectGetResponse, State } from './lib'
 
-    ${createActionStr(interfaces)}
-    ${createUseRapStr(interfaces)}
+    ${createActionStr(interfaces, extr)}
+    ${createUseRapStr(interfaces, extr)}
     ${createSelectorStr(interfaces)}
     ${createConnectStr()}
 
@@ -58,7 +58,7 @@ function createDynamicStr(interfaces: Intf[], { resSelector }): string {
 }
 
 /** 生成 lib.ts */
-function createLibStr(interfaces: Intf[], { projectId }: { projectId: number }): GeneratedCode {
+function createLibStr(interfaces: Intf[], extr: CreatorExtr): GeneratedCode {
   return {
     import: `
       import { useState, useEffect } from 'react'
