@@ -16,7 +16,6 @@
   </p>
 </p>
 
-
 ## Rapper 是什么？
 
 为了管理接口文档，十年以前我们创立了广受欢迎的 [Rap](https://github.com/thx/rap2-delos) 项目，如今已经有相当多的用户在 Rap 中管理接口文档和 Mock 数据。Rapper 可以利用这些已经录入的接口数据为你生成 TypeScript 类型定义以及配套的数据请求方案。
@@ -28,7 +27,6 @@
 ```sh
 npm install rap --save-dev
 ```
-
 
 ## Usage
 

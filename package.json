@@ -1,6 +1,6 @@
 {
   "name": "@ali/rapper-redux",
-  "version": "0.1.6",
+  "version": "0.1.6-beta4",
   "description": "rapper, use http api as a function",
   "main": "./dist/index.js",
   "scripts": {
@@ -9,6 +9,9 @@
     "clean": "rm -rf test_data/model",
     "requester": "npm run build && npm run clean && node ./dist/test/requester",
     "redux": "npm run build && npm run clean && node ./dist/test/redux"
+  },
+  "bin": {
+    "rapper": "./dist/models.js"
   },
   "repository": {
     "type": "git",

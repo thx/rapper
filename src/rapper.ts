@@ -6,6 +6,7 @@ import { createBaseRequestStr, createBaseIndexCode, createBaseLibCode } from './
 import ReduxCreator from './redux';
 import { writeFile, mixGeneratedCode } from './utils';
 import { getInterfaces, getIntfWithModelName, uniqueItfs } from './core/tools';
+import scanFile from './core/scanFile';
 
 interface Rapper {
   /** 必填，redux、requester 等 */
@@ -14,7 +15,7 @@ interface Rapper {
   projectId: number;
   /** 选填，rap网站地址，默认是 http://rap2.taobao.org */
   rapUrl?: string;
-  /** 选填，生成出 rapper 的文件夹地址, 默认 ./rapper */
+  /** 选填，生成出 rapper 的文件夹地址, 默认 ./src/rapper */
   rapperPath?: string;
   /** 选填，url映射，可用来将复杂的url映射为简单的url */
   urlMapper?: UrlMapper;
@@ -27,7 +28,7 @@ export default async function({
   type,
   projectId,
   rapUrl = 'http://rap2.taobao.org',
-  rapperPath = './rapper',
+  rapperPath = './src/rapper',
   urlMapper = t => t,
   codeStyle,
   resSelector = 'type ResSelector<T> = T',
@@ -52,17 +53,13 @@ export default async function({
     DEFAULT_OPTIONS.style = { ...codeStyle };
   }
 
-  if (!rapperPath) {
-    return new Promise(() => console.log(chalk.red('rapper: rapperPath 配置失败，请修改')));
-  } else {
-    rapperPath = rapperPath.replace(/\/$/, '');
-  }
+  rapperPath = rapperPath.replace(/\/$/, '');
 
   /** 输出文件集合 */
   const outputFiles = [];
 
   /** 获取所有接口 */
-  let interfaces = [];
+  let interfaces: Intf[] = [];
   try {
     interfaces = await getInterfaces(rapUrl, projectId);
   } catch (e) {
@@ -141,11 +138,22 @@ export default async function({
     content: format(mixGeneratedCode(libCodeArr), DEFAULT_OPTIONS),
   });
 
-  return Promise.all(outputFiles.map(({ path, content }) => writeFile(path, content)))
-    .then(() => {
-      console.log(chalk.green(`rapper: 同步成功！共同步:${interfaces.length} 个接口`));
-    })
-    .catch(err => {
-      console.log(chalk.red(err));
+  /** Rap 接口引用扫描 */
+  const scanResult = scanFile(interfaces, [rapperPath]);
+  if (scanResult.length) {
+    console.log(
+      chalk.red('rapper: 同步失败，如下文件使用了已被 Rap 删除的接口，请确认后重新执行同步'),
+    );
+    scanResult.forEach(({ key, filePath, start, line }) => {
+      console.log(chalk.red(`  接口: ${key}, 所在文件: ${filePath}:${line}:${start}`));
     });
+  } else {
+    return Promise.all(outputFiles.map(({ path, content }) => writeFile(path, content)))
+      .then(() => {
+        console.log(chalk.green(`rapper: 同步成功！共同步:${interfaces.length} 个接口`));
+      })
+      .catch(err => {
+        console.log(chalk.red(err));
+      });
+  }
 }
