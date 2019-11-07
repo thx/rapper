@@ -22,7 +22,7 @@
 
 1. 进入仓库，点击配置「生成 TS 代码」
 
-![rapper安装](https://img.alicdn.com/tfs/TB1hcail.Y1gK0jSZFMXXaWcVXa-1470-834.png)
+<img src="https://img.alicdn.com/tfs/TB1hcail.Y1gK0jSZFMXXaWcVXa-1470-834.png" alt="install" width="700">
 
 2. 按照指引把 Rapper 安装到项目中
 
@@ -45,11 +45,11 @@ import { fetch } from './rapper/index';
 
 ### 友好的类型约束/提示
 
-<img src="https://img.alicdn.com/tfs/TB1xV9Dl8r0gK0jSZFnXXbRRXXa-958-422.gif" alt="Logo" width="500">
+<img src="https://img.alicdn.com/tfs/TB1xV9Dl8r0gK0jSZFnXXbRRXXa-958-422.gif" alt="smart" width="1000">
 
 ### 随时跳转到 Rap 查看接口文档
 
-<img src="https://img.alicdn.com/tfs/TB1ejyGl4D1gK0jSZFKXXcJrVXa-1008-463.gif" alt="Logo" width="500">
+<img src="https://img.alicdn.com/tfs/TB1ejyGl4D1gK0jSZFKXXcJrVXa-1008-463.gif" alt="jump" width="1000">
 
 ## 在 React/Redux 场景下强大的数据管理方案
 
