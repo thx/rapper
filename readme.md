@@ -1,18 +1,14 @@
 [![MIT License][license-shield]][license-url]
 
 <p align="center">
-  <a href="https://github.com/othneildrew/Best-README-Template">
+  <a href="https://github.com/thx/rapper">
     <img src="https://img.alicdn.com/tfs/TB1SlW9lQT2gK0jSZPcXXcKkpXa-1138-220.png" alt="Logo" width="250">
   </a>
 
   <h3 align="center">一个自带类型的请求库</h3>
 
   <p align="center">
-    <a href="https://github.com/othneildrew/Best-README-Template">文档</a>
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template">Demo</a>
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues"> Bug</a>
+    <a href="https://github.com/thx/rapper/wiki">文档</a>
   </p>
 </p>
 
@@ -32,30 +28,55 @@
 
 3. 执行 `npm run rapper` 生成代码
 
-4. 直接引入 requester 函数，调用它就能发起请求并返回带有类型的相应数据
+4. 引入生成的 fetch 函数，调用它就能发起请求并返回带有类型的相应数据
+
+```javascript
+// 从生成的代码中引入 requester
+import { fetch } from './rapper/index';
+// 直接使用 requester 调用请求函数，能获得请求/返回类型校验/提示
+(async function() {
+  //                         alt+点击可以查看接口信息
+  const res = await requester['GET/example/rapper']({
+    foo: '123',
+  });
+  const nameList = res.taskList.map(e => e.name);
+})();
+```
+
+### 友好的类型约束/提示
 
 ![rapper最简单的使用](https://img.alicdn.com/tfs/TB1xV9Dl8r0gK0jSZFnXXbRRXXa-958-422.gif)
 
+### 随时跳转到 Rap 查看接口文档
+
 ![点击查看接口](https://img.alicdn.com/tfs/TB1ejyGl4D1gK0jSZFKXXcJrVXa-1008-463.gif)
 
-## 进阶
+## 在 React/Redux 场景下强大的数据管理方案
 
-## License
+如果你使用 React 和 Redux，在以上基础的请求函数之外，Rapper 还为你提供精心设计过的全局数据管理方案。
 
-Distributed under the MIT License. See `LICENSE` for more information.
+以往发送一个请求要写繁杂的 interface/action/reducer/effect，现在这些都会为你准备好，你只需要使用即可：
 
-<!-- CONTACT -->
+```javascript
+const [result, loading] = useResponse['GET/duck/fetchColor'];
 
-## 联系
+useEffect(() => {
+  if (!result && !loading) {
+    fetch['GET/duck/fetchColor'](params);
+  }
+}, [result, loading, params]);
+```
 
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+## 深度使用
+
+想要在生产中深度使用 Rapper，你可能还需要自定义请求函数、对返回的数据做统一的类型转换
+
+## 联系我们
+
+- Github Issue
+- 钉钉群：11789704
 
 [stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=flat-square
 [license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=flat-square
 [license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
 [product-screenshot]: images/screenshot.png
-
-```
-
-```
