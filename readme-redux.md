@@ -83,9 +83,9 @@ fetch['GET/adgroup/price/update$']({ productId: 1 })
     })
 
 /** 以 Hooks 的方式获取请求回来的数据 */
-const [responseData, isFetching] = useResponse['GET/adgroup/price/update$']()
+const [responseData, { isPending }] = useResponse['GET/adgroup/price/update$']()
 
-responseData 是 请求响应的数据，isFetching 是请求的状态
+responseData 是 请求响应的数据，isPending 是请求的状态
 
 /** 以 Hooks 的方式获取请求回来的所有数据（包括历史数据） */
 const rapData = useAllResponse['GET/adgroup/price/update$']()

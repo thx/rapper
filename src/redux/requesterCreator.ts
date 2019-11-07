@@ -14,14 +14,14 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreatorExtr
   
     ${createResponseTypes(interfaces)}
 
-    export function createRequester(options?: RequesterOption) {
+    export function createFetch(fetchConfig: RequesterOption) {
       let rapperFetch: any;
-      if (options && typeof options.fetchConfig === 'function') {
-        rapperFetch = options.fetchConfig;
+      if (typeof fetchConfig === 'function') {
+        rapperFetch = fetchConfig;
       } else {
         let fetchConfig: FetchConfigObj = {};
-        if (options && typeof options.fetchConfig === 'object') {
-          fetchConfig = { ...defaultConfig, ...options.fetchConfig };
+        if (typeof fetchConfig === 'object') {
+          fetchConfig = { ...defaultConfig, ...fetchConfig };
         }
         rapperFetch = async (requestParams: {
           url: string;
@@ -60,7 +60,7 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreatorExtr
     }
 
     export interface RapperProps{
-      fetch: ReturnType<typeof createRequester>
+      fetch: ReturnType<typeof createFetch>
     }
       `;
 }
