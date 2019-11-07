@@ -122,10 +122,10 @@ export function createBaseIndexCode(): GeneratedCode {
       import { defaultFetch } from './lib'
     `,
     body: `
-      const request = createRequester()
+      const requester = createRequester()
     `,
     export: `
-      export { request, createRequester, defaultFetch }
+      export { requester, createRequester, defaultFetch }
       export type Models = Models
     `,
   };
