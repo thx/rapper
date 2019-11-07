@@ -1,6 +1,6 @@
 {
   "name": "@ali/rapper-redux",
-  "version": "0.1.6-beta4",
+  "version": "0.1.8",
   "description": "rapper, use http api as a function",
   "main": "./dist/index.js",
   "scripts": {
@@ -47,7 +47,6 @@
     "eslint": "^6.5.1",
     "eslint-config-prettier": "^6.4.0",
     "eslint-plugin-prettier": "^3.1.1",
-    "prettier": "^1.18.2",
     "react": "^16.9.0",
     "react-redux": "^7.1.1",
     "redux": "^4.0.4",

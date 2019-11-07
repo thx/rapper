@@ -92,3 +92,9 @@ export interface GeneratedCode {
   body: string;
   export: string;
 }
+
+/** create 函数的参数 */
+export interface CreatorExtr {
+  rapUrl: string;
+  resSelector: string;
+}
