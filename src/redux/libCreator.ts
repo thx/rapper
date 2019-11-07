@@ -165,23 +165,23 @@ export function createReduxRuntime(): string {
     payload: { interfaceKey, id, requestTime, reponseTime, request = {}, response, isPending, errorMessage },
     maxCacheLength,
   }: AssignDataProps) {
-      const newState = { ...oldState }
-      if (typeof maxCacheLength !== 'number' || maxCacheLength < 1) {
-          maxCacheLength = 2
+    const newState = { ...oldState }
+    if (typeof maxCacheLength !== 'number' || maxCacheLength < 1) {
+      maxCacheLength = 2
+    }
+
+    let data = newState[interfaceKey] || []
+    if (isPending === true) {
+      /** 只存最近 maxCacheLength 个数据 */
+      if (maxCacheLength !== Infinity && data.length >= maxCacheLength) {
+        data = newState[interfaceKey].slice(data.length - maxCacheLength + 1)
       }
-  
-      let data = newState[interfaceKey] || []
-      if (isPending === true) {
-          /** 只存最近 maxCacheLength 个数据 */
-          if (maxCacheLength !== Infinity && data.length >= maxCacheLength) {
-              data = newState[interfaceKey].slice(data.length - maxCacheLength + 1)
-          }
-          newState[interfaceKey] = [...data, { id, requestTime, request, isPending }]
-      } else {
-          newState[interfaceKey] = data.map((item: StateInterfaceItem) => (item.id === id ? { ...item, reponseTime, response, isPending, errorMessage } : item))
-      }
-  
-      return newState
+      newState[interfaceKey] = [...data, { id, requestTime, request, isPending }]
+    } else {
+      newState[interfaceKey] = data.map((item: StateInterfaceItem) => (item.id === id ? { ...item, reponseTime, response, isPending, errorMessage } : item))
+    }
+
+    return newState
   }
   
   export const rapReducers = {
@@ -190,113 +190,112 @@ export function createReduxRuntime(): string {
   
   /** store enhancer */
   export function rapEnhancer(config?: EnhancerProps): StoreEnhancer<any> {
-      config = config || {}
-      const { maxCacheLength = 2 } = config
+    config = config || {}
+    const { maxCacheLength = 2 } = config
   
-      return (next: StoreCreator) => (reducers: Reducer<any, any>, ...args: any[]) => {
-          const store = next(reducers, ...args)
+    return (next: StoreCreator) => (reducers: Reducer<any, any>, ...args: any[]) => {
+      const store = next(reducers, ...args)
   
-          /** 重新定义 reducers */
-          const newReducers = (state: any, action: IAction): Store => {
-              if (state && !state.${RAPPER_STATE_KEY}) {
-                  throw Error('rapper初始化配置失败，rootReducer应该加入rapReducers，具体请查看demo配置')
-              }
+      /** 重新定义 reducers */
+      const newReducers = (state: any, action: IAction): Store => {
+        if (state && !state.${RAPPER_STATE_KEY}) {
+          throw Error('rapper初始化配置失败，rootReducer应该加入rapReducers，具体请查看demo配置: https://www.yuque.com/rap/rapper/redux#e391cb1c')
+        }
   
-              if (!action.hasOwnProperty('type')) {
-                  return reducers(state, action)
-              }
+        if (!action.hasOwnProperty('type')) {
+          return reducers(state, action)
+        }
   
-              switch (action.type) {
-                  /** 请求成功，更新 store */
-                  case '${RAPPER_UPDATE_STORE}':
-                      return {
-                          ...state,
-                          '${RAPPER_STATE_KEY}': assignData({
-                              oldState: state.${RAPPER_STATE_KEY},
-                              maxCacheLength,
-                              payload: action.payload,
-                          }),
-                      }
-                  /** 用户手动清空 */
-                  case '${RAPPER_CLEAR_STORE}':
-                      return {
-                          ...state,
-                          '${RAPPER_STATE_KEY}': {
-                              ...state.${RAPPER_STATE_KEY},
-                              ...action.payload,
-                          },
-                      }
-                  default:
-                      return reducers(state, action)
-              }
-          }
-          store.replaceReducer(newReducers)
-  
-          /** 重新定义 dispatch */
-          dispatch = async <Res>(action: IAction) => {
-              if (action.type !== '${RAPPER_REQUEST}') {
-                  return store.dispatch(action)
-              }
-  
-              const {
-                  modelName,
-                  url,
-                  method,
-                  params,
-                  cb,
-                  types: [REQUEST, SUCCESS, FAILURE],
-              } = action.payload
-              const requestTime = new Date().getTime()
-  
-              store.dispatch({ type: REQUEST })
-              store.dispatch({
-                  type: '${RAPPER_UPDATE_STORE}',
-                  payload: {
-                      interfaceKey: modelName,
-                      id: requestTime,
-                      requestTime,
-                      request: params,
-                      isPending: true,
-                  },
-              })
-              try {
-                  const responseData = await fetchFunc({ url, method, params })
-                  const reponseTime = new Date().getTime()
-  
-                  cb && cb(responseData)
-                  store.dispatch({ type: SUCCESS, payload: responseData })
-                  /** 请求成功，更新store */
-                  store.dispatch({
-                      type: '${RAPPER_UPDATE_STORE}',
-                      payload: {
-                          interfaceKey: modelName,
-                          id: requestTime,
-                          requestTime,
-                          reponseTime,
-                          request: params,
-                          response: responseData,
-                          isPending: false,
-                      },
-                  })
-                  return responseData
-              } catch (err) {
-                const errorMessage = typeof err === 'object' ? err.message : JSON.stringify(err)
-                store.dispatch({ type: FAILURE, payload: errorMessage })
-                store.dispatch({
-                  type: '$$RAPPER_UPDATE_STORE',
-                  payload: {
-                    interfaceKey: modelName,
-                    id: requestTime,
-                    requestTime,
-                    isPending: false,
-                    errorMessage
-                  },
-                })
-              }
-          }
-  
-          return { ...store, dispatch }
+        switch (action.type) {
+          /** 请求成功，更新 store */
+          case '${RAPPER_UPDATE_STORE}':
+            return {
+              ...state,
+              '${RAPPER_STATE_KEY}': assignData({
+                oldState: state.${RAPPER_STATE_KEY},
+                maxCacheLength,
+                payload: action.payload,
+              }),
+            }
+          /** 用户手动清空 */
+          case '${RAPPER_CLEAR_STORE}':
+            return {
+              ...state,
+              '${RAPPER_STATE_KEY}': {
+                ...state.${RAPPER_STATE_KEY},
+                ...action.payload,
+              },
+            }
+          default:
+            return reducers(state, action)
+        }
       }
+      store.replaceReducer(newReducers)
+  
+      /** 重新定义 dispatch */
+      dispatch = async <Res>(action: IAction) => {
+        if (action.type !== '${RAPPER_REQUEST}') {
+          return store.dispatch(action)
+        }
+
+        const {
+          modelName,
+          url,
+          method,
+          params,
+          cb,
+          types: [REQUEST, SUCCESS, FAILURE],
+        } = action.payload
+        const requestTime = new Date().getTime()
+
+        store.dispatch({ type: REQUEST })
+        store.dispatch({
+          type: '${RAPPER_UPDATE_STORE}',
+          payload: {
+            interfaceKey: modelName,
+            id: requestTime,
+            requestTime,
+            request: params,
+            isPending: true,
+          },
+        })
+        try {
+          const responseData = await fetchFunc({ url, method, params })
+          const reponseTime = new Date().getTime()
+
+          cb && cb(responseData)
+          store.dispatch({ type: SUCCESS, payload: responseData })
+          /** 请求成功，更新store */
+          store.dispatch({
+            type: '${RAPPER_UPDATE_STORE}',
+            payload: {
+              interfaceKey: modelName,
+              id: requestTime,
+              requestTime,
+              reponseTime,
+              request: params,
+              response: responseData,
+              isPending: false,
+            },
+          })
+          return responseData
+        } catch (err) {
+          const errorMessage = typeof err === 'object' ? err.message : JSON.stringify(err)
+          store.dispatch({ type: FAILURE, payload: errorMessage })
+          store.dispatch({
+            type: '$$RAPPER_UPDATE_STORE',
+            payload: {
+              interfaceKey: modelName,
+              id: requestTime,
+              requestTime,
+              isPending: false,
+              errorMessage
+            },
+          })
+        }
+      }
+      return { ...store, dispatch }
+    }
   }
   
   /** 发送请求 */
