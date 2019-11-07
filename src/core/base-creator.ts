@@ -104,7 +104,7 @@ export function createBaseIndexCode(): GeneratedCode {
       import { defaultFetch } from './lib'
     `,
     body: `
-      const fetch = createFetch()
+      const fetch = createFetch({})
     `,
     export: `
       export { fetch, createFetch, defaultFetch }
