@@ -112,7 +112,7 @@ export function createUseRapStr(interfaces: Intf[], extr: CreatorExtr): string {
           id: number
           requestTime: number
           responseTime: number
-          isFetching: boolean
+          isPending: boolean
         }>`,
           )
           .join(',\n\n')}
@@ -136,7 +136,12 @@ export function createUseRapStr(interfaces: Intf[], extr: CreatorExtr): string {
         type Res = ResponseTypes['${itf.modelName}']
         return useResponseData<RapperStore, M, Req, Item>('${
           itf.modelName
-        }', filter) as [Res, boolean | undefined]
+        }', filter) as [Res | undefined, {
+          /** 是否正在请求中 */
+          isPending: boolean,
+          /** 请求错误信息 */
+          errorMessage?: string
+        } ]
       }`,
         )
         .join(',\n\n')}

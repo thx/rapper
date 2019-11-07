@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
-const { rapper } = require('@ali/rapper-redux');
-const { resolve } = require('path');
-const chalk = require('chalk');
+import { rapper } from './index';
+import { resolve } from 'path';
+import chalk from 'chalk';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageConfig = require(resolve(process.cwd(), './package.json'));
 
 if (!packageConfig.rapper) {
@@ -17,5 +18,6 @@ rapper({
   type: packageConfig.rapper.type || 'redux',
   projectId: packageConfig.rapper.projectId,
   rapperPath: resolve(process.cwd(), './src/models/rapper/'),
-  rapUrl: packageConfig.rapper.rapUrl || 'https://rap2api.alibabainc.com',
+  rapUrl: packageConfig.rapper.rapUrl || 'https://rap2.alibaba-inc.com',
+  apiUrl: packageConfig.rapper.apiUrl || 'https://rap2api.alibaba-inc.com',
 });

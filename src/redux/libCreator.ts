@@ -126,41 +126,44 @@ export function createReduxRuntime(): string {
   
   /** redux store存的数据结构 */
   interface StateInterfaceItem {
-      /** 请求的唯一id，暂时等于requestTime */
-      id: number
-      /** 请求时间 */
-      requestTime: number
-      /** 请求参数 */
-      request?: any
-      /** 是否正在 fetching */
-      isFetching: boolean
-      /** 响应时间 */
-      reponseTime?: number
-      /** 请求响应数据 */
-      response?: any
+    /** 请求的唯一id，暂时等于requestTime */
+    id: number
+    /** 请求时间 */
+    requestTime: number
+    /** 请求参数 */
+    request?: any
+    /** 是否正在 fetching */
+    isPending: boolean
+    /** 错误信息 */
+    errorMessage?: string
+    /** 响应时间 */
+    reponseTime?: number
+    /** 请求响应数据 */
+    response?: any
   }
   interface AssignDataProps {
-      /** 合并前的State */
-      oldState: {
-          [key: string]: StateInterfaceItem[]
-      }
-      /** 最大缓存数 */
-      maxCacheLength?: number
-      payload: {
-          /** 接口的key */
-          interfaceKey: string
-          id: number
-          requestTime: number
-          reponseTime?: number
-          request?: any
-          response?: any
-          isFetching: boolean
-      }
+    /** 合并前的State */
+    oldState: {
+      [key: string]: StateInterfaceItem[]
+    }
+    /** 最大缓存数 */
+    maxCacheLength?: number
+    payload: {
+      /** 接口的key */
+      interfaceKey: string
+      id: number
+      requestTime: number
+      reponseTime?: number
+      request?: any
+      response?: any
+      isPending: boolean
+      errorMessage?: string
+    }
   }
   function assignData({
-      oldState,
-      payload: { interfaceKey, id, requestTime, reponseTime, request = {}, response, isFetching },
-      maxCacheLength,
+    oldState,
+    payload: { interfaceKey, id, requestTime, reponseTime, request = {}, response, isPending, errorMessage },
+    maxCacheLength,
   }: AssignDataProps) {
       const newState = { ...oldState }
       if (typeof maxCacheLength !== 'number' || maxCacheLength < 1) {
@@ -168,14 +171,14 @@ export function createReduxRuntime(): string {
       }
   
       let data = newState[interfaceKey] || []
-      if (isFetching === true) {
+      if (isPending === true) {
           /** 只存最近 maxCacheLength 个数据 */
           if (maxCacheLength !== Infinity && data.length >= maxCacheLength) {
               data = newState[interfaceKey].slice(data.length - maxCacheLength + 1)
           }
-          newState[interfaceKey] = [...data, { id, requestTime, request, isFetching }]
+          newState[interfaceKey] = [...data, { id, requestTime, request, isPending }]
       } else {
-          newState[interfaceKey] = data.map((item: StateInterfaceItem) => (item.id === id ? { ...item, reponseTime, response, isFetching } : item))
+          newState[interfaceKey] = data.map((item: StateInterfaceItem) => (item.id === id ? { ...item, reponseTime, response, isPending, errorMessage } : item))
       }
   
       return newState
@@ -253,7 +256,7 @@ export function createReduxRuntime(): string {
                       id: requestTime,
                       requestTime,
                       request: params,
-                      isFetching: true,
+                      isPending: true,
                   },
               })
               try {
@@ -272,22 +275,23 @@ export function createReduxRuntime(): string {
                           reponseTime,
                           request: params,
                           response: responseData,
-                          isFetching: false,
+                          isPending: false,
                       },
                   })
                   return responseData
-              } catch (e) {
-                  store.dispatch({ type: FAILURE, payload: e })
-                  store.dispatch({
-                      type: '${RAPPER_UPDATE_STORE}',
-                      payload: {
-                          interfaceKey: modelName,
-                          id: requestTime,
-                          requestTime,
-                          isFetching: false,
-                      },
-                  })
-                  throw Error(e)
+              } catch (err) {
+                const errorMessage = typeof err === 'object' ? err.message : JSON.stringify(err)
+                store.dispatch({ type: FAILURE, payload: errorMessage })
+                store.dispatch({
+                  type: '$$RAPPER_UPDATE_STORE',
+                  payload: {
+                    interfaceKey: modelName,
+                    id: requestTime,
+                    requestTime,
+                    isPending: false,
+                    errorMessage
+                  },
+                })
               }
           }
   
@@ -374,7 +378,8 @@ export function createTools(): string {
         })
         const initData = reduxData.length ? reduxData.slice(-1)[0] : {}
         const [filteredData, setFilteredData] = useState(initData.response || undefined)
-        const [isFetching, setIsFetching] = useState(initData.isFetching || false)
+        const [isPending, setIsPending] = useState(initData.isPending || false)
+        const [errorMessage, setErrorMessage] = useState(initData.errorMessage || undefined)
         
         useEffect(() => {
           let resultArr = []
@@ -390,13 +395,12 @@ export function createTools(): string {
           /** 过滤出一条最新的符合条件的数据 */
           const result = resultArr.length ? resultArr.slice(-1)[0] : {}
       
-          if (!looseEqual(result.response, filteredData)) {
-            setFilteredData(result.response || undefined)
-            setIsFetching(result.isFetching || false)
-          }
+          !looseEqual(result.response, filteredData) && setFilteredData(result.response || undefined)
+          setIsPending(result.isPending || false)
+          setErrorMessage(result.errorMessage)
         }, [reduxData, filter, filteredData])
         
-        return [filteredData, isFetching]
+        return [filteredData, { isPending, errorMessage }]
       }
 
       /** 以connect方式获取response数据 */

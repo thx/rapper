@@ -54,14 +54,14 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreatorExtr
   
     ${createResponseTypes(interfaces)}
 
-    export function createRequester(options?: RequesterOption) {
+    export function createFetch(fetchConfig: RequesterOption) {
       let rapperFetch: any;
-      if (options && typeof options.fetchConfig === 'function') {
-        rapperFetch = options.fetchConfig;
+      if (typeof fetchConfig === 'function') {
+        rapperFetch = fetchConfig;
       } else {
         let fetchConfig: FetchConfigObj = {};
-        if (options && typeof options.fetchConfig === 'object') {
-          fetchConfig = { ...defaultConfig, ...options.fetchConfig };
+        if (fetchConfig === 'object') {
+          fetchConfig = { ...defaultConfig, ...fetchConfig };
         }
         rapperFetch = async (requestParams: {
           url: string;
@@ -100,14 +100,14 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreatorExtr
 export function createBaseIndexCode(): GeneratedCode {
   return {
     import: `
-      import { createRequester, Models } from './request'
+      import { createFetch, Models } from './request'
       import { defaultFetch } from './lib'
     `,
     body: `
-      const requester = createRequester()
+      const fetch = createFetch()
     `,
     export: `
-      export { requester, createRequester, defaultFetch }
+      export { fetch, createFetch, defaultFetch }
       export type Models = Models
     `,
   };
@@ -138,9 +138,8 @@ function createDefaultFetch() {
        */
       credentials?: 'include' | 'same-origin' | 'omit';
     }
-    export interface RequesterOption {
-      fetchConfig: FetchConfigObj | FetchConfigFunc;
-    }
+    export type RequesterOption = FetchConfigObj | FetchConfigFunc;
+
     export const defaultConfig: FetchConfigObj = {
       prefix: '',
       headers: { 'Content-Type': 'application/json' },
