@@ -45,11 +45,11 @@ import { fetch } from './rapper/index';
 
 ### 友好的类型约束/提示
 
-![rapper最简单的使用](https://img.alicdn.com/tfs/TB1xV9Dl8r0gK0jSZFnXXbRRXXa-958-422.gif)
+<img src="https://img.alicdn.com/tfs/TB1xV9Dl8r0gK0jSZFnXXbRRXXa-958-422.gif" alt="Logo" width="500">
 
 ### 随时跳转到 Rap 查看接口文档
 
-![点击查看接口](https://img.alicdn.com/tfs/TB1ejyGl4D1gK0jSZFKXXcJrVXa-1008-463.gif)
+<img src="https://img.alicdn.com/tfs/TB1ejyGl4D1gK0jSZFKXXcJrVXa-1008-463.gif" alt="Logo" width="500">
 
 ## 在 React/Redux 场景下强大的数据管理方案
 
