@@ -14,7 +14,17 @@
 
 ## Rapper 是什么？
 
-十年前我们创立了 [Rap](https://github.com/thx/rap2-delos) 项目，如今已经有相当多的用户在 Rap 中管理接口文档和 Mock 数据。Rapper 在此基础上更进一步，利用这些已经录入的接口数据为你生成 TypeScript 类型定义以及配套的数据请求方案，让你在代码开发中省去重复的劳动，直接使用后端接口。
+Rapper 是 TypeScript 的最佳拍档，它可以帮你生成具有类型定义的请求方案。
+
+- 无需自行书写请求代码，把 HTTP 接口当做函数调用
+- 请求参数/返回数据类型化，静态校验、自动补全快到飞起
+- 对 React/Redux 特别优化，提供全局数据方案，hooks 轻松使用
+
+## 来自阿里的 THX 团队
+
+十年前我们创立了 [Rap](https://github.com/thx/rap2-delos) 项目，如今已经有相当多的用户在 Rap 中管理接口文档和 Mock 数据。
+
+Rapper 在此基础上更进一步，利用这些已经录入的接口数据为你生成 TypeScript 类型定义以及配套的数据请求方案，让你在代码开发中省去重复的劳动。
 
 ## 快速开始
 
@@ -67,13 +77,13 @@ useEffect(() => {
 }, [result, loading, params]);
 ```
 
-## 深度使用
+## 文档
 
-想要在生产中深度使用 Rapper，你可能还需要自定义请求函数、对返回的数据做统一的类型转换
+想要在生产中深度使用 Rapper，你可能还需要自定义请求函数、对返回的数据做统一的类型转换、具体了解 rapper-redux 的 API，请参考我们的文档：https://www.yuque.com/rap/rapper
 
 ## 联系我们
 
-- Github Issue
+- [Github Issue](https://github.com/thx/rapper/issues)
 - 钉钉群：11789704
 
 [stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=flat-square
