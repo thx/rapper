@@ -14,7 +14,7 @@ function createIndexStr(): GeneratedCode {
     import: `
       import { useResponse, useAllResponse, clearResponseCache, rapperActions, rapperSelector, connect } from './redux'
       import { rapReducers, rapEnhancer } from './lib'
-      import { RapperProps, ResponseTypes } from './request'
+      import { RapperProps as RequestRapperProps, ResponseTypes as RequestResponseTypes } from './request'
     `,
     body: '',
     export: `
@@ -33,9 +33,9 @@ function createIndexStr(): GeneratedCode {
       };
 
       /** class component 默认 props */
-      export type RapperProps = RapperProps
+      export type RapperProps = RequestRapperProps
       /** 响应类型 */
-      export type ResponseTypes = ResponseTypes
+      export type ResponseTypes = RequestResponseTypes
     `,
   };
 }

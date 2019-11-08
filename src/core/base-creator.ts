@@ -104,7 +104,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: Creato
 export function createBaseIndexCode(): GeneratedCode {
   return {
     import: `
-      import { createFetch, Models } from './request'
+      import { createFetch, Models as RequestModels } from './request'
       import { defaultFetch } from './lib'
     `,
     body: `
@@ -112,7 +112,7 @@ export function createBaseIndexCode(): GeneratedCode {
     `,
     export: `
       export { fetch, createFetch, defaultFetch }
-      export type Models = Models
+      export type Models = RequestModels
     `,
   };
 }
@@ -202,7 +202,6 @@ export function createBaseLibCode(): GeneratedCode {
     return requestPrefix + '/' + url
   }
 
-  /** defaultFetch */
   ${createDefaultFetch()}
   `,
     export: '',
