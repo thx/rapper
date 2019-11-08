@@ -278,7 +278,7 @@ export function createReduxRuntime(): string {
               isPending: false,
             },
           })
-          return responseData
+          return Promise.resolve(responseData)
         } catch (err) {
           const errorMessage = typeof err === 'object' ? err.message : JSON.stringify(err)
           store.dispatch({ type: FAILURE, payload: errorMessage })
@@ -292,6 +292,7 @@ export function createReduxRuntime(): string {
               errorMessage
             },
           })
+          return Promise.reject(err)
         }
       }
       return { ...store, dispatch }

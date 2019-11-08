@@ -19,19 +19,20 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreatorExtr
       if (typeof fetchConfig === 'function') {
         rapperFetch = fetchConfig;
       } else {
-        let fetchConfig: FetchConfigObj = {};
+        let prefix = ''
         if (typeof fetchConfig === 'object') {
-          fetchConfig = { ...defaultConfig, ...fetchConfig };
+          fetchConfig = { ...defaultConfig, ...fetchConfig }
+          prefix = fetchConfig.prefix || ''
         }
         rapperFetch = async (requestParams: {
-          url: string;
-          method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD';
-          params?: any;
-          extra?: { [key: string]: any };
+          url: string
+          method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD'
+          params?: any
+          extra?: { [key: string]: any }
         }) => {
-          requestParams.url = parseUrl(requestParams.url, fetchConfig.prefix);
-          return await defaultFetch({ ...fetchConfig, ...requestParams });
-        };
+          requestParams.url = parseUrl(requestParams.url, prefix)
+          return await defaultFetch({ ...fetchConfig, ...requestParams })
+        }
       }
       return {
       ${interfaces
