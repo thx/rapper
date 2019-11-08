@@ -4,7 +4,7 @@ import { Intf, GeneratedCode, CreatorExtr } from '../types';
 import { creatInterfaceHelpStr } from './tools';
 
 /** 生成 Models 文件 */
-export async function createModel(interfaces: Intf[], extr: CreatorExtr) {
+export async function createModel(interfaces: Array<Intf>, extr: CreatorExtr) {
   const itfStrs = await Promise.all(
     interfaces.map(async itf => {
       try {
