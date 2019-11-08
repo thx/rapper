@@ -5,7 +5,7 @@ import { creatInterfaceHelpStr } from '../core/tools';
 export async function createBaseRequestStr(interfaces: Intf[], extr: CreatorExtr) {
   const modelStr = await createModel(interfaces, extr);
   return `
-    import { parseUrl, dispatchAction, defaultFetch, defaultConfig, RequesterOption, FetchConfigObj } from './lib'
+    import { parseUrl, dispatchAction, defaultFetch, defaultConfig, RequesterOption, UserFetchParams, FetchConfigFunc } from './lib'
     import { RequestAction } from './redux'
 
     ${modelStr}
@@ -15,24 +15,27 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreatorExtr
     ${createResponseTypes(interfaces)}
 
     export function createFetch(fetchConfig: RequesterOption) {
-      let rapperFetch: any;
+      let rapperFetch: FetchConfigFunc;
       if (typeof fetchConfig === 'function') {
         rapperFetch = fetchConfig;
       } else {
-        let prefix = ''
+        let myFetchConfig = { ...defaultConfig };
         if (typeof fetchConfig === 'object') {
-          fetchConfig = { ...defaultConfig, ...fetchConfig }
-          prefix = fetchConfig.prefix || ''
+          myFetchConfig = {
+            ...myFetchConfig,
+            ...fetchConfig,
+          };
         }
-        rapperFetch = async (requestParams: {
-          url: string
-          method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD'
-          params?: any
-          extra?: { [key: string]: any }
-        }) => {
-          requestParams.url = parseUrl(requestParams.url, prefix)
-          return await defaultFetch({ ...fetchConfig, ...requestParams })
-        }
+        const prefix = myFetchConfig.prefix;
+        rapperFetch = (requestParams: UserFetchParams) => {
+          const url = parseUrl(requestParams.url, prefix);
+          return defaultFetch({
+            url,
+            method: requestParams.method,
+            params: requestParams.method,
+            fetchOption: myFetchConfig.fetchOption,
+          });
+        };
       }
       return {
       ${interfaces
