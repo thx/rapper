@@ -19,7 +19,7 @@ export function createTypesStr(): string {
               url: string
               method?: REQUEST_METHOD
               params?: any
-              types: Array<string>
+              types: string[]
           }
       }
       
@@ -31,7 +31,7 @@ export function createTypesStr(): string {
           maxCacheLength?: number
       }
       
-      type Dispatch<A = AnyAction> = <T extends A>(action: T, ...extraArgs: Array<any>) => T
+      type Dispatch<A = AnyAction> = <T extends A>(action: T, ...extraArgs: any[]) => T
       type Unsubscribe = () => void
       export type Reducer<S = any, A = AnyAction> = (state: S | undefined, action: A) => S
       type ExtendState<State, Extension> = [Extension] extends [never] ? State : State & Extension
@@ -110,9 +110,8 @@ export function createTypesStr(): string {
 /** 生成 redux 运行时依赖 */
 export function createReduxRuntime(): string {
   return `
-  let dispatch = <Res>(action: IAction): Promise<AnyAction | Res> => {
-      return new Promise(() => null)
-  }
+  type dispatch = <Res>(action: IAction) => Promise<AnyAction | Res>;
+  let dispatch: dispatch;
   interface RequestParams {
     url: string;
     /** 请求类型 */
@@ -144,7 +143,7 @@ export function createReduxRuntime(): string {
   interface AssignDataProps {
     /** 合并前的State */
     oldState: {
-      [key: string]: Array<StateInterfaceItem>
+      [key: string]: StateInterfaceItem[]
     }
     /** 最大缓存数 */
     maxCacheLength?: number
@@ -193,7 +192,7 @@ export function createReduxRuntime(): string {
     config = config || {}
     const { maxCacheLength = 2 } = config
   
-    return (next: StoreCreator) => (reducers: Reducer<any, any>, ...args: Array<any>) => {
+    return (next: StoreCreator) => (reducers: Reducer<any, any>, ...args: any[]) => {
       const store = next(reducers, ...args)
   
       /** 重新定义 reducers */
@@ -233,7 +232,7 @@ export function createReduxRuntime(): string {
       store.replaceReducer(newReducers)
   
       /** 重新定义 dispatch */
-      dispatch = async <Res>(action: IAction) => {
+      dispatch = async (action: IAction) => {
         if (action.type !== '${RAPPER_REQUEST}') {
           return store.dispatch(action)
         }

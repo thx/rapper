@@ -31,7 +31,7 @@ function inferArraySchema(
     // 这时候这个属性的类型并非 array，而是 array 子元素的类型
     // 子元素的类型可以从 value 中推断出来
     try {
-      const arr: Array<any> | any = JSON5.parse(p.value);
+      const arr: any[] | any = JSON5.parse(p.value);
       if (Array.isArray(arr)) {
         const type = _.chain(arr)
           .map(e => typeof e)
@@ -69,7 +69,7 @@ function inferArraySchema(
     // primitive 的具体类型通过 value 推断
 
     try {
-      const v: Array<any> | any = JSON5.parse(p.value);
+      const v: any[] | any = JSON5.parse(p.value);
 
       if (Array.isArray(v)) {
         // 如果是数组使用数组元素类型
@@ -102,7 +102,7 @@ function inferArraySchema(
         ];
       }
     } catch (error) {
-      // 解析失败 返回 array<any>
+      // 解析失败 返回 any[]
       return [
         p.name,
         {
@@ -112,7 +112,7 @@ function inferArraySchema(
       ];
     }
   } else {
-    // 无生成规则也无值，生成 array<any>
+    // 无生成规则也无值，生成 any[]
     return [
       p.name,
       {
@@ -150,7 +150,7 @@ function interfaceToJSONSchema(itf: Interface.Root, scope: Scope): JSONSchema4 {
         const childItfs = properties.filter(x => x.parentId === p.id);
         const common: {
           description?: string;
-          required: Array<string>;
+          required: string[];
           additionalProperties: boolean;
         } = {
           // 这里默认所有的属性都有值
@@ -197,7 +197,7 @@ function interfaceToJSONSchema(itf: Interface.Root, scope: Scope): JSONSchema4 {
   return propertyChildren['dummyroot'];
 }
 
-export default function convert(itf: Interface.Root): Promise<Array<string>> {
+export default function convert(itf: Interface.Root): Promise<string[]> {
   const reqJSONSchema = interfaceToJSONSchema(itf, 'request');
   const resJSONSchema = interfaceToJSONSchema(itf, 'response');
 
