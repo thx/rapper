@@ -59,21 +59,16 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: Creato
       if (typeof fetchConfig === 'function') {
         rapperFetch = fetchConfig;
       } else {
-        let myFetchConfig = { ...defaultConfig };
-        if (typeof fetchConfig === 'object') {
-          myFetchConfig = {
-            ...myFetchConfig,
-            ...fetchConfig,
-          };
-        }
-        const prefix = myFetchConfig.prefix;
+        const prefix = fetchConfig.prefix !== undefined ? fetchConfig.prefix : defaultConfig.prefix;
+        const fetchOption =
+          fetchConfig.fetchOption !== undefined ? fetchConfig.fetchOption : defaultConfig.fetchOption;
         rapperFetch = (requestParams: UserFetchParams) => {
           const url = parseUrl(requestParams.url, prefix);
           return defaultFetch({
             url,
             method: requestParams.method,
             params: requestParams.method,
-            fetchOption: myFetchConfig.fetchOption,
+            fetchOption,
           });
         };
       }
@@ -134,16 +129,18 @@ function createDefaultFetch() {
       params?: any;
       extra?: { [key: string]: any };
     }
-    export type FetchConfigFunc = <T>(params: UserFetchParams) => Promise<T>;
-    export interface FetchConfigObj {
+    
+    export interface DefaultConfigObj {
       /** 'prefix' 前缀，统一设置 url 前缀，默认是 '' */
-      prefix?: string;
+      prefix: string
       /** fetch 的第二参数，除了 body 和 method 都可以自定义 */
-      fetchOption?: DefaultFetchParams['fetchOption'];
+      fetchOption: DefaultFetchParams['fetchOption']
     }
-    export type RequesterOption = FetchConfigObj | FetchConfigFunc;
+    export type FetchConfigObj =  Partial<DefaultConfigObj>
+    export type FetchConfigFunc = <T>(params: UserFetchParams) => Promise<T>
+    export type RequesterOption = FetchConfigObj | FetchConfigFunc
 
-    export const defaultConfig: FetchConfigObj = {
+    export const defaultConfig: DefaultConfigObj = {
       prefix: '',
       fetchOption: {
         headers: { 'Content-Type': 'application/json' },

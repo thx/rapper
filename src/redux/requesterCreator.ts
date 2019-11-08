@@ -19,21 +19,16 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: Creato
       if (typeof fetchConfig === 'function') {
         rapperFetch = fetchConfig;
       } else {
-        let myFetchConfig = { ...defaultConfig };
-        if (typeof fetchConfig === 'object') {
-          myFetchConfig = {
-            ...myFetchConfig,
-            ...fetchConfig,
-          };
-        }
-        const prefix = myFetchConfig.prefix;
+        const prefix = fetchConfig.prefix !== undefined ? fetchConfig.prefix : defaultConfig.prefix;
+        const fetchOption =
+          fetchConfig.fetchOption !== undefined ? fetchConfig.fetchOption : defaultConfig.fetchOption;
         rapperFetch = (requestParams: UserFetchParams) => {
           const url = parseUrl(requestParams.url, prefix);
           return defaultFetch({
             url,
             method: requestParams.method,
             params: requestParams.method,
-            fetchOption: myFetchConfig.fetchOption,
+            fetchOption,
           });
         };
       }
