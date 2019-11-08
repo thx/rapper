@@ -59,19 +59,20 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreatorExtr
       if (typeof fetchConfig === 'function') {
         rapperFetch = fetchConfig;
       } else {
-        let fetchConfig: FetchConfigObj = {};
-        if (fetchConfig === 'object') {
-          fetchConfig = { ...defaultConfig, ...fetchConfig };
+        let prefix = ''
+        if (typeof fetchConfig === 'object') {
+          fetchConfig = { ...defaultConfig, ...fetchConfig }
+          prefix = fetchConfig.prefix || ''
         }
         rapperFetch = async (requestParams: {
-          url: string;
-          method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD';
-          params?: any;
-          extra?: { [key: string]: any };
+          url: string
+          method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD'
+          params?: any
+          extra?: { [key: string]: any }
         }) => {
-          requestParams.url = parseUrl(requestParams.url, fetchConfig.prefix);
-          return await defaultFetch({ ...fetchConfig, ...requestParams });
-        };
+          requestParams.url = parseUrl(requestParams.url, prefix)
+          return await defaultFetch({ ...fetchConfig, ...requestParams })
+        }
       }
 
       return {
@@ -152,12 +153,7 @@ function createDefaultFetch() {
         otherParams.body = typeof params === 'object' ? JSON.stringify(params) : params;
       }
       const res = await fetch(url, otherParams);
-      const responseType = res.headers.get('Content-Type')
-      if (responseType && responseType.includes('application/json')) {
-        return res.json()
-      } else {
-        throw Error('rapper 仅支持响应数据类型为 application/json 的接口')
-      }
+      return Promise.resolve(res.json());
     }
   `;
 }
@@ -185,7 +181,12 @@ export function createBaseLibCode(): GeneratedCode {
   }
 
   /** 拼接组合request链接 */
-  export function parseUrl (url: string, requestPrefix?: string): string {
+  export function parseUrl(url: string, requestPrefix?: string): string {
+    const urlReg = /^((https?:\\/\\/)?(([a-zA-Z0-9]+-?)+[a-zA-Z0-9]+\\.)+[a-zA-Z]+)(:\\d+)?(\\/.*)?(\\?.*)?(#.*)?$/
+    /** 如果url含有host，就不再混入prefix */
+    if (urlReg.test(url)) {
+      return url
+    }
     if (!requestPrefix) {
       requestPrefix = ''
     }
