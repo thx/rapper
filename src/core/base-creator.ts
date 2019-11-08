@@ -47,7 +47,7 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreatorExtr
   const { rapUrl, resSelector } = extr;
   const modelStr = await createModel(interfaces, extr);
   return `
-    import { parseUrl, defaultFetch, defaultConfig, RequesterOption, FetchConfigObj } from './lib'
+    import { parseUrl, defaultFetch, defaultConfig, RequesterOption, UserFetchParams, FetchConfigFunc } from './lib'
     ${modelStr}
 
     ${resSelector}
@@ -55,24 +55,27 @@ export async function createBaseRequestStr(interfaces: Intf[], extr: CreatorExtr
     ${createResponseTypes(interfaces)}
 
     export function createFetch(fetchConfig: RequesterOption) {
-      let rapperFetch: any;
+      let rapperFetch: FetchConfigFunc;
       if (typeof fetchConfig === 'function') {
         rapperFetch = fetchConfig;
       } else {
-        let prefix = ''
+        let myFetchConfig = { ...defaultConfig };
         if (typeof fetchConfig === 'object') {
-          fetchConfig = { ...defaultConfig, ...fetchConfig }
-          prefix = fetchConfig.prefix || ''
+          myFetchConfig = {
+            ...myFetchConfig,
+            ...fetchConfig,
+          };
         }
-        rapperFetch = async (requestParams: {
-          url: string
-          method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD'
-          params?: any
-          extra?: { [key: string]: any }
-        }) => {
-          requestParams.url = parseUrl(requestParams.url, prefix)
-          return await defaultFetch({ ...fetchConfig, ...requestParams })
-        }
+        const prefix = myFetchConfig.prefix;
+        rapperFetch = (requestParams: UserFetchParams) => {
+          const url = parseUrl(requestParams.url, prefix);
+          return defaultFetch({
+            url,
+            method: requestParams.method,
+            params: requestParams.method,
+            fetchOption: myFetchConfig.fetchOption,
+          });
+        };
       }
 
       return {
@@ -116,45 +119,49 @@ export function createBaseIndexCode(): GeneratedCode {
 
 /** 生成 defaultFetch */
 function createDefaultFetch() {
-  return `interface FetchParams {
+  return `
+    /** defaultFetch 参数 */
+    export interface DefaultFetchParams {
       url: string;
       method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD';
-      headers?: any;
-      credentials?: 'include' | 'same-origin' | 'omit';
       params?: any;
-      body?: any;
+      fetchOption: Omit<RequestInit, 'body' | 'method'>;
+    }
+    /** defaultFetch 参数 */
+    export interface UserFetchParams {
+      url: string;
+      method: DefaultFetchParams['method'];
+      params?: any;
       extra?: { [key: string]: any };
     }
-    type FetchConfigFunc = <T>(params: FetchParams) => Promise<T>;
+    export type FetchConfigFunc = <T>(params: UserFetchParams) => Promise<T>;
     export interface FetchConfigObj {
       /** 'prefix' 前缀，统一设置 url 前缀，默认是 '' */
       prefix?: string;
-      /** 'headers' 请求头，默认 { 'Content-Type': 'application/json' } */
-      headers?: any;
-      /**
-       * credentials 用于设置是否发送带凭据的请求，默认值 'same-origin'
-       * credentials: 'include'，浏览器发送包含凭据的请求（即使是跨域源）
-       * credentials: 'same-origin'，只在请求URL与调用脚本位于同一起源处时发送凭据
-       * credentials: 'omit'，浏览器不在请求中包含凭据
-       */
-      credentials?: 'include' | 'same-origin' | 'omit';
+      /** fetch 的第二参数，除了 body 和 method 都可以自定义 */
+      fetchOption?: DefaultFetchParams['fetchOption'];
     }
     export type RequesterOption = FetchConfigObj | FetchConfigFunc;
 
     export const defaultConfig: FetchConfigObj = {
       prefix: '',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'same-origin',
+      fetchOption: {
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+      },
     };
-    export const defaultFetch = async ({ url, params, extra, ...otherParams }: FetchParams) => {
-      if (otherParams.method === 'GET') {
-        url = url + '?' + locationStringify(params);
-      } else if (params && otherParams.body) {
-        otherParams.body = typeof params === 'object' ? JSON.stringify(params) : params;
+
+    export const defaultFetch = async ({ url, method, params, fetchOption }: DefaultFetchParams) => {
+      let urlWithParams = url;
+      const init: RequestInit = { ...fetchOption, method };
+      if (method === 'GET') {
+        urlWithParams = url + '?' + locationStringify(params);
+      } else {
+        init.body = typeof params === 'object' ? JSON.stringify(params) : params;
       }
-      const res = await fetch(url, otherParams);
+      const res = await fetch(urlWithParams, fetchOption);
       return Promise.resolve(res.json());
-    }
+    };
   `;
 }
 
