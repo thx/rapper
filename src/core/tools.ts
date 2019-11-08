@@ -8,8 +8,8 @@ export async function getInterfaces(rapApiUrl: string, projectId: number) {
   const response = await axios.get(`${rapApiUrl}/repository/get?id=${projectId}`);
 
   const data = response.data.data;
-  const modules: Modules[] = data.modules;
-  const collaborators: Collaborator[] = data.collaborators;
+  const modules: Array<Modules> = data.modules;
+  const collaborators: Array<Collaborator> = data.collaborators;
 
   let interfaces = _(modules)
     .map(m => m.interfaces)
@@ -70,9 +70,9 @@ export function rap2name(itf: Interface.Root, urlMapper: UrlMapper = t => t) {
 
 /** 给接口增加 modelName */
 export function getIntfWithModelName(
-  intfs: Interface.Root[],
+  intfs: Array<Interface.Root>,
   urlMapper: UrlMapper = t => t,
-): Intf[] {
+): Array<Intf> {
   return intfs.map(itf => ({
     ...itf,
     modelName: rap2name(itf, urlMapper),
@@ -80,8 +80,8 @@ export function getIntfWithModelName(
 }
 
 /** 接口去重 */
-export function uniqueItfs(itfs: Intf[]) {
-  const itfMap = new Map<string, Intf[]>();
+export function uniqueItfs(itfs: Array<Intf>) {
+  const itfMap = new Map<string, Array<Intf>>();
   itfs.forEach(itf => {
     const name = itf.modelName;
     if (itfMap.has(name)) {
@@ -90,7 +90,7 @@ export function uniqueItfs(itfs: Intf[]) {
       itfMap.set(name, [itf]);
     }
   });
-  const newItfs: Intf[] = [];
+  const newItfs: Array<Intf> = [];
   itfMap.forEach(dupItfs => {
     dupItfs.sort(
       // 后更改的在前面

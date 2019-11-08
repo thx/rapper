@@ -31,7 +31,7 @@ export async function createModel(interfaces: Array<Intf>, extr: CreatorExtr) {
 }
 
 /** 生成 ResponseTypes */
-export function createResponseTypes(interfaces: Intf[]) {
+export function createResponseTypes(interfaces: Array<Intf>) {
   return `
     export interface ResponseTypes {
       ${interfaces.map(
@@ -43,7 +43,7 @@ export function createResponseTypes(interfaces: Intf[]) {
   `;
 }
 
-export async function createBaseRequestStr(interfaces: Intf[], extr: CreatorExtr) {
+export async function createBaseRequestStr(interfaces: Array<Intf>, extr: CreatorExtr) {
   const { rapUrl, resSelector } = extr;
   const modelStr = await createModel(interfaces, extr);
   return `

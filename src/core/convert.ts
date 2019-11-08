@@ -31,7 +31,7 @@ function inferArraySchema(
     // 这时候这个属性的类型并非 array，而是 array 子元素的类型
     // 子元素的类型可以从 value 中推断出来
     try {
-      const arr: any[] | any = JSON5.parse(p.value);
+      const arr: Array<any> | any = JSON5.parse(p.value);
       if (Array.isArray(arr)) {
         const type = _.chain(arr)
           .map(e => typeof e)
@@ -69,7 +69,7 @@ function inferArraySchema(
     // primitive 的具体类型通过 value 推断
 
     try {
-      const v: any[] | any = JSON5.parse(p.value);
+      const v: Array<any> | any = JSON5.parse(p.value);
 
       if (Array.isArray(v)) {
         // 如果是数组使用数组元素类型
@@ -150,7 +150,7 @@ function interfaceToJSONSchema(itf: Interface.Root, scope: Scope): JSONSchema4 {
         const childItfs = properties.filter(x => x.parentId === p.id);
         const common: {
           description?: string;
-          required: string[];
+          required: Array<string>;
           additionalProperties: boolean;
         } = {
           // 这里默认所有的属性都有值

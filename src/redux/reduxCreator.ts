@@ -3,7 +3,7 @@ import { RAPPER_STATE_KEY, RAPPER_CLEAR_STORE, RAPPER_REQUEST } from './index';
 import { creatInterfaceHelpStr } from '../core/tools';
 
 /** 定义 请求types interface  */
-function getRequestTypesInterfaceStr(interfaces: Intf[]): string {
+function getRequestTypesInterfaceStr(interfaces: Array<Intf>): string {
   return `interface RequestTypes {
     ${interfaces
       .map(
@@ -16,30 +16,30 @@ function getRequestTypesInterfaceStr(interfaces: Intf[]): string {
 }
 
 /** 定义 请求action interface  */
-function getRequestActionInterfaceStr(interfaces: Intf[]): string {
+function getRequestActionInterfaceStr(interfaces: Array<Intf>): string {
   return `interface RequestAction {
-            ${interfaces
-              .map(({ modelName, method, url }) => {
-                return `
-                        '${modelName}': (params?: Models['${modelName}']['Req']) => {
-                            type: '${RAPPER_REQUEST}',
-                            payload: {
-                                modelName: '${modelName}'
-                                url: '${url}'
-                                method: '${method}'
-                                params?: Models['${modelName}']['Req']
-                                types: ['${modelName}_REQUEST', '${modelName}_SUCCESS', '${modelName}_FAILURE']
-                            }
-                        },
-                    `;
-              })
-              .join('\n\n')}
-            }
+    ${interfaces
+      .map(({ modelName, method, url }) => {
+        return `
+          '${modelName}': (params?: Models['${modelName}']['Req']) => {
+              type: '${RAPPER_REQUEST}',
+              payload: {
+                  modelName: '${modelName}'
+                  url: '${url}'
+                  method: '${method}'
+                  params?: Models['${modelName}']['Req']
+                  types: ['${modelName}_REQUEST', '${modelName}_SUCCESS', '${modelName}_FAILURE']
+              }
+          },
         `;
+      })
+      .join('\n\n')}
+    }
+`;
 }
 
 /** 定义 请求types */
-function getRequestTypesStr(interfaces: Intf[]): string {
+function getRequestTypesStr(interfaces: Array<Intf>): string {
   return `const RequestTypes:RequestTypes = {
     ${interfaces
       .map(({ modelName }) => {
@@ -56,7 +56,7 @@ function getRequestTypesStr(interfaces: Intf[]): string {
 }
 
 /** 定义 请求action */
-function getRequestActionStr(interfaces: Intf[], extr: CreatorExtr): string {
+function getRequestActionStr(interfaces: Array<Intf>, extr: CreatorExtr): string {
   return `export const RequestAction: RequestAction = {
     ${interfaces
       .map(itf => {
@@ -81,7 +81,7 @@ function getRequestActionStr(interfaces: Intf[], extr: CreatorExtr): string {
 }
 
 /** 生成 Action 定义 */
-export function createActionStr(interfaces: Intf[], extr: CreatorExtr): string {
+export function createActionStr(interfaces: Array<Intf>, extr: CreatorExtr): string {
   return `
         /** 请求types interface  */
         ${getRequestTypesInterfaceStr(interfaces)}
@@ -98,7 +98,7 @@ export function createActionStr(interfaces: Intf[], extr: CreatorExtr): string {
 }
 
 /** 生成 useResponse，useAllResponse */
-export function createUseRapStr(interfaces: Intf[], extr: CreatorExtr): string {
+export function createUseRapStr(interfaces: Array<Intf>, extr: CreatorExtr): string {
   return `
     /** store中存储的数据结构 */
     interface RapperStore {
@@ -158,7 +158,7 @@ export function createUseRapStr(interfaces: Intf[], extr: CreatorExtr): string {
           const selectedState = (state['${RAPPER_STATE_KEY}'] && state['${RAPPER_STATE_KEY}']['${
             itf.modelName
           }']) || []
-          return selectedState as ResponseTypes['${itf.modelName}'][]
+          return selectedState as Array<ResponseTypes['${itf.modelName}']>
         })
       }`,
         )
@@ -183,7 +183,7 @@ export function createUseRapStr(interfaces: Intf[], extr: CreatorExtr): string {
     `;
 }
 
-export function createSelectorStr(interfaces: Intf[]): string {
+export function createSelectorStr(interfaces: Array<Intf>): string {
   return `
     export const rapperSelector = {
     ${interfaces

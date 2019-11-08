@@ -19,7 +19,7 @@ export function createTypesStr(): string {
               url: string
               method?: REQUEST_METHOD
               params?: any
-              types: string[]
+              types: Array<string>
           }
       }
       
@@ -31,7 +31,7 @@ export function createTypesStr(): string {
           maxCacheLength?: number
       }
       
-      type Dispatch<A = AnyAction> = <T extends A>(action: T, ...extraArgs: any[]) => T
+      type Dispatch<A = AnyAction> = <T extends A>(action: T, ...extraArgs: Array<any>) => T
       type Unsubscribe = () => void
       export type Reducer<S = any, A = AnyAction> = (state: S | undefined, action: A) => S
       type ExtendState<State, Extension> = [Extension] extends [never] ? State : State & Extension
@@ -144,7 +144,7 @@ export function createReduxRuntime(): string {
   interface AssignDataProps {
     /** 合并前的State */
     oldState: {
-      [key: string]: StateInterfaceItem[]
+      [key: string]: Array<StateInterfaceItem>
     }
     /** 最大缓存数 */
     maxCacheLength?: number
@@ -193,7 +193,7 @@ export function createReduxRuntime(): string {
     config = config || {}
     const { maxCacheLength = 2 } = config
   
-    return (next: StoreCreator) => (reducers: Reducer<any, any>, ...args: any[]) => {
+    return (next: StoreCreator) => (reducers: Reducer<any, any>, ...args: Array<any>) => {
       const store = next(reducers, ...args)
   
       /** 重新定义 reducers */

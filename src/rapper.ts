@@ -64,7 +64,7 @@ export default async function({
   const outputFiles = [];
 
   /** 获取所有接口 */
-  let interfaces: Intf[] = [];
+  let interfaces: Array<Intf> = [];
   try {
     interfaces = await getInterfaces(apiUrl, projectId);
   } catch (e) {
@@ -77,9 +77,9 @@ export default async function({
 
   let Creator: {
     createIndexStr?: () => GeneratedCode;
-    createDynamicStr?: (interfaces: Intf[], extr: CreatorExtr) => string;
-    createLibStr?: (interfaces: Intf[], extr: CreatorExtr) => GeneratedCode;
-    createBaseRequestStr?: (interfaces: Intf[], extr: CreatorExtr) => Promise<string>;
+    createDynamicStr?: (interfaces: Array<Intf>, extr: CreatorExtr) => string;
+    createLibStr?: (interfaces: Array<Intf>, extr: CreatorExtr) => GeneratedCode;
+    createBaseRequestStr?: (interfaces: Array<Intf>, extr: CreatorExtr) => Promise<string>;
   } = {};
   switch (type) {
     case 'redux':
@@ -90,7 +90,7 @@ export default async function({
   }
 
   /** 生成 index.ts */
-  const indexCodeArr: GeneratedCode[] = [createBaseIndexCode()];
+  const indexCodeArr: Array<GeneratedCode> = [createBaseIndexCode()];
   if (Creator.createIndexStr) {
     indexCodeArr.push(Creator.createIndexStr());
   }
@@ -142,7 +142,7 @@ export default async function({
     });
 
   /** 生成静态的 lib */
-  const libCodeArr: GeneratedCode[] = [createBaseLibCode()];
+  const libCodeArr: Array<GeneratedCode> = [createBaseLibCode()];
   if (Creator.createLibStr) {
     libCodeArr.push(Creator.createLibStr(interfaces, { rapUrl, resSelector }));
   }

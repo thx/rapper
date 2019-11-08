@@ -52,7 +52,7 @@ interface ErrorList {
   /** 所在文件的列数 */
   start: number;
 }
-function scanAllfiles(interfaces: Intf[], fileList: Array<string>): Array<ErrorList> {
+function scanAllfiles(interfaces: Array<Intf>, fileList: Array<string>): Array<ErrorList> {
   const strReg = /[\'\"]+(GET|POST|PUT|DELETE|OPTIONS|PATCH|HEAD)\/([^\'\"]*)[^(REQUEST)(SUCCESS)(FAILURE)]{1}[\'\"]+/g;
 
   const errorList: Array<ErrorList> = [];
@@ -93,7 +93,7 @@ function scanAllfiles(interfaces: Intf[], fileList: Array<string>): Array<ErrorL
  * @param interfaces, Rap平台同步的接口
  * @param excludePath, 排除检测的文件 (已默认排除 node_modules，无需配置此项)
  */
-export default function(interfaces: Intf[], excludePaths: string[]) {
+export default function(interfaces: Array<Intf>, excludePaths: Array<string>) {
   let fileList = getFiles('./');
   fileList = fileList.filter(file => {
     file = resolve(process.cwd(), file);

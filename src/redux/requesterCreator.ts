@@ -2,7 +2,7 @@ import { createModel, createResponseTypes } from '../core/base-creator';
 import { Intf, CreatorExtr } from '../types';
 import { creatInterfaceHelpStr } from '../core/tools';
 
-export async function createBaseRequestStr(interfaces: Intf[], extr: CreatorExtr) {
+export async function createBaseRequestStr(interfaces: Array<Intf>, extr: CreatorExtr) {
   const modelStr = await createModel(interfaces, extr);
   return `
     import { parseUrl, dispatchAction, defaultFetch, defaultConfig, RequesterOption, UserFetchParams, FetchConfigFunc } from './lib'

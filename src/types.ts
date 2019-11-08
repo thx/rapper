@@ -36,7 +36,7 @@ export namespace Interface {
     updatedAt: Date;
     deletedAt?: any;
     locker?: any;
-    properties: Property[];
+    properties: Array<Property>;
   }
 }
 
@@ -52,7 +52,7 @@ export interface Modules {
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date | null;
-  interfaces: Intf[];
+  interfaces: Array<Intf>;
 }
 
 export interface Collaborator {

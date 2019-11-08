@@ -41,7 +41,7 @@ function createIndexStr(): GeneratedCode {
 }
 
 /** 生成 redux.ts */
-function createDynamicStr(interfaces: Intf[], extr: CreatorExtr): string {
+function createDynamicStr(interfaces: Array<Intf>, extr: CreatorExtr): string {
   return `
     import { connect as defaultConnect, useSelector } from 'react-redux'
     import { createSelector } from 'reselect'
@@ -58,7 +58,7 @@ function createDynamicStr(interfaces: Intf[], extr: CreatorExtr): string {
 }
 
 /** 生成 lib.ts */
-function createLibStr(interfaces: Intf[], extr: CreatorExtr): GeneratedCode {
+function createLibStr(interfaces: Array<Intf>, extr: CreatorExtr): GeneratedCode {
   return {
     import: `
       import { useState, useEffect } from 'react'
