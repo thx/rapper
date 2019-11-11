@@ -7,16 +7,15 @@ import ReduxCreator from './redux';
 import { writeFile, mixGeneratedCode } from './utils';
 import { getInterfaces, getIntfWithModelName, uniqueItfs, creatHeadHelpStr } from './core/tools';
 import scanFile from './core/scanFile';
+import url = require('url');
 
 interface Rapper {
   /** 必填，redux、requester 等 */
   type: RAPPER_TYPE;
-  /** 必填，rap 项目id */
-  projectId: number;
+  /** 必填，api仓库地址，从仓库的数据按钮可以获得 */
+  apiUrl: string;
   /** 选填，rap平台前端地址，默认是 http://rap2.taobao.org */
   rapUrl?: string;
-  /** 选填，rap平台后端地址，默认是 http://rap2api.taobao.org */
-  apiUrl?: string;
   /** 选填，生成出 rapper 的文件夹地址, 默认 ./src/rapper */
   rapperPath?: string;
   /** 选填，url映射，可用来将复杂的url映射为简单的url */
@@ -28,7 +27,6 @@ interface Rapper {
 }
 export default async function({
   type,
-  projectId,
   rapUrl = 'http://rap2.taobao.org',
   apiUrl = 'http://rap2api.taobao.org',
   rapperPath = './src/rapper',
@@ -42,9 +40,10 @@ export default async function({
   } else if (!['requester', 'redux'].includes(type)) {
     return new Promise(() => console.log(chalk.red('rapper: type 参数配置错误，请重新配置')));
   }
-  if (!projectId) {
-    return new Promise(() => console.log(chalk.red('rapper: 请配置 projectId 参数')));
-  }
+  const apiParams = url.parse(apiUrl, true).query;
+  const projectId = parseInt(
+    Array.isArray(apiParams.projectId) ? apiParams.projectId[0] : apiParams.projectId,
+  );
 
   DEFAULT_OPTIONS.style = {
     ...DEFAULT_OPTIONS.style,
@@ -66,7 +65,7 @@ export default async function({
   /** 获取所有接口 */
   let interfaces: Array<Intf> = [];
   try {
-    interfaces = await getInterfaces(apiUrl, projectId);
+    interfaces = await getInterfaces(apiUrl);
   } catch (e) {
     return new Promise(() => console.log(chalk.red(`rapper: 同步 rap 接口失败，${e}`)));
   }

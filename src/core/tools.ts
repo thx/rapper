@@ -4,8 +4,8 @@ import * as _ from 'lodash';
 import { Modules, Collaborator, Interface, Intf, UrlMapper } from '../types';
 
 /** 从rap查询所有接口数据 */
-export async function getInterfaces(rapApiUrl: string, projectId: number) {
-  const response = await axios.get(`${rapApiUrl}/repository/get?id=${projectId}`);
+export async function getInterfaces(rapApiUrl: string) {
+  const response = await axios.get(rapApiUrl);
 
   const data = response.data.data;
   const modules: Array<Modules> = data.modules;
@@ -18,7 +18,7 @@ export async function getInterfaces(rapApiUrl: string, projectId: number) {
 
   if (collaborators.length) {
     const collaboratorsInterfaces = await Promise.all(
-      collaborators.map(e => getInterfaces(rapApiUrl, e.id)),
+      collaborators.map(e => getInterfaces(rapApiUrl)),
     );
     interfaces = interfaces.concat(collaboratorsInterfaces.flat());
   }

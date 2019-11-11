@@ -16,8 +16,9 @@ if (!packageConfig.rapper.projectId) {
 }
 rapper({
   type: packageConfig.rapper.type || 'redux',
-  projectId: packageConfig.rapper.projectId,
   rapperPath: resolve(process.cwd(), './src/models/rapper/'),
   rapUrl: packageConfig.rapper.rapUrl || 'https://rap2.alibaba-inc.com',
-  apiUrl: packageConfig.rapper.apiUrl || 'https://rap2api.alibaba-inc.com',
+  apiUrl: packageConfig.rapper.apiUrl
+    ? `${packageConfig.rapper.apiUrl}/repository/get?id=${packageConfig.rapper.projectId}`
+    : `https://rap2api.alibaba-inc.com/repository/get?id=${packageConfig.rapper.projectId}`,
 });
