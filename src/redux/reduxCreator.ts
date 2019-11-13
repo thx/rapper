@@ -137,6 +137,8 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: CreatorExtr): str
         return useResponseData<RapperStore, M, Req, Item>('${
           itf.modelName
         }', filter) as [Res | undefined, {
+          /** 本次请求的唯一id */
+          id: number,
           /** 是否正在请求中 */
           isPending: boolean,
           /** 请求错误信息 */
@@ -200,22 +202,4 @@ export function createSelectorStr(interfaces: Array<Intf>): string {
       .join(',\n\n')}
     }
   `;
-}
-
-/** 生成 connect */
-export function createConnectStr(): string {
-  return `
-      type ConnectProps = Parameters<typeof defaultConnect>;
-      export const connect = (
-        mapStateToProps: ConnectProps[0],
-        mapDispatchToProps?: any,
-        mergeProps?: any,
-        options?: ConnectProps[3],
-      ) => {
-        const newMapDispatchToProps: ConnectProps[1] = (dispatch: any) => {
-          return { ...mapDispatchToProps(dispatch), fetch };
-        };
-        return defaultConnect(mapStateToProps, newMapDispatchToProps, mergeProps, options);
-      };
-    `;
 }

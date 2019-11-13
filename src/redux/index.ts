@@ -1,10 +1,5 @@
 import { Intf, GeneratedCode, CreatorExtr } from '../types';
-import {
-  createActionStr,
-  createUseRapStr,
-  createSelectorStr,
-  createConnectStr,
-} from './reduxCreator';
+import { createActionStr, createUseRapStr, createSelectorStr } from './reduxCreator';
 import { createTools, createTypesStr, createReduxRuntime } from './libCreator';
 import { createBaseRequestStr } from './requesterCreator';
 
@@ -12,9 +7,9 @@ import { createBaseRequestStr } from './requesterCreator';
 function createIndexStr(): GeneratedCode {
   return {
     import: `
-      import { useResponse, useAllResponse, clearResponseCache, rapperActions, rapperSelector, connect } from './redux'
+      import { useResponse, useAllResponse, clearResponseCache, rapperActions, rapperSelector } from './redux'
       import { rapReducers, rapEnhancer } from './lib'
-      import { RapperProps as RequestRapperProps, ResponseTypes as RequestResponseTypes } from './request'
+      import { ResponseTypes as RequestResponseTypes } from './request'
     `,
     body: '',
     export: `
@@ -25,15 +20,12 @@ function createIndexStr(): GeneratedCode {
         useAllResponse,
         /** 清除此接口的缓存 */
         clearResponseCache,
-        connect,
         rapperSelector,
         rapperActions,
         rapReducers,
         rapEnhancer,
       };
 
-      /** class component 默认 props */
-      export type RapperProps = RequestRapperProps
       /** 响应类型 */
       export type ResponseTypes = RequestResponseTypes
     `,
@@ -43,7 +35,7 @@ function createIndexStr(): GeneratedCode {
 /** 生成 redux.ts */
 function createDynamicStr(interfaces: Array<Intf>, extr: CreatorExtr): string {
   return `
-    import { connect as defaultConnect, useSelector } from 'react-redux'
+    import { useSelector } from 'react-redux'
     import { createSelector } from 'reselect'
     import { Models, ResponseTypes } from './request'
     import { dispatchAction, useResponseData, connectGetResponse, State } from './lib'
@@ -51,7 +43,6 @@ function createDynamicStr(interfaces: Array<Intf>, extr: CreatorExtr): string {
     ${createActionStr(interfaces, extr)}
     ${createUseRapStr(interfaces, extr)}
     ${createSelectorStr(interfaces)}
-    ${createConnectStr()}
 
     export const rapperActions = RequestTypes || []
   `;

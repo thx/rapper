@@ -376,6 +376,7 @@ export function createTools(): string {
           return (state.${RAPPER_STATE_KEY} && state.${RAPPER_STATE_KEY}[modelName]) || []
         })
         const initData = reduxData.length ? reduxData.slice(-1)[0] : {}
+        const [id, setId] = useState(initData.response || undefined)
         const [filteredData, setFilteredData] = useState(initData.response || undefined)
         const [isPending, setIsPending] = useState(initData.isPending || false)
         const [errorMessage, setErrorMessage] = useState(initData.errorMessage || undefined)
@@ -395,11 +396,12 @@ export function createTools(): string {
           const result = resultArr.length ? resultArr.slice(-1)[0] : {}
       
           !looseEqual(result.response, filteredData) && setFilteredData(result.response || undefined)
+          setId(result.id)
           setIsPending(result.isPending || false)
           setErrorMessage(result.errorMessage)
         }, [reduxData, filter, filteredData])
         
-        return [filteredData, { isPending, errorMessage }]
+        return [filteredData, { id, isPending, errorMessage }]
       }
 
       /** 以connect方式获取response数据 */
