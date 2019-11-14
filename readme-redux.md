@@ -42,28 +42,28 @@ rapper({
 ```js
 import { applyMiddleware, createStore, compose } from 'redux';
 import { createLogger } from 'redux-logger';
-import { rapEnhancer } from 'model/rapper';
+import { rapperEnhancer } from 'model/rapper';
 import reducers from './reducer';
 
 const loggerMiddleware = createLogger();
 
 const enhancer = compose(
-  /** rapEnhancer 即为增加的 store enhancer */
-  rapEnhancer(),
+  /** rapperEnhancer 即为增加的 store enhancer */
+  rapperEnhancer(),
   applyMiddleware(loggerMiddleware),
 );
 
 const store = createStore(reducers, enhancer);
 ```
 
-#### 在 combineReducers 的时候，增加 rapReducers （请求响应的数据就存在这里面）
+#### 在 combineReducers 的时候，增加 rapperReducers （请求响应的数据就存在这里面）
 
 ```js
-import { rapReducers } from 'model/rapper';
+import { rapperReducers } from 'model/rapper';
 
 combineReducers({
+  ...rapperReducers,
   duck: DuckReducer,
-  ...rapReducers,
 });
 ```
 
@@ -182,9 +182,9 @@ const rapData = useResponse['GET/adgroup/price/update$'](({ request, response })
 我们可以将多次请求响应的数据缓存起来，默认缓存最近 2 次请求的数据，当然也可以通过配置 `maxCacheLength` 来自定义缓存长度
 
 ```js
-import { rapEnhancer } from 'model/rapper';
+import { rapperEnhancer } from 'model/rapper';
 
-rapEnhancer({
+rapperEnhancer({
   maxCacheLength: 3, // 也支持 Infinity
 });
 ```

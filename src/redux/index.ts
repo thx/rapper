@@ -8,7 +8,7 @@ function createIndexStr(): GeneratedCode {
   return {
     import: `
       import { useResponse, useAllResponse, clearResponseCache, rapperActions, rapperSelector } from './redux'
-      import { rapReducers, rapEnhancer } from './lib'
+      import { rapperReducers, rapperEnhancer } from './lib'
       import { ResponseTypes as RequestResponseTypes } from './request'
     `,
     body: '',
@@ -22,8 +22,8 @@ function createIndexStr(): GeneratedCode {
         clearResponseCache,
         rapperSelector,
         rapperActions,
-        rapReducers,
-        rapEnhancer,
+        rapperReducers,
+        rapperEnhancer,
       };
 
       /** 响应类型 */
