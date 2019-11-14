@@ -36,7 +36,6 @@ function createIndexStr(): GeneratedCode {
 function createDynamicStr(interfaces: Array<Intf>, extr: CreatorExtr): string {
   return `
     import { useSelector } from 'react-redux'
-    import { createSelector } from 'reselect'
     import { Models, ResponseTypes } from './request'
     import { dispatchAction, useResponseData, connectGetResponse, State } from './lib'
 

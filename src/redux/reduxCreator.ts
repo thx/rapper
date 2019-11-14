@@ -191,12 +191,10 @@ export function createSelectorStr(interfaces: Array<Intf>): string {
     ${interfaces
       .map(
         ({ modelName }) => `
-      '${modelName}': createSelector(
-        (state: State) => state['${RAPPER_STATE_KEY}']['${modelName}'],
-        responseData => {
-          return connectGetResponse(responseData) as ResponseTypes['${modelName}']
-        }
-      )
+      '${modelName}': (state: State) => {
+        const responseData = state['${RAPPER_STATE_KEY}']['${modelName}']
+        return connectGetResponse(responseData) as ResponseTypes['${modelName}']
+      }
     `,
       )
       .join(',\n\n')}
