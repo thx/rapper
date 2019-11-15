@@ -27,6 +27,7 @@
   "dependencies": {
     "axios": "^0.19.0",
     "chalk": "^2.4.2",
+    "commander": "^4.0.1",
     "json-schema-to-typescript": "^7.1.0",
     "json5": "^2.1.0",
     "lodash": "^4.17.15",

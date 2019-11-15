@@ -9,7 +9,7 @@ import { getInterfaces, getIntfWithModelName, uniqueItfs, creatHeadHelpStr } fro
 import scanFile from './core/scanFile';
 import url = require('url');
 
-interface Rapper {
+export interface Rapper {
   /** 必填，redux、requester 等 */
   type: RAPPER_TYPE;
   /** 必填，api仓库地址，从仓库的数据按钮可以获得 */
