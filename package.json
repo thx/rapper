@@ -1,6 +1,6 @@
 {
   "name": "@ali/rapper-redux",
-  "version": "0.1.14",
+  "version": "0.1.18",
   "description": "rapper, use http api as a function",
   "main": "./dist/index.js",
   "scripts": {
@@ -18,7 +18,9 @@
     "url": "git@gitlab.alibaba-inc.com:mm/rapper.git"
   },
   "keywords": [
-    "api"
+    "api",
+    "rap",
+    "rapper"
   ],
   "author": "chibing.fy",
   "license": "ISC",
@@ -28,8 +30,7 @@
     "json-schema-to-typescript": "^7.1.0",
     "json5": "^2.1.0",
     "lodash": "^4.17.15",
-    "mkdirp": "^0.5.1",
-    "reselect": "^4.0.0"
+    "mkdirp": "^0.5.1"
   },
   "files": [
     "dist"

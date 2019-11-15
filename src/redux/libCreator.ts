@@ -183,12 +183,12 @@ export function createReduxRuntime(): string {
     return newState
   }
   
-  export const rapReducers = {
+  export const rapperReducers = {
     '${RAPPER_STATE_KEY}': (state = {}) => state,
   }
   
   /** store enhancer */
-  export function rapEnhancer(config?: EnhancerProps): StoreEnhancer<any> {
+  export function rapperEnhancer(config?: EnhancerProps): StoreEnhancer<any> {
     config = config || {}
     const { maxCacheLength = 2 } = config
   
@@ -198,7 +198,7 @@ export function createReduxRuntime(): string {
       /** 重新定义 reducers */
       const newReducers = (state: any, action: IAction): Store => {
         if (state && !state.${RAPPER_STATE_KEY}) {
-          throw Error('rapper初始化配置失败，rootReducer应该加入rapReducers，具体请查看demo配置: https://www.yuque.com/rap/rapper/redux#e391cb1c')
+          throw Error('rapper初始化配置失败，rootReducer应该加入rapperReducers，具体请查看demo配置: https://www.yuque.com/rap/rapper/redux#e391cb1c')
         }
   
         if (!action.hasOwnProperty('type')) {
@@ -376,6 +376,7 @@ export function createTools(): string {
           return (state.${RAPPER_STATE_KEY} && state.${RAPPER_STATE_KEY}[modelName]) || []
         })
         const initData = reduxData.length ? reduxData.slice(-1)[0] : {}
+        const [id, setId] = useState(initData.response || undefined)
         const [filteredData, setFilteredData] = useState(initData.response || undefined)
         const [isPending, setIsPending] = useState(initData.isPending || false)
         const [errorMessage, setErrorMessage] = useState(initData.errorMessage || undefined)
@@ -395,11 +396,12 @@ export function createTools(): string {
           const result = resultArr.length ? resultArr.slice(-1)[0] : {}
       
           !looseEqual(result.response, filteredData) && setFilteredData(result.response || undefined)
+          setId(result.id)
           setIsPending(result.isPending || false)
           setErrorMessage(result.errorMessage)
         }, [reduxData, filter, filteredData])
         
-        return [filteredData, { isPending, errorMessage }]
+        return [filteredData, { id, isPending, errorMessage }]
       }
 
       /** 以connect方式获取response数据 */

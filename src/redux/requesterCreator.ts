@@ -57,9 +57,5 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: Creato
         .join(',\n\n')}
       };
     }
-
-    export interface RapperProps{
-      fetch: ReturnType<typeof createFetch>
-    }
-      `;
+  `;
 }
