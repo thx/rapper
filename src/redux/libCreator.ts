@@ -366,6 +366,20 @@ export function createTools(): string {
         }
         return true
       }
+
+      function getFilterData<Req, Item extends { request: Req }>(reduxData: any[], filter?: FilterObj<Req> | FilterFunc<Item>) {
+        let resultArr = []
+        if (filter) {
+          if (typeof filter === 'function') {
+            resultArr = reduxData.filter((item: Item) => functionFilter<Item, typeof filter>(item, filter))
+          } else {
+            resultArr = reduxData.filter((item: Item) => paramsFilter<Req, Item, typeof filter>(item, filter))
+          }
+        } else {
+          resultArr = reduxData
+        }
+        return resultArr.length ? resultArr.slice(-1)[0] : {}
+      }
   
       /** 以Hooks方式获取response数据 */
       export function useResponseData<S extends { '${RAPPER_STATE_KEY}': any }, M, Req, Item extends { request: Req }>(
@@ -375,25 +389,15 @@ export function createTools(): string {
         const reduxData = useSelector((state: S) => {
           return (state.${RAPPER_STATE_KEY} && state.${RAPPER_STATE_KEY}[modelName]) || []
         })
-        const initData = reduxData.length ? reduxData.slice(-1)[0] : {}
+        const initData = getFilterData<Req, Item>(reduxData, filter)
         const [id, setId] = useState(initData.response || undefined)
         const [filteredData, setFilteredData] = useState(initData.response || undefined)
         const [isPending, setIsPending] = useState(initData.isPending || false)
         const [errorMessage, setErrorMessage] = useState(initData.errorMessage || undefined)
         
         useEffect(() => {
-          let resultArr = []
-          if (filter) {
-            if (typeof filter === 'function') {
-              resultArr = reduxData.filter((item: Item) => functionFilter<Item, typeof filter>(item, filter))
-            } else {
-              resultArr = reduxData.filter((item: Item) => paramsFilter<Req, Item, typeof filter>(item, filter))
-            }
-          } else {
-            resultArr = reduxData
-          }
           /** 过滤出一条最新的符合条件的数据 */
-          const result = resultArr.length ? resultArr.slice(-1)[0] : {}
+          const result = getFilterData<Req, Item>(reduxData, filter)
       
           !looseEqual(result.response, filteredData) && setFilteredData(result.response || undefined)
           setId(result.id)
