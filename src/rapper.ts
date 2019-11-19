@@ -41,9 +41,7 @@ export default async function({
     return new Promise(() => console.log(chalk.red('rapper: type 参数配置错误，请重新配置')));
   }
   const apiParams = url.parse(apiUrl, true).query;
-  const projectId = parseInt(
-    Array.isArray(apiParams.projectId) ? apiParams.projectId[0] : apiParams.projectId,
-  );
+  const projectId = parseInt(Array.isArray(apiParams.id) ? apiParams.id[0] : apiParams.id);
 
   DEFAULT_OPTIONS.style = {
     ...DEFAULT_OPTIONS.style,
