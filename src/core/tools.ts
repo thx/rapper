@@ -45,7 +45,7 @@ export function rap2name(itf: Interface.Root, urlMapper: UrlMapper = t => t) {
     return;
   }
 
-  const urlSplit = regExpExec[1].split('/');
+  const urlSplit = apiUrl.split('/');
 
   //接口地址为RESTful的，清除占位符
   //api/:id/get -> api//get

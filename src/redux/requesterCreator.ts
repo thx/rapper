@@ -27,7 +27,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: Creato
           return defaultFetch({
             url,
             method: requestParams.method,
-            params: requestParams.method,
+            params: requestParams.params,
             fetchOption,
           });
         };
@@ -40,7 +40,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: Creato
           * @param extra 请求配置项`;
           return `
           ${creatInterfaceHelpStr(extr.rapUrl, itf, extrText)}
-          '${modelName}': (req?: Models['${modelName}']['Req'], extra?: any) => {
+          '${modelName}': (req?: Models['${modelName}']['Req'], extra?: { type?: 'normal' | 'redux' }) => {
             if(extra && extra.type === 'normal') {
               return rapperFetch({
                 url: '${url}',

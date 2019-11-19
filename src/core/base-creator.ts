@@ -67,7 +67,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: Creato
           return defaultFetch({
             url,
             method: requestParams.method,
-            params: requestParams.method,
+            params: requestParams.params,
             fetchOption,
           });
         };
