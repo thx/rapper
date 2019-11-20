@@ -156,7 +156,7 @@ function createDefaultFetch() {
       } else {
         init.body = typeof params === 'object' ? JSON.stringify(params) : params;
       }
-      const res = await fetch(urlWithParams, fetchOption);
+      const res = await fetch(urlWithParams, init);
       return Promise.resolve(res.json());
     };
   `;
