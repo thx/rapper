@@ -1,46 +1,10 @@
 import { Intf, CreatorExtr } from '../types';
-import { RAPPER_STATE_KEY, RAPPER_CLEAR_STORE, RAPPER_REQUEST } from './index';
+import { RAPPER_STATE_KEY, RAPPER_CLEAR_STORE } from './index';
 import { creatInterfaceHelpStr } from '../core/tools';
-
-/** 定义 请求types interface  */
-function getRequestTypesInterfaceStr(interfaces: Array<Intf>): string {
-  return `interface RequestTypes {
-    ${interfaces
-      .map(
-        ({ modelName }) =>
-          `'${modelName}': ['${modelName}_REQUEST', '${modelName}_SUCCESS', '${modelName}_FAILURE']`,
-      )
-      .join('\n\n')}
-    }
-  `;
-}
-
-/** 定义 请求action interface  */
-function getRequestActionInterfaceStr(interfaces: Array<Intf>): string {
-  return `interface RequestAction {
-    ${interfaces
-      .map(({ modelName, method, url }) => {
-        return `
-          '${modelName}': (params?: Models['${modelName}']['Req']) => {
-              type: '${RAPPER_REQUEST}',
-              payload: {
-                  modelName: '${modelName}'
-                  url: '${url}'
-                  method: '${method}'
-                  params?: Models['${modelName}']['Req']
-                  types: ['${modelName}_REQUEST', '${modelName}_SUCCESS', '${modelName}_FAILURE']
-              }
-          },
-        `;
-      })
-      .join('\n\n')}
-    }
-`;
-}
 
 /** 定义 请求types */
 function getRequestTypesStr(interfaces: Array<Intf>): string {
-  return `const RequestTypes:RequestTypes = {
+  return `export const RequestTypes = {
     ${interfaces
       .map(({ modelName }) => {
         return `
@@ -55,46 +19,12 @@ function getRequestTypesStr(interfaces: Array<Intf>): string {
   }`;
 }
 
-/** 定义 请求action */
-function getRequestActionStr(interfaces: Array<Intf>, extr: CreatorExtr): string {
-  return `export const RequestAction: RequestAction = {
-    ${interfaces
-      .map(itf => {
-        const { url, modelName, method } = itf;
-        return `
-          ${creatInterfaceHelpStr(extr.rapUrl, itf)}
-          '${modelName}': (params) => ({
-            type: '${RAPPER_REQUEST}',
-            payload: {
-                modelName: '${modelName}',
-                url: '${url}',
-                method: '${method}',
-                params,
-                types: RequestTypes['${modelName}'],
-            },
-          }),
-      `;
-      })
-      .join('\n\n')}
-    }
-`;
-}
-
 /** 生成 Action 定义 */
 export function createActionStr(interfaces: Array<Intf>, extr: CreatorExtr): string {
   return `
-        /** 请求types interface  */
-        ${getRequestTypesInterfaceStr(interfaces)}
-    
-        /** 请求action interface  */
-        ${getRequestActionInterfaceStr(interfaces)}
-    
-        /** 请求types */
-        ${getRequestTypesStr(interfaces)}
-    
-        /** 请求action */
-        ${getRequestActionStr(interfaces, extr)}
-        `;
+    /** 请求types */
+    ${getRequestTypesStr(interfaces)}
+  `;
 }
 
 /** 生成 useResponse，useAllResponse */
@@ -193,7 +123,7 @@ export function createSelectorStr(interfaces: Array<Intf>): string {
         ({ modelName }) => `
       '${modelName}': (state: State) => {
         const responseData = state['${RAPPER_STATE_KEY}']['${modelName}']
-        return connectGetResponse(responseData) as ResponseTypes['${modelName}']
+        return connectGetResponse(responseData) as ResponseTypes['${modelName}'] | undefined
       }
     `,
       )

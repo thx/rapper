@@ -47,7 +47,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: Creato
   const { rapUrl, resSelector } = extr;
   const modelStr = await createModel(interfaces, extr);
   return `
-    import { parseUrl, defaultFetch, defaultConfig, RequesterOption, UserFetchParams, FetchConfigFunc } from './lib'
+    import { RequesterOption, getRapperRequest } from './lib'
     ${modelStr}
 
     ${resSelector}
@@ -55,23 +55,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: Creato
     ${createResponseTypes(interfaces)}
 
     export function createFetch(fetchConfig: RequesterOption) {
-      let rapperFetch: FetchConfigFunc;
-      if (typeof fetchConfig === 'function') {
-        rapperFetch = fetchConfig;
-      } else {
-        const prefix = fetchConfig.prefix !== undefined ? fetchConfig.prefix : defaultConfig.prefix;
-        const fetchOption =
-          fetchConfig.fetchOption !== undefined ? fetchConfig.fetchOption : defaultConfig.fetchOption;
-        rapperFetch = (requestParams: UserFetchParams) => {
-          const url = parseUrl(requestParams.url, prefix);
-          return defaultFetch({
-            url,
-            method: requestParams.method,
-            params: requestParams.params,
-            fetchOption,
-          });
-        };
-      }
+      const rapperFetch = getRapperRequest(fetchConfig)
 
       return {
         ${interfaces
@@ -100,13 +84,12 @@ export function createBaseIndexCode(): GeneratedCode {
   return {
     import: `
       import { createFetch, Models as RequestModels } from './request'
-      import { defaultFetch } from './lib'
     `,
     body: `
       const fetch = createFetch({})
     `,
     export: `
-      export { fetch, createFetch, defaultFetch }
+      export { fetch, createFetch }
       export type Models = RequestModels
     `,
   };
@@ -137,10 +120,10 @@ function createDefaultFetch() {
       fetchOption: DefaultFetchParams['fetchOption']
     }
     export type FetchConfigObj =  Partial<DefaultConfigObj>
-    export type FetchConfigFunc = <T>(params: UserFetchParams) => Promise<T>
+    type FetchConfigFunc = <T>(params: UserFetchParams) => Promise<T>
     export type RequesterOption = FetchConfigObj | FetchConfigFunc
 
-    export const defaultConfig: DefaultConfigObj = {
+    const defaultConfig: DefaultConfigObj = {
       prefix: '',
       fetchOption: {
         headers: { 'Content-Type': 'application/json' },
@@ -148,7 +131,7 @@ function createDefaultFetch() {
       },
     };
 
-    export const defaultFetch = async ({ url, method, params, fetchOption }: DefaultFetchParams) => {
+    const defaultFetch = async ({ url, method, params, fetchOption }: DefaultFetchParams) => {
       let urlWithParams = url;
       const init: RequestInit = { ...fetchOption, method };
       if (method === 'GET') {
@@ -158,6 +141,30 @@ function createDefaultFetch() {
       }
       const res = await fetch(urlWithParams, init);
       return Promise.resolve(res.json());
+    };
+
+    export const getRapperRequest = (fetchConfig: RequesterOption) => {
+      let rapperFetch: FetchConfigFunc;
+      if (typeof fetchConfig === 'function') {
+        rapperFetch = fetchConfig;
+      } else {
+        let { prefix, fetchOption } = fetchConfig;
+        prefix = prefix !== undefined ? prefix : defaultConfig.prefix;
+        fetchOption = fetchOption !== undefined ? fetchOption : defaultConfig.fetchOption;
+    
+        rapperFetch = (requestParams: UserFetchParams) => {
+          const { url, method, params, extra } = requestParams;
+          /** 用户自定义 Content-Type */
+          if (extra && extra.contentType) {
+            fetchOption = {
+              ...fetchOption,
+              headers: { ...fetchOption.headers, 'Content-Type': extra.contentType },
+            };
+          }
+          return defaultFetch({ url: parseUrl(url, prefix), method, params, fetchOption });
+        };
+      }
+      return rapperFetch;
     };
   `;
 }
@@ -171,21 +178,21 @@ export function createBaseLibCode(): GeneratedCode {
    * 会自动删除 undefined
    */
   export function locationStringify(
-      obj: {
-          [key: string]: any
-      } = {}
+    obj: {
+      [key: string]: any
+    } = {}
   ): string {
-      return Object.entries(obj).reduce((str, [key, value]) => {
-          if (value === undefined) {
-              return str
-          }
-          str = str ? str + '&' : str
-          return str + encodeURIComponent(key) + '=' + encodeURIComponent(value)
-      }, '')
+    return Object.entries(obj).reduce((str, [key, value]) => {
+      if (value === undefined) {
+        return str
+      }
+      str = str ? str + '&' : str
+      return str + encodeURIComponent(key) + '=' + encodeURIComponent(value)
+    }, '')
   }
 
   /** 拼接组合request链接 */
-  export function parseUrl(url: string, requestPrefix?: string): string {
+  function parseUrl(url: string, requestPrefix?: string): string {
     const urlReg = /^((https?:\\/\\/)?(([a-zA-Z0-9]+-?)+[a-zA-Z0-9]+\\.)+[a-zA-Z]+)(:\\d+)?(\\/.*)?(\\?.*)?(#.*)?$/
     /** 如果url含有host，就不再混入prefix */
     if (urlReg.test(url)) {

@@ -7,7 +7,7 @@
     "lint": "eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
     "build": "./node_modules/typescript/bin/tsc -p tsconfig.json",
     "clean": "rm -rf test_data/model",
-    "requester": "npm run build && npm run clean && node ./dist/test/requester",
+    "normal": "npm run build && npm run clean && node ./dist/test/normal",
     "redux": "npm run build && npm run clean && node ./dist/test/redux"
   },
   "bin": {

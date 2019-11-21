@@ -3,108 +3,122 @@ import { RAPPER_STATE_KEY, RAPPER_UPDATE_STORE, RAPPER_CLEAR_STORE, RAPPER_REQUE
 /** 生成 types 定义 */
 export function createTypesStr(): string {
   return `
-      /** 请求类型 */
-      type REQUEST_METHOD = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD'
-      
-      interface Action<T = any> {
-          type: T
+    /** 请求类型 */
+    type REQUEST_METHOD = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD'
+    
+    interface Action<T = any> {
+      type: T
+    }
+    export interface AnyAction extends Action {
+      [extraProps: string]: any
+    }
+    export interface RequestAction {
+      type: '${RAPPER_REQUEST}'
+      payload?: {
+        modelName: string
+        url: string
+        method?: REQUEST_METHOD
+        params?: any
+        types: string[]
       }
-      export interface AnyAction extends Action {
-          [extraProps: string]: any
+    }
+    
+    export type IAction = AnyAction | RequestAction
+    
+    /** store enhancer 参数 */
+    export interface EnhancerProps {
+      /** 缓存数据最大长度 */
+      maxCacheLength?: number
+    }
+    
+    type Dispatch<A = AnyAction> = <T extends A>(action: T, ...extraArgs: any[]) => T
+    type Unsubscribe = () => void
+    export type Reducer<S = any, A = AnyAction> = (state: S | undefined, action: A) => S
+    type ExtendState<State, Extension> = [Extension] extends [never] ? State : State & Extension
+    type Observer<T> = {
+      next?(value: T): void
+    }
+    type Observable<T> = {
+      subscribe: (observer: Observer<T>) => { unsubscribe: Unsubscribe }
+      [Symbol.observable](): Observable<T>
+    }
+    
+    export type StoreEnhancer<Ext = {}, StateExt = {}> = (next: StoreEnhancerStoreCreator) => StoreEnhancerStoreCreator<Ext, StateExt>
+    
+    export type StoreEnhancerStoreCreator<Ext = {}, StateExt = {}> = <S = any, A extends Action = AnyAction>(
+      reducer: Reducer<S, A>,
+      preloadedState?: DeepPartial<S>
+    ) => Store<S & StateExt, A> & Ext
+    
+    export type DeepPartial<T> = {
+      [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K]
+    }
+    
+    /** Store */
+    export interface Store<S = any, A = IAction, StateExt = never, Ext = {}> {
+      dispatch: Dispatch<A>
+      getState(): S
+      subscribe(listener: () => void): Unsubscribe
+      replaceReducer<NewState, NewActions>(
+          nextReducer: Reducer<NewState, NewActions>
+      ): Store<ExtendState<NewState, StateExt>, NewActions, StateExt, Ext> & Ext
+      [Symbol.observable](): Observable<S>
+    }
+    
+    declare const $CombinedState: unique symbol
+    
+    export type CombinedState<S> = { readonly [$CombinedState]?: undefined } & S
+    
+    export type PreloadedState<S> = Required<S> extends {
+      [$CombinedState]: undefined
+    }
+      ? S extends CombinedState<infer S1>
+      ? {
+        [K in keyof S1]?: S1[K] extends object ? PreloadedState<S1[K]> : S1[K]
       }
-      export interface RequestAction {
-          type: '${RAPPER_REQUEST}'
-          payload?: {
-              modelName: string
-              url: string
-              method?: REQUEST_METHOD
-              params?: any
-              types: string[]
-          }
-      }
-      
-      export type IAction = AnyAction | RequestAction
-      
-      /** store enhancer 参数 */
-      export interface EnhancerProps {
-          /** 缓存数据最大长度 */
-          maxCacheLength?: number
-      }
-      
-      type Dispatch<A = AnyAction> = <T extends A>(action: T, ...extraArgs: any[]) => T
-      type Unsubscribe = () => void
-      export type Reducer<S = any, A = AnyAction> = (state: S | undefined, action: A) => S
-      type ExtendState<State, Extension> = [Extension] extends [never] ? State : State & Extension
-      type Observer<T> = {
-          next?(value: T): void
-      }
-      type Observable<T> = {
-          subscribe: (observer: Observer<T>) => { unsubscribe: Unsubscribe }
-          [Symbol.observable](): Observable<T>
-      }
-      
-      export type StoreEnhancer<Ext = {}, StateExt = {}> = (next: StoreEnhancerStoreCreator) => StoreEnhancerStoreCreator<Ext, StateExt>
-      
-      export type StoreEnhancerStoreCreator<Ext = {}, StateExt = {}> = <S = any, A extends Action = AnyAction>(
-          reducer: Reducer<S, A>,
-          preloadedState?: DeepPartial<S>
-      ) => Store<S & StateExt, A> & Ext
-      
-      export type DeepPartial<T> = {
-          [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K]
-      }
-      
-      /** Store */
-      export interface Store<S = any, A = IAction, StateExt = never, Ext = {}> {
-          dispatch: Dispatch<A>
-          getState(): S
-          subscribe(listener: () => void): Unsubscribe
-          replaceReducer<NewState, NewActions>(
-              nextReducer: Reducer<NewState, NewActions>
-          ): Store<ExtendState<NewState, StateExt>, NewActions, StateExt, Ext> & Ext
-          [Symbol.observable](): Observable<S>
-      }
-      
-      declare const $CombinedState: unique symbol
-      
-      export type CombinedState<S> = { readonly [$CombinedState]?: undefined } & S
-      
-      export type PreloadedState<S> = Required<S> extends {
-          [$CombinedState]: undefined
-      }
-          ? S extends CombinedState<infer S1>
-          ? {
-              [K in keyof S1]?: S1[K] extends object ? PreloadedState<S1[K]> : S1[K]
-          }
-          : never
-          : {
-              [K in keyof S]: S[K] extends object ? PreloadedState<S[K]> : S[K]
-          }
-      
-      export interface StoreCreator {
-          <S, A extends Action, Ext = {}, StateExt = never>(reducer: Reducer<S, A>, enhancer?: StoreEnhancer<Ext, StateExt>): Store<
-              ExtendState<S, StateExt>,
-              A,
-              StateExt,
-              Ext
-          > &
-              Ext
-          <S, A extends Action, Ext = {}, StateExt = never>(
-              reducer: Reducer<S, A>,
-              preloadedState?: PreloadedState<S>,
-              enhancer?: StoreEnhancer<Ext>
-          ): Store<ExtendState<S, StateExt>, A, StateExt, Ext> & Ext
+      : never
+      : {
+        [K in keyof S]: S[K] extends object ? PreloadedState<S[K]> : S[K]
       }
     
-      interface FilterObj<Req> {
-        request?: Req
-      }
-      type FilterFunc<Item> = (storeData: Item) => boolean
-      
-      export interface State {
-        [key: string]: any
-      }
-      `;
+    export interface StoreCreator {
+      <S, A extends Action, Ext = {}, StateExt = never>(reducer: Reducer<S, A>, enhancer?: StoreEnhancer<Ext, StateExt>): Store<
+        ExtendState<S, StateExt>,
+        A,
+        StateExt,
+        Ext
+      > &
+        Ext
+      <S, A extends Action, Ext = {}, StateExt = never>(
+        reducer: Reducer<S, A>,
+        preloadedState?: PreloadedState<S>,
+        enhancer?: StoreEnhancer<Ext>
+      ): Store<ExtendState<S, StateExt>, A, StateExt, Ext> & Ext
+    }
+  
+    interface FilterObj<Req> {
+      request?: Req
+    }
+    type FilterFunc<Item> = (storeData: Item) => boolean
+    
+    export interface State {
+      [key: string]: any
+    }
+
+    /** 请求的额外参数类型 */
+    export interface IExtra {
+      /** 
+       * 请求的类型，默认不传 代表redux请求，会发送 Action，也存入redux store
+       * normal 代表普通请求，不发送 Action，也不存入redux store
+       * redux 代表redux请求，会发送 Action，也存入redux store
+       */
+      type?: 'normal' | 'redux',
+      /**
+       * 请求头 content-type，默认是 'application/json'
+       */
+      contentType?: 'application/json' | 'form-data' | 'x-www-form-urlencoded' | 'text/plain' | 'text/html' | 'application/javascript'
+    }
+    `;
 }
 
 /** 生成 redux 运行时依赖 */
@@ -242,7 +256,7 @@ export function createReduxRuntime(): string {
           url,
           method,
           params,
-          cb,
+          extra,
           types: [REQUEST, SUCCESS, FAILURE],
         } = action.payload
         const requestTime = new Date().getTime()
@@ -259,10 +273,9 @@ export function createReduxRuntime(): string {
           },
         })
         try {
-          const responseData = await fetchFunc({ url, method, params })
+          const responseData = await fetchFunc({ url, method, params, extra })
           const reponseTime = new Date().getTime()
 
-          cb && cb(responseData)
           store.dispatch({ type: SUCCESS, payload: responseData })
           /** 请求成功，更新store */
           store.dispatch({
