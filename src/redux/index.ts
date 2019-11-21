@@ -1,15 +1,15 @@
-import { Intf, GeneratedCode, CreatorExtr } from '../types';
+import { Intf, IGeneratedCode, ICreatorExtr } from '../types';
 import { createActionStr, createUseRapStr, createSelectorStr } from './reduxCreator';
 import { createTools, createTypesStr, createReduxRuntime } from './libCreator';
 import { createBaseRequestStr } from './requesterCreator';
 
 /** 生成 index.ts */
-function createIndexStr(): GeneratedCode {
+function createIndexStr(): IGeneratedCode {
   return {
     import: `
       import { useResponse, useAllResponse, clearResponseCache, rapperActions, rapperSelector } from './redux'
       import { rapperReducers, rapperEnhancer } from './lib'
-      import { ResponseTypes as RequestResponseTypes } from './request'
+      import { IResponseTypes } from './request'
     `,
     body: '',
     export: `
@@ -27,17 +27,17 @@ function createIndexStr(): GeneratedCode {
       };
 
       /** 响应类型 */
-      export type ResponseTypes = RequestResponseTypes
+      export type ResponseTypes = IResponseTypes
     `,
   };
 }
 
 /** 生成 redux.ts */
-function createDynamicStr(interfaces: Array<Intf>, extr: CreatorExtr): string {
+function createDynamicStr(interfaces: Array<Intf>, extr: ICreatorExtr): string {
   return `
     import { useSelector } from 'react-redux'
-    import { Models, ResponseTypes } from './request'
-    import { dispatchAction, useResponseData, connectGetResponse, State } from './lib'
+    import { IModels, IResponseTypes } from './request'
+    import { dispatchAction, useResponseData, connectGetResponse, IState } from './lib'
 
     ${createActionStr(interfaces, extr)}
     ${createUseRapStr(interfaces, extr)}
@@ -48,7 +48,7 @@ function createDynamicStr(interfaces: Array<Intf>, extr: CreatorExtr): string {
 }
 
 /** 生成 lib.ts */
-function createLibStr(interfaces: Array<Intf>, extr: CreatorExtr): GeneratedCode {
+function createLibStr(interfaces: Array<Intf>, extr: ICreatorExtr): IGeneratedCode {
   return {
     import: `
       import { useState, useEffect } from 'react'

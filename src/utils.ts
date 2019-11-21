@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
 import * as fs from 'fs';
-import { GeneratedCode } from './types';
+import { IGeneratedCode } from './types';
 
 export function withoutExt(p: string) {
   return p.replace(/\.[^/.]+$/, '');
@@ -11,7 +11,7 @@ export function relativeImport(from: string, to: string) {
   return withoutExt('./' + path.relative(path.dirname(from), to));
 }
 
-export function mixGeneratedCode(codeArr: Array<GeneratedCode>) {
+export function mixGeneratedCode(codeArr: Array<IGeneratedCode>) {
   const imports = codeArr.map(c => c.import);
   const bodies = codeArr.map(c => c.body);
   const _exports = codeArr.map(c => c.export);

@@ -1,4 +1,4 @@
-import { Intf, CreatorExtr } from '../types';
+import { Intf, ICreatorExtr } from '../types';
 import { RAPPER_STATE_KEY, RAPPER_CLEAR_STORE } from './index';
 import { creatInterfaceHelpStr } from '../core/tools';
 
@@ -20,7 +20,7 @@ function getRequestTypesStr(interfaces: Array<Intf>): string {
 }
 
 /** 生成 Action 定义 */
-export function createActionStr(interfaces: Array<Intf>, extr: CreatorExtr): string {
+export function createActionStr(interfaces: Array<Intf>, extr: ICreatorExtr): string {
   return `
     /** 请求types */
     ${getRequestTypesStr(interfaces)}
@@ -28,17 +28,17 @@ export function createActionStr(interfaces: Array<Intf>, extr: CreatorExtr): str
 }
 
 /** 生成 useResponse，useAllResponse */
-export function createUseRapStr(interfaces: Array<Intf>, extr: CreatorExtr): string {
+export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): string {
   return `
     /** store中存储的数据结构 */
-    interface RapperStore {
+    interface IRapperStore {
       '${RAPPER_STATE_KEY}': {
         ${interfaces
           .map(
             ({ modelName }) => `
         '${modelName}': Array<{
-          request: Models['${modelName}']['Req']
-          response: Models['${modelName}']['Res']
+          request: IModels['${modelName}']['Req']
+          response: IModels['${modelName}']['Res']
           id: number
           requestTime: number
           responseTime: number
@@ -56,15 +56,15 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: CreatorExtr): str
       ${creatInterfaceHelpStr(extr.rapUrl, itf)}
       /* tslint:disable */
       '${itf.modelName}': function useData(
-          filter?: { request?: Models['${itf.modelName}']['Req'] } | { (
-              storeData: RapperStore['${RAPPER_STATE_KEY}']['${itf.modelName}'][0]
+          filter?: { request?: IModels['${itf.modelName}']['Req'] } | { (
+              storeData: IRapperStore['${RAPPER_STATE_KEY}']['${itf.modelName}'][0]
           ): boolean }
       ) {
-        type M = keyof RapperStore['${RAPPER_STATE_KEY}']
-        type Req = Models['${itf.modelName}']['Req']
-        type Item = RapperStore['${RAPPER_STATE_KEY}']['${itf.modelName}'][0]
-        type Res = ResponseTypes['${itf.modelName}']
-        return useResponseData<RapperStore, M, Req, Item>('${
+        type M = keyof IRapperStore['${RAPPER_STATE_KEY}']
+        type Req = IModels['${itf.modelName}']['Req']
+        type Item = IRapperStore['${RAPPER_STATE_KEY}']['${itf.modelName}'][0]
+        type Res = IResponseTypes['${itf.modelName}']
+        return useResponseData<IRapperStore, M, Req, Item>('${
           itf.modelName
         }', filter) as [Res | undefined, {
           /** 本次请求的唯一id */
@@ -86,11 +86,11 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: CreatorExtr): str
       ${creatInterfaceHelpStr(extr.rapUrl, itf)}
       /* tslint:disable */
       '${itf.modelName}': function useData() {
-        return useSelector((state: State) => {
+        return useSelector((state: IState) => {
           const selectedState = (state['${RAPPER_STATE_KEY}'] && state['${RAPPER_STATE_KEY}']['${
             itf.modelName
           }']) || []
-          return selectedState as Array<ResponseTypes['${itf.modelName}']>
+          return selectedState as Array<IResponseTypes['${itf.modelName}']>
         })
       }`,
         )
@@ -121,9 +121,9 @@ export function createSelectorStr(interfaces: Array<Intf>): string {
     ${interfaces
       .map(
         ({ modelName }) => `
-      '${modelName}': (state: State) => {
+      '${modelName}': (state: IState) => {
         const responseData = state['${RAPPER_STATE_KEY}']['${modelName}']
-        return connectGetResponse(responseData) as ResponseTypes['${modelName}'] | undefined
+        return connectGetResponse(responseData) as IResponseTypes['${modelName}'] | undefined
       }
     `,
       )

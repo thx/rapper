@@ -1,5 +1,5 @@
 export namespace Interface {
-  export interface Property {
+  export interface IProperty {
     id: number;
     scope: string;
     type: string;
@@ -20,7 +20,7 @@ export namespace Interface {
     deletedAt?: any;
   }
 
-  export interface Root {
+  export interface IRoot {
     id: number;
     name: string;
     url: string;
@@ -36,13 +36,13 @@ export namespace Interface {
     updatedAt: Date;
     deletedAt?: any;
     locker?: any;
-    properties: Array<Property>;
+    properties: Array<IProperty>;
   }
 }
 
-export type Intf = Interface.Root & { modelName: string };
+export type Intf = Interface.IRoot & { modelName: string };
 
-export interface Modules {
+export interface IModules {
   id: number;
   name: string;
   description: string;
@@ -55,7 +55,7 @@ export interface Modules {
   interfaces: Array<Intf>;
 }
 
-export interface Collaborator {
+export interface ICollaborator {
   id: number;
   name: string;
   description: string;
@@ -71,7 +71,7 @@ export interface Collaborator {
 }
 
 /** url 匹配函数 */
-export interface UrlMapper {
+export interface IUrlMapper {
   (url: string): string;
 }
 
@@ -86,7 +86,7 @@ export enum TRAILING_COMMA {
 }
 
 /** 生成出的代码 */
-export interface GeneratedCode {
+export interface IGeneratedCode {
   /** 顶部 import */
   import: string;
   body: string;
@@ -94,7 +94,7 @@ export interface GeneratedCode {
 }
 
 /** create 函数的参数 */
-export interface CreatorExtr {
+export interface ICreatorExtr {
   rapUrl: string;
   resSelector: string;
 }

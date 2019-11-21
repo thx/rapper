@@ -1,15 +1,15 @@
 import chalk from 'chalk';
 import axios from 'axios';
 import * as _ from 'lodash';
-import { Modules, Collaborator, Interface, Intf, UrlMapper } from '../types';
+import { IModules, ICollaborator, Interface, Intf, IUrlMapper } from '../types';
 
 /** 从rap查询所有接口数据 */
 export async function getInterfaces(rapApiUrl: string) {
   const response = await axios.get(rapApiUrl);
 
   const data = response.data.data;
-  const modules: Array<Modules> = data.modules;
-  const collaborators: Array<Collaborator> = data.collaborators;
+  const modules: Array<IModules> = data.modules;
+  const collaborators: Array<ICollaborator> = data.collaborators;
 
   let interfaces = _(modules)
     .map(m => m.interfaces)
@@ -28,7 +28,7 @@ export async function getInterfaces(rapApiUrl: string) {
 /**
  * 转换rap接口名称
  */
-export function rap2name(itf: Interface.Root, urlMapper: UrlMapper = t => t) {
+export function rap2name(itf: Interface.IRoot, urlMapper: IUrlMapper = t => t) {
   // copy from http://gitlab.alibaba-inc.com/thx/magix-cli/blob/master/util/rap.js
   const { method, url, repositoryId: projectId, id } = itf;
   const apiUrl = urlMapper(url);
@@ -70,8 +70,8 @@ export function rap2name(itf: Interface.Root, urlMapper: UrlMapper = t => t) {
 
 /** 给接口增加 modelName */
 export function getIntfWithModelName(
-  intfs: Array<Interface.Root>,
-  urlMapper: UrlMapper = t => t,
+  intfs: Array<Interface.IRoot>,
+  urlMapper: IUrlMapper = t => t,
 ): Array<Intf> {
   return intfs.map(itf => ({
     ...itf,

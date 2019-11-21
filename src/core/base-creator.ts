@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 import convert from './convert';
-import { Intf, GeneratedCode, CreatorExtr } from '../types';
+import { Intf, IGeneratedCode, ICreatorExtr } from '../types';
 import { creatInterfaceHelpStr } from './tools';
 
 /** 生成 Models 文件 */
-export async function createModel(interfaces: Array<Intf>, extr: CreatorExtr) {
+export async function createModel(interfaces: Array<Intf>, extr: ICreatorExtr) {
   const itfStrs = await Promise.all(
     interfaces.map(async itf => {
       try {
@@ -24,26 +24,26 @@ export async function createModel(interfaces: Array<Intf>, extr: CreatorExtr) {
     }),
   );
   return `
-        export interface Models {
+        export interface IModels {
             ${itfStrs.join('\n\n')}
         };
     `;
 }
 
-/** 生成 ResponseTypes */
+/** 生成 IResponseTypes */
 export function createResponseTypes(interfaces: Array<Intf>) {
   return `
-    export interface ResponseTypes {
+    export interface IResponseTypes {
       ${interfaces.map(
         ({ modelName }) => `
-        '${modelName}': ResSelector<Models['${modelName}']['Res']>
+        '${modelName}': ResSelector<IModels['${modelName}']['Res']>
       `,
       )}
     }
   `;
 }
 
-export async function createBaseRequestStr(interfaces: Array<Intf>, extr: CreatorExtr) {
+export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreatorExtr) {
   const { rapUrl, resSelector } = extr;
   const modelStr = await createModel(interfaces, extr);
   return `
@@ -65,13 +65,13 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: Creato
             * @param extra 请求配置项`;
             return `
             ${creatInterfaceHelpStr(rapUrl, itf, extra)}
-            '${modelName}': (req?: Models['${modelName}']['Req'], extra?: any) => {
+            '${modelName}': (req?: IModels['${modelName}']['Req'], extra?: any) => {
               return rapperFetch({
                 url: '${itf.url}',
                 method: '${itf.method.toUpperCase()}',
                 params: req, 
                 extra
-              }) as Promise<ResponseTypes['${modelName}']>;
+              }) as Promise<IResponseTypes['${modelName}']>;
             }`;
           })
           .join(',\n\n')}
@@ -80,17 +80,17 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: Creato
     `;
 }
 
-export function createBaseIndexCode(): GeneratedCode {
+export function createBaseIndexCode(): IGeneratedCode {
   return {
     import: `
-      import { createFetch, Models as RequestModels } from './request'
+      import { createFetch, IModels } from './request'
     `,
     body: `
       const fetch = createFetch({})
     `,
     export: `
       export { fetch, createFetch }
-      export type Models = RequestModels
+      export type Models = IModels
     `,
   };
 }
@@ -99,31 +99,31 @@ export function createBaseIndexCode(): GeneratedCode {
 function createDefaultFetch() {
   return `
     /** defaultFetch 参数 */
-    export interface DefaultFetchParams {
+    export interface IDefaultFetchParams {
       url: string;
       method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD';
       params?: any;
       fetchOption: Omit<RequestInit, 'body' | 'method'>;
     }
     /** defaultFetch 参数 */
-    export interface UserFetchParams {
+    export interface IUserFetchParams {
       url: string;
-      method: DefaultFetchParams['method'];
+      method: IDefaultFetchParams['method'];
       params?: any;
       extra?: { [key: string]: any };
     }
     
-    export interface DefaultConfigObj {
+    export interface IDefaultConfigObj {
       /** 'prefix' 前缀，统一设置 url 前缀，默认是 '' */
       prefix: string
       /** fetch 的第二参数，除了 body 和 method 都可以自定义 */
-      fetchOption: DefaultFetchParams['fetchOption']
+      fetchOption: IDefaultFetchParams['fetchOption']
     }
-    export type FetchConfigObj =  Partial<DefaultConfigObj>
-    type FetchConfigFunc = <T>(params: UserFetchParams) => Promise<T>
+    export type FetchConfigObj =  Partial<IDefaultConfigObj>
+    type FetchConfigFunc = <T>(params: IUserFetchParams) => Promise<T>
     export type RequesterOption = FetchConfigObj | FetchConfigFunc
 
-    const defaultConfig: DefaultConfigObj = {
+    const defaultConfig: IDefaultConfigObj = {
       prefix: '',
       fetchOption: {
         headers: { 'Content-Type': 'application/json' },
@@ -131,7 +131,7 @@ function createDefaultFetch() {
       },
     };
 
-    const defaultFetch = async ({ url, method, params, fetchOption }: DefaultFetchParams) => {
+    const defaultFetch = async ({ url, method, params, fetchOption }: IDefaultFetchParams) => {
       let urlWithParams = url;
       const init: RequestInit = { ...fetchOption, method };
       if (method === 'GET') {
@@ -152,7 +152,7 @@ function createDefaultFetch() {
         prefix = prefix !== undefined ? prefix : defaultConfig.prefix;
         fetchOption = fetchOption !== undefined ? fetchOption : defaultConfig.fetchOption;
     
-        rapperFetch = (requestParams: UserFetchParams) => {
+        rapperFetch = (requestParams: IUserFetchParams) => {
           const { url, method, params, extra } = requestParams;
           /** 用户自定义 Content-Type */
           if (extra && extra.contentType) {
@@ -169,7 +169,7 @@ function createDefaultFetch() {
   `;
 }
 
-export function createBaseLibCode(): GeneratedCode {
+export function createBaseLibCode(): IGeneratedCode {
   return {
     import: ``,
     body: `

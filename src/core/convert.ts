@@ -5,7 +5,7 @@ import * as JSON5 from 'json5';
 import * as _ from 'lodash';
 
 function inferArraySchema(
-  p: Interface.Property,
+  p: Interface.IProperty,
   childProperties: JSONSchema4,
   common: Record<string, any>,
 ) {
@@ -127,7 +127,7 @@ type Scope = 'request' | 'response';
 
 const removeComment = (str: string) => str.replace(/\/\*|\*\//g, '');
 
-function interfaceToJSONSchema(itf: Interface.Root, scope: Scope): JSONSchema4 {
+function interfaceToJSONSchema(itf: Interface.IRoot, scope: Scope): JSONSchema4 {
   let properties = itf.properties.filter(p => p.scope === scope);
 
   properties = [
@@ -197,7 +197,7 @@ function interfaceToJSONSchema(itf: Interface.Root, scope: Scope): JSONSchema4 {
   return propertyChildren['dummyroot'];
 }
 
-export default function convert(itf: Interface.Root): Promise<string[]> {
+export default function convert(itf: Interface.IRoot): Promise<string[]> {
   const reqJSONSchema = interfaceToJSONSchema(itf, 'request');
   const resJSONSchema = interfaceToJSONSchema(itf, 'response');
 

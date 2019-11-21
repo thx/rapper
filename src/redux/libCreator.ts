@@ -6,13 +6,13 @@ export function createTypesStr(): string {
     /** 请求类型 */
     type REQUEST_METHOD = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD'
     
-    interface Action<T = any> {
+    interface IAction<T = any> {
       type: T
     }
-    export interface AnyAction extends Action {
+    export interface IAnyAction extends IAction {
       [extraProps: string]: any
     }
-    export interface RequestAction {
+    export interface IRequestAction {
       type: '${RAPPER_REQUEST}'
       payload?: {
         modelName: string
@@ -23,18 +23,18 @@ export function createTypesStr(): string {
       }
     }
     
-    export type IAction = AnyAction | RequestAction
+    export type TAction = IAnyAction | IRequestAction
     
     /** store enhancer 参数 */
-    export interface EnhancerProps {
+    export interface IEnhancerProps {
       /** 缓存数据最大长度 */
       maxCacheLength?: number
     }
     
-    type Dispatch<A = AnyAction> = <T extends A>(action: T, ...extraArgs: any[]) => T
+    type Dispatch<A = IAnyAction> = <T extends A>(action: T, ...extraArgs: any[]) => T
     type Unsubscribe = () => void
-    export type Reducer<S = any, A = AnyAction> = (state: S | undefined, action: A) => S
-    type ExtendState<State, Extension> = [Extension] extends [never] ? State : State & Extension
+    export type Reducer<S = any, A = IAnyAction> = (state: S | undefined, action: A) => S
+    type ExtendState<IState, Extension> = [Extension] extends [never] ? IState : IState & Extension
     type Observer<T> = {
       next?(value: T): void
     }
@@ -45,23 +45,23 @@ export function createTypesStr(): string {
     
     export type StoreEnhancer<Ext = {}, StateExt = {}> = (next: StoreEnhancerStoreCreator) => StoreEnhancerStoreCreator<Ext, StateExt>
     
-    export type StoreEnhancerStoreCreator<Ext = {}, StateExt = {}> = <S = any, A extends Action = AnyAction>(
+    export type StoreEnhancerStoreCreator<Ext = {}, StateExt = {}> = <S = any, A extends IAction = IAnyAction>(
       reducer: Reducer<S, A>,
       preloadedState?: DeepPartial<S>
-    ) => Store<S & StateExt, A> & Ext
+    ) => IStore<S & StateExt, A> & Ext
     
     export type DeepPartial<T> = {
       [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K]
     }
     
-    /** Store */
-    export interface Store<S = any, A = IAction, StateExt = never, Ext = {}> {
+    /** IStore */
+    export interface IStore<S = any, A = TAction, StateExt = never, Ext = {}> {
       dispatch: Dispatch<A>
       getState(): S
       subscribe(listener: () => void): Unsubscribe
       replaceReducer<NewState, NewActions>(
           nextReducer: Reducer<NewState, NewActions>
-      ): Store<ExtendState<NewState, StateExt>, NewActions, StateExt, Ext> & Ext
+      ): IStore<ExtendState<NewState, StateExt>, NewActions, StateExt, Ext> & Ext
       [Symbol.observable](): Observable<S>
     }
     
@@ -81,27 +81,27 @@ export function createTypesStr(): string {
         [K in keyof S]: S[K] extends object ? PreloadedState<S[K]> : S[K]
       }
     
-    export interface StoreCreator {
-      <S, A extends Action, Ext = {}, StateExt = never>(reducer: Reducer<S, A>, enhancer?: StoreEnhancer<Ext, StateExt>): Store<
+    export interface IStoreCreator {
+      <S, A extends IAction, Ext = {}, StateExt = never>(reducer: Reducer<S, A>, enhancer?: StoreEnhancer<Ext, StateExt>): IStore<
         ExtendState<S, StateExt>,
         A,
         StateExt,
         Ext
       > &
         Ext
-      <S, A extends Action, Ext = {}, StateExt = never>(
+      <S, A extends IAction, Ext = {}, StateExt = never>(
         reducer: Reducer<S, A>,
         preloadedState?: PreloadedState<S>,
         enhancer?: StoreEnhancer<Ext>
-      ): Store<ExtendState<S, StateExt>, A, StateExt, Ext> & Ext
+      ): IStore<ExtendState<S, StateExt>, A, StateExt, Ext> & Ext
     }
   
-    interface FilterObj<Req> {
+    interface IFilterObj<Req> {
       request?: Req
     }
     type FilterFunc<Item> = (storeData: Item) => boolean
     
-    export interface State {
+    export interface IState {
       [key: string]: any
     }
 
@@ -124,9 +124,9 @@ export function createTypesStr(): string {
 /** 生成 redux 运行时依赖 */
 export function createReduxRuntime(): string {
   return `
-  type dispatch = <Res>(action: IAction) => Promise<AnyAction | Res>;
+  type dispatch = <Res>(action: TAction) => Promise<IAnyAction | Res>;
   let dispatch: dispatch;
-  interface RequestParams {
+  interface IRequestParams {
     url: string;
     /** 请求类型 */
     method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD';
@@ -135,10 +135,10 @@ export function createReduxRuntime(): string {
       [k: string]: any;
     };
   }
-  let fetchFunc: (params: RequestParams) => Promise<any>;
+  let fetchFunc: (params: IRequestParams) => Promise<any>;
   
   /** redux store存的数据结构 */
-  interface StateInterfaceItem {
+  interface IStateInterfaceItem {
     /** 请求的唯一id，暂时等于requestTime */
     id: number
     /** 请求时间 */
@@ -154,10 +154,10 @@ export function createReduxRuntime(): string {
     /** 请求响应数据 */
     response?: any
   }
-  interface AssignDataProps {
+  interface IAssignDataProps {
     /** 合并前的State */
     oldState: {
-      [key: string]: StateInterfaceItem[]
+      [key: string]: IStateInterfaceItem[]
     }
     /** 最大缓存数 */
     maxCacheLength?: number
@@ -177,7 +177,7 @@ export function createReduxRuntime(): string {
     oldState,
     payload: { interfaceKey, id, requestTime, reponseTime, request = {}, response, isPending, errorMessage },
     maxCacheLength,
-  }: AssignDataProps) {
+  }: IAssignDataProps) {
     const newState = { ...oldState }
     if (typeof maxCacheLength !== 'number' || maxCacheLength < 1) {
       maxCacheLength = 2
@@ -191,7 +191,7 @@ export function createReduxRuntime(): string {
       }
       newState[interfaceKey] = [...data, { id, requestTime, request, isPending }]
     } else {
-      newState[interfaceKey] = data.map((item: StateInterfaceItem) => (item.id === id ? { ...item, reponseTime, response, isPending, errorMessage } : item))
+      newState[interfaceKey] = data.map((item: IStateInterfaceItem) => (item.id === id ? { ...item, reponseTime, response, isPending, errorMessage } : item))
     }
 
     return newState
@@ -202,15 +202,15 @@ export function createReduxRuntime(): string {
   }
   
   /** store enhancer */
-  export function rapperEnhancer(config?: EnhancerProps): StoreEnhancer<any> {
+  export function rapperEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
     config = config || {}
     const { maxCacheLength = 2 } = config
   
-    return (next: StoreCreator) => (reducers: Reducer<any, any>, ...args: any[]) => {
+    return (next: IStoreCreator) => (reducers: Reducer<any, any>, ...args: any[]) => {
       const store = next(reducers, ...args)
   
       /** 重新定义 reducers */
-      const newReducers = (state: any, action: IAction): Store => {
+      const newReducers = (state: any, action: TAction): IStore => {
         if (state && !state.${RAPPER_STATE_KEY}) {
           throw Error('rapper初始化配置失败，rootReducer应该加入rapperReducers，具体请查看demo配置: https://www.yuque.com/rap/rapper/redux#e391cb1c')
         }
@@ -246,7 +246,7 @@ export function createReduxRuntime(): string {
       store.replaceReducer(newReducers)
   
       /** 重新定义 dispatch */
-      dispatch = async (action: IAction) => {
+      dispatch = async (action: TAction) => {
         if (action.type !== '${RAPPER_REQUEST}') {
           return store.dispatch(action)
         }
@@ -312,7 +312,7 @@ export function createReduxRuntime(): string {
   }
   
   /** 发送请求 */
-  export function dispatchAction<Res>(action: AnyAction, fetch?: any) {
+  export function dispatchAction<Res>(action: IAnyAction, fetch?: any) {
     fetch && (fetchFunc = fetch)
     return dispatch<Res>(action)
   }
@@ -380,7 +380,7 @@ export function createTools(): string {
         return true
       }
 
-      function getFilterData<Req, Item extends { request: Req }>(reduxData: any[], filter?: FilterObj<Req> | FilterFunc<Item>) {
+      function getFilterData<Req, Item extends { request: Req }>(reduxData: any[], filter?: IFilterObj<Req> | FilterFunc<Item>) {
         let resultArr = []
         if (filter) {
           if (typeof filter === 'function') {
@@ -397,7 +397,7 @@ export function createTools(): string {
       /** 以Hooks方式获取response数据 */
       export function useResponseData<S extends { '${RAPPER_STATE_KEY}': any }, M, Req, Item extends { request: Req }>(
         modelName: M,
-        filter?: FilterObj<Req> | FilterFunc<Item>
+        filter?: IFilterObj<Req> | FilterFunc<Item>
       ) {
         const reduxData = useSelector((state: S) => {
           return (state.${RAPPER_STATE_KEY} && state.${RAPPER_STATE_KEY}[modelName]) || []

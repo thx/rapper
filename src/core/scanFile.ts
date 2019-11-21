@@ -42,7 +42,7 @@ function getFiles(parentPath: string): string[] {
   return fileList;
 }
 
-interface ErrorList {
+interface IErrorList {
   /** 被删除的接口 modelName */
   key: string;
   /** 被删除的接口所在文件 */
@@ -52,10 +52,10 @@ interface ErrorList {
   /** 所在文件的列数 */
   start: number;
 }
-function scanAllfiles(interfaces: Array<Intf>, fileList: string[]): Array<ErrorList> {
+function scanAllfiles(interfaces: Array<Intf>, fileList: string[]): Array<IErrorList> {
   const strReg = /[\'\"]+(GET|POST|PUT|DELETE|OPTIONS|PATCH|HEAD)\/([^\'\"]*)[^(REQUEST)(SUCCESS)(FAILURE)]{1}[\'\"]+/g;
 
-  const errorList: Array<ErrorList> = [];
+  const errorList: Array<IErrorList> = [];
   fileList.forEach(filePath => {
     /** 文件的扩展名 */
     const extName = path.extname(filePath);

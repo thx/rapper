@@ -4,7 +4,7 @@ import { rapper } from './index';
 import { resolve } from 'path';
 import chalk from 'chalk';
 import * as program from 'commander';
-import { Rapper } from './rapper';
+import { IRapper } from './rapper';
 
 // Todo: 增加 checkUpdate
 
@@ -17,7 +17,7 @@ import { Rapper } from './rapper';
 
   program.parse(process.argv);
 
-  let rapperConfig: Rapper;
+  let rapperConfig: IRapper;
   if (program.type && program.apiUrl && program.rapUrl) {
     rapperConfig = {
       type: program.type,

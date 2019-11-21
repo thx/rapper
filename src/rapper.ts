@@ -1,7 +1,14 @@
 import chalk from 'chalk';
 import { format } from 'json-schema-to-typescript/dist/src/formatter';
 import { DEFAULT_OPTIONS } from 'json-schema-to-typescript';
-import { Intf, UrlMapper, RAPPER_TYPE, TRAILING_COMMA, GeneratedCode, CreatorExtr } from './types';
+import {
+  Intf,
+  IUrlMapper,
+  RAPPER_TYPE,
+  TRAILING_COMMA,
+  IGeneratedCode,
+  ICreatorExtr,
+} from './types';
 import { createBaseRequestStr, createBaseIndexCode, createBaseLibCode } from './core/base-creator';
 import ReduxCreator from './redux';
 import { writeFile, mixGeneratedCode } from './utils';
@@ -9,7 +16,7 @@ import { getInterfaces, getIntfWithModelName, uniqueItfs, creatHeadHelpStr } fro
 import scanFile from './core/scanFile';
 import url = require('url');
 
-export interface Rapper {
+export interface IRapper {
   /** 必填，redux、requester 等 */
   type: RAPPER_TYPE;
   /** 必填，api仓库地址，从仓库的数据按钮可以获得 */
@@ -19,7 +26,7 @@ export interface Rapper {
   /** 选填，生成出 rapper 的文件夹地址, 默认 ./src/rapper */
   rapperPath?: string;
   /** 选填，url映射，可用来将复杂的url映射为简单的url */
-  urlMapper?: UrlMapper;
+  urlMapper?: IUrlMapper;
   /** 选填，输出模板代码的格式 */
   codeStyle?: {};
   /** 选填，类型变换 type Selector<T> = T */
@@ -33,7 +40,7 @@ export default async function({
   urlMapper = t => t,
   codeStyle,
   resSelector = 'type ResSelector<T> = T',
-}: Rapper) {
+}: IRapper) {
   /** 参数校验 */
   if (!type) {
     return new Promise(() => console.log(chalk.red('rapper: 请配置 type 参数')));
@@ -73,10 +80,10 @@ export default async function({
   interfaces = uniqueItfs(getIntfWithModelName(interfaces, urlMapper));
 
   let Creator: {
-    createIndexStr?: () => GeneratedCode;
-    createDynamicStr?: (interfaces: Array<Intf>, extr: CreatorExtr) => string;
-    createLibStr?: (interfaces: Array<Intf>, extr: CreatorExtr) => GeneratedCode;
-    createBaseRequestStr?: (interfaces: Array<Intf>, extr: CreatorExtr) => Promise<string>;
+    createIndexStr?: () => IGeneratedCode;
+    createDynamicStr?: (interfaces: Array<Intf>, extr: ICreatorExtr) => string;
+    createLibStr?: (interfaces: Array<Intf>, extr: ICreatorExtr) => IGeneratedCode;
+    createBaseRequestStr?: (interfaces: Array<Intf>, extr: ICreatorExtr) => Promise<string>;
   } = {};
   switch (type) {
     case 'redux':
@@ -87,7 +94,7 @@ export default async function({
   }
 
   /** 生成 index.ts */
-  const indexCodeArr: Array<GeneratedCode> = [createBaseIndexCode()];
+  const indexCodeArr: Array<IGeneratedCode> = [createBaseIndexCode()];
   if (Creator.createIndexStr) {
     indexCodeArr.push(Creator.createIndexStr());
   }
@@ -139,7 +146,7 @@ export default async function({
     });
 
   /** 生成静态的 lib */
-  const libCodeArr: Array<GeneratedCode> = [createBaseLibCode()];
+  const libCodeArr: Array<IGeneratedCode> = [createBaseLibCode()];
   if (Creator.createLibStr) {
     libCodeArr.push(Creator.createLibStr(interfaces, { rapUrl, resSelector }));
   }
