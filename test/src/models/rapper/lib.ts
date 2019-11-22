@@ -2,7 +2,7 @@
 
 /**
  * 本文件由 Rapper 同步 Rap 平台接口，自动生成，请勿修改
- * Rap仓库 地址: https://rap2.alibaba-inc.com/repository/editor?id=3564
+ * Rap仓库 地址: https://rap2.taobao.org/repository/editor?id=237514
  */
 
 import { useState, useEffect } from 'react';
@@ -46,14 +46,15 @@ export interface IDefaultFetchParams {
   url: string;
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD';
   params?: any;
+  extra?: IExtra;
   fetchOption: Omit<RequestInit, 'body' | 'method'>;
 }
 /** defaultFetch 参数 */
 export interface IUserFetchParams {
   url: string;
   method: IDefaultFetchParams['method'];
-  params?: any;
-  extra?: { [key: string]: any };
+  params?: object;
+  extra?: IExtra;
 }
 
 export interface IDefaultConfigObj {
@@ -74,14 +75,33 @@ const defaultConfig: IDefaultConfigObj = {
   },
 };
 
-const defaultFetch = async ({ url, method, params, fetchOption }: IDefaultFetchParams) => {
+const defaultFetch = async ({ url, method, params, extra, fetchOption }: IDefaultFetchParams) => {
   let urlWithParams = url;
   const init: RequestInit = { ...fetchOption, method };
   if (method === 'GET') {
     urlWithParams = url + '?' + locationStringify(params);
+  } else if (
+    method === 'POST' &&
+    extra &&
+    extra.contentType === 'application/x-www-form-urlencoded'
+  ) {
+    init.body = locationStringify(params);
+  } else if (method === 'POST' && extra && extra.contentType === 'multipart/form-data') {
+    const formdata = new FormData();
+    params &&
+      Object.keys(params).forEach(key => {
+        params[key] && formdata.append(key, params[key]);
+      });
+    init.body = formdata;
   } else {
     init.body = typeof params === 'object' ? JSON.stringify(params) : params;
   }
+
+  /** 用户自定义 Content-Type */
+  if (extra && extra.contentType) {
+    init.headers = { ...init.headers, 'Content-Type': extra.contentType };
+  }
+
   const res = await fetch(urlWithParams, init);
   return Promise.resolve(res.json());
 };
@@ -98,14 +118,7 @@ export const getRapperRequest = (fetchConfig: RequesterOption) => {
     rapperFetch = (requestParams: IUserFetchParams) => {
       const { url, method, params, extra } = requestParams;
       fetchOption = fetchOption || {};
-      /** 用户自定义 Content-Type */
-      if (extra && extra.contentType) {
-        fetchOption = {
-          ...fetchOption,
-          headers: { ...fetchOption.headers, 'Content-Type': extra.contentType },
-        };
-      }
-      return defaultFetch({ url: parseUrl(url, prefix), method, params, fetchOption });
+      return defaultFetch({ url: parseUrl(url, prefix), method, params, extra, fetchOption });
     };
   }
   return rapperFetch;
@@ -228,8 +241,8 @@ export interface IExtra {
    */
   contentType?:
     | 'application/json'
-    | 'form-data'
-    | 'x-www-form-urlencoded'
+    | 'multipart/form-data'
+    | 'application/x-www-form-urlencoded'
     | 'text/plain'
     | 'text/html'
     | 'application/javascript';

@@ -2,7 +2,7 @@
 
 /**
  * 本文件由 Rapper 同步 Rap 平台接口，自动生成，请勿修改
- * Rap仓库 地址: https://rap2.alibaba-inc.com/repository/editor?id=3564
+ * Rap仓库 地址: https://rap2.taobao.org/repository/editor?id=237514
  */
 
 import { dispatchAction, RequesterOption, IUserFetchParams, IExtra, getRapperRequest } from './lib';
@@ -11,9 +11,9 @@ import { RequestTypes } from './redux';
 export interface IModels {
   /**
    * 接口名：示例接口
-   * Rap 地址: https://rap2.alibaba-inc.com/repository/editor?id=3564&mod=8414&itf=80291
+   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1376440
    */
-  'GET/example/1565269104015': {
+  'GET/example/1574387719563': {
     Req: {
       /**
        * 请求属性示例
@@ -79,27 +79,51 @@ export interface IModels {
   };
 
   /**
-   * 接口名：智能推广-修改ad出价上限
-   * Rap 地址: https://rap2.alibaba-inc.com/repository/editor?id=3564&mod=8414&itf=80292
+   * 接口名：GET请求
+   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
    */
-  'GET/openapi/param2/1/gateway.subway/testing/adgroup/price/update$': {
+  'GET/testGet': {
     Req: {
-      /**
-       * 所有出价单位为：分。 {"campaignId":"65649263","adgroupPrices":[{"adgroupId":"1688741147","bidPrice":"","mobileBidPrice":"23"}]}
-       */
-      priceBody?: string;
-      /**
-       * 101001013
-       */
-      productId?: string;
+      projectId?: number;
     };
     Res: {
-      custId: number;
-      result: {
-        tableData: {
-          id: number;
-        }[];
-      };
+      errcode: number;
+      value: string;
+      message: string;
+    };
+  };
+
+  /**
+   * 接口名：POST 请求
+   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
+   */
+  'POST/testPost': {
+    Req: {
+      id?: string;
+    };
+    Res: {
+      errcode: number;
+      message: string;
+      value: {
+        id: number;
+        message: string;
+      }[];
+    };
+  };
+
+  /**
+   * 接口名：form表单提交请求
+   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377106
+   */
+  'POST/testFormData': {
+    Req: {
+      type?: string;
+      role?: string;
+    };
+    Res: {
+      errcode: number;
+      message: string;
+      value: string;
     };
   };
 }
@@ -107,10 +131,10 @@ export interface IModels {
 type ResSelector<T> = T;
 
 export interface IResponseTypes {
-  'GET/example/1565269104015': ResSelector<IModels['GET/example/1565269104015']['Res']>;
-  'GET/openapi/param2/1/gateway.subway/testing/adgroup/price/update$': ResSelector<
-    IModels['GET/openapi/param2/1/gateway.subway/testing/adgroup/price/update$']['Res']
-  >;
+  'GET/example/1574387719563': ResSelector<IModels['GET/example/1574387719563']['Res']>;
+  'GET/testGet': ResSelector<IModels['GET/testGet']['Res']>;
+  'POST/testPost': ResSelector<IModels['POST/testPost']['Res']>;
+  'POST/testFormData': ResSelector<IModels['POST/testFormData']['Res']>;
 }
 
 export function createFetch(fetchConfig: RequesterOption) {
@@ -134,40 +158,65 @@ export function createFetch(fetchConfig: RequesterOption) {
   return {
     /**
      * 接口名：示例接口
-     * Rap 地址: https://rap2.alibaba-inc.com/repository/editor?id=3564&mod=8414&itf=80291
+     * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1376440
      * @param req 请求参数
      * @param extra 请求配置项
      */
-    'GET/example/1565269104015': (
-      req?: IModels['GET/example/1565269104015']['Req'],
+    'GET/example/1574387719563': (
+      req?: IModels['GET/example/1574387719563']['Req'],
       extra?: IExtra,
     ) => {
-      return sendRapperFetch('GET/example/1565269104015', {
-        url: '/example/1565269104015',
+      return sendRapperFetch('GET/example/1574387719563', {
+        url: '/example/1574387719563',
         method: 'GET',
         params: req,
         extra,
-      }) as Promise<IResponseTypes['GET/example/1565269104015']>;
+      }) as Promise<IResponseTypes['GET/example/1574387719563']>;
     },
 
     /**
-     * 接口名：智能推广-修改ad出价上限
-     * Rap 地址: https://rap2.alibaba-inc.com/repository/editor?id=3564&mod=8414&itf=80292
+     * 接口名：GET请求
+     * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
      * @param req 请求参数
      * @param extra 请求配置项
      */
-    'GET/openapi/param2/1/gateway.subway/testing/adgroup/price/update$': (
-      req?: IModels['GET/openapi/param2/1/gateway.subway/testing/adgroup/price/update$']['Req'],
-      extra?: IExtra,
-    ) => {
-      return sendRapperFetch('GET/openapi/param2/1/gateway.subway/testing/adgroup/price/update$', {
-        url: '/openapi/param2/1/gateway.subway/testing/adgroup/price/update$',
+    'GET/testGet': (req?: IModels['GET/testGet']['Req'], extra?: IExtra) => {
+      return sendRapperFetch('GET/testGet', {
+        url: '/testGet',
         method: 'GET',
         params: req,
         extra,
-      }) as Promise<
-        IResponseTypes['GET/openapi/param2/1/gateway.subway/testing/adgroup/price/update$']
-      >;
+      }) as Promise<IResponseTypes['GET/testGet']>;
+    },
+
+    /**
+     * 接口名：POST 请求
+     * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
+     * @param req 请求参数
+     * @param extra 请求配置项
+     */
+    'POST/testPost': (req?: IModels['POST/testPost']['Req'], extra?: IExtra) => {
+      return sendRapperFetch('POST/testPost', {
+        url: '/testPost',
+        method: 'POST',
+        params: req,
+        extra,
+      }) as Promise<IResponseTypes['POST/testPost']>;
+    },
+
+    /**
+     * 接口名：form表单提交请求
+     * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377106
+     * @param req 请求参数
+     * @param extra 请求配置项
+     */
+    'POST/testFormData': (req?: IModels['POST/testFormData']['Req'], extra?: IExtra) => {
+      return sendRapperFetch('POST/testFormData', {
+        url: '/testFormData',
+        method: 'POST',
+        params: req,
+        extra,
+      }) as Promise<IResponseTypes['POST/testFormData']>;
     },
   };
 }

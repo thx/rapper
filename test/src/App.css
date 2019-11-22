@@ -3,10 +3,13 @@
 .App {
   text-align: center;
   padding: 20px 40px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .card {
-  width: 100%;
+  width: 600px;
   height: 300px;
   border: 1px solid #cccccc;
   margin: 50px 0;

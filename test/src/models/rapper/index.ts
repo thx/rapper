@@ -2,7 +2,7 @@
 
 /**
  * 本文件由 Rapper 同步 Rap 平台接口，自动生成，请勿修改
- * Rap仓库 地址: https://rap2.alibaba-inc.com/repository/editor?id=3564
+ * Rap仓库 地址: https://rap2.taobao.org/repository/editor?id=237514
  */
 
 import { createFetch, IModels } from './request';
