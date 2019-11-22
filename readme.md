@@ -8,7 +8,7 @@
   <h3 align="center">一个自带类型的请求库</h3>
 
   <p align="center">
-    <a href="https://github.com/thx/rapper/wiki">文档</a>
+    <a href="https://www.yuque.com/rap/rapper/readme">文档</a>
   </p>
 </p>
 
