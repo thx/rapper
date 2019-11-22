@@ -1,14 +1,14 @@
 {
   "name": "@ali/rapper-redux",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "description": "rapper, use http api as a function",
   "main": "./dist/index.js",
   "scripts": {
     "lint": "eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
     "build": "./node_modules/typescript/bin/tsc -p tsconfig.json",
-    "clean": "rm -rf test_data/model",
-    "normal": "npm run build && npm run clean && node ./dist/test/normal",
-    "redux": "npm run build && npm run clean && node ./dist/test/redux"
+    "clean": "rm -rf test/model",
+    "normal": "npm run build && npm run clean && node ./dist/build/normal",
+    "redux": "npm run build && npm run clean && node ./dist/build/redux"
   },
   "bin": {
     "rapper": "./dist/models.js"

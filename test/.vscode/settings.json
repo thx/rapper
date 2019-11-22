@@ -1,0 +1,19 @@
+{
+  "workbench.editor.showTabs": true,
+  "files.trimTrailingWhitespace": true,
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "eslint.enable": true,
+  "eslint.validate": [
+    "javascriptreact",
+    {
+      "language": "typescript",
+      "autoFix": true
+    },
+    {
+      "language": "typescriptreact",
+      "autoFix": true
+    }
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
+}

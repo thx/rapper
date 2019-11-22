@@ -7,7 +7,7 @@ rapper({
   /** rap 前端地址，默认是 http://rap2.taobao.org */
   rapUrl: 'https://rap2.alibaba-inc.com',
   /** 输出文件的目录，默认是 ./src/rapper */
-  rapperPath: './test_data/model',
+  rapperPath: './test/model',
   codeStyle: {
     semi: true,
     trailingComma: 'all',

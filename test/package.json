@@ -1,0 +1,127 @@
+{
+  "name": "marquex-pro",
+  "version": "0.1.1",
+  "private": true,
+  "scripts": {
+    "start": "craco-cli start",
+    "build": "craco-cli build",
+    "daily": "craco-cli daily",
+    "publish": "craco-cli publish",
+    "rapper": "rapper",
+    "router": "craco-cli router",
+    "test": "craco-cli test",
+    "bundle-report": "cross-env GENERATE_BUNDLE_REPORT=true npm run build",
+    "dll:prod": "cross-env NODE_ENV=production craco-cli dll",
+    "dll:dev": "cross-env NODE_ENV=development craco-cli dll",
+    "test-run": "tsc src/**/*.{tsx,ts} --out /dev/null --jsx react",
+    "lint": "eslint ./src/**/*.{tsx,ts}",
+    "prestart": "craco-cli router",
+    "prebuild": "craco-cli router",
+    "onchange": "craco-cli router"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "devDependencies": {
+    "@ali/craco-cli": "^1.0.10",
+    "@ali/customize-cra-extra": "^1.0.0",
+    "@ali/rapper-redux": "^0.1.22",
+    "@babel/plugin-proposal-optional-chaining": "^7.6.0",
+    "@commitlint/cli": "^7.5.2",
+    "@commitlint/config-conventional": "^7.5.0",
+    "@types/classnames": "^2.2.7",
+    "@types/history": "^4.7.2",
+    "@types/lodash": "^4.14.123",
+    "@types/react": "^16.8.13",
+    "@types/react-dom": "^16.8.4",
+    "@types/react-redux": "^7.1.0",
+    "@types/react-router-dom": "^4.3.2",
+    "@types/redux-logger": "^3.0.7",
+    "@types/styled-components": "^4.4.0",
+    "@typescript-eslint/eslint-plugin-tslint": "^2.6.1",
+    "@typescript-eslint/parser": "^2.6.1",
+    "babel-plugin-styled-components": "^1.10.1",
+    "cross-env": "^5.2.0",
+    "eslint": "^6.6.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-react": "^7.16.0",
+    "http-proxy-middleware": "^0.19.1",
+    "husky": "^3.0.0",
+    "react-hot-loader": "^4.8.4",
+    "redux-devtools-extension": "^2.13.8",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.0",
+    "utility-types": "^3.5.0"
+  },
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "babel": {
+    "env": {
+      "development": {
+        "plugins": [
+          [
+            "styled-components"
+          ],
+          [
+            "@babel/plugin-proposal-optional-chaining"
+          ]
+        ]
+      },
+      "production": {
+        "plugins": [
+          [
+            "styled-components",
+            {
+              "displayName": false,
+              "fileName": false,
+              "pure": true
+            }
+          ],
+          [
+            "@babel/plugin-proposal-optional-chaining"
+          ]
+        ]
+      }
+    }
+  },
+  "rapper": {
+    "type": "redux",
+    "projectId": 2900,
+    "rapUrl": "https://rap2.alibaba-inc.com",
+    "apiUrl": "https://rap2api.alibaba-inc.com"
+  },
+  "dependencies": {
+    "@alife/mux-components": "~1.10.0",
+    "chartx": "~1.0.162",
+    "classnames": "^2.2.6",
+    "connected-react-router": "^6.4.0",
+    "history": "^4.9.0",
+    "lodash": "^4.17.12",
+    "moment": "^2.24.0",
+    "querystring": "^0.2.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-redux": "^7.0.2",
+    "react-router": "^5.0.0",
+    "react-router-dom": "^5.0.0",
+    "redux": "^4.0.1",
+    "redux-logger": "^3.0.6",
+    "reselect": "^4.0.0",
+    "styled-components": "~5.0.0-rc.2"
+  }
+}
