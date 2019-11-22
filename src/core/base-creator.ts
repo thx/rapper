@@ -154,6 +154,7 @@ function createDefaultFetch() {
     
         rapperFetch = (requestParams: IUserFetchParams) => {
           const { url, method, params, extra } = requestParams;
+          fetchOption = fetchOption || {};
           /** 用户自定义 Content-Type */
           if (extra && extra.contentType) {
             fetchOption = {

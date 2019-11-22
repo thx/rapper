@@ -202,7 +202,7 @@ export function createReduxRuntime(): string {
   }
   
   /** store enhancer */
-  export function rapperEnhancer(config?: IEnhancerProps): StoreEnhancer<any> {
+  export function rapperEnhancer(config?: IEnhancerProps): any {
     config = config || {}
     const { maxCacheLength = 2 } = config
   

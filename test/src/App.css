@@ -1,0 +1,15 @@
+@import '~antd/dist/antd.css';
+
+.App {
+  text-align: center;
+  padding: 20px 40px;
+}
+
+.card {
+  width: 100%;
+  height: 300px;
+  border: 1px solid #cccccc;
+  margin: 50px 0;
+  text-align: left;
+  padding: 20px;
+}

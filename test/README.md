@@ -1,66 +1,44 @@
-# craco-cli
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-**C**reate **R**eact **A**pp **C**onfiguration **O**verride 用以创建react项目脚手架。同时基于[create-react-app](https://github.com/facebook/create-react-app)、[react-app-rewired](https://github.com/timarney/react-app-rewired)和[customize-cra](https://github.com/arackaf/customize-cra) 进行`webpack`的自定义配置。
+## Available Scripts
 
-## Usage
+In the project directory, you can run:
 
-> 由于该npm包安装在tnpm上，需要使用`tnpx`进行一次性安装运行，`tnpx`与`npx`实现上差异，执行时无任何按安装进度，请耐心等待。
+### `npm start`
 
-```bash
-tnpx @ali/craco-cli init <projectName>
+Runs the app in the development mode.<br />
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-### 或使用如下方式，下面这种方式可以看到交互的安装进度
-npm_config_registry=http://registry.antfin-inc.com npx @ali/craco-cli init <projectName>
+The page will reload if you make edits.<br />
+You will also see any lint errors in the console.
 
-```
+### `npm test`
 
-成功创建项目后，包含如下内置命令
-
-### `npm run start`
-
-本地开发模式下启动服务器， 默认运行 http://localhost:3000。 如需自定义设置打开的URL以及配置代理，支持下面参数方式更改。
-
-```bash
-
-PORT=443 npm run start # 自定义设置端口
-HOST=https://subway.simba.local.taobao.com npm run start # 自定义设置打开的URL 需要绑定127.0.0.1
-PROXY=https://subway.simba.taobao.com npm run start # 配置反向代理的域名
-HTTPS=true npm run start # 支持HTTPS代理
-MOCK=true npm run start # 支持rap项目代理数据
-```
-
-> 以上命令运行的方式，都是一次性执行的参数配置，如果想长久生效，可以在项目的`.env`文件中进行持久化配置。
-
-```bash
-
-### .env
-
-PORT=443 # 自定义设置端口
-HOST=https://subway.simba.local.taobao.com # 自定义设置打开的URL
-PROXY=https://subway.simba.taobao.com # 配置反向代理的域名
-HTTPS=true # 支持HTTPS代理
-MOCK=true # 支持rap项目代理数据
-RAPID=1004 # rap ProjectId
-
-```
+Launches the test runner in the interactive watch mode.<br />
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
 ### `npm run build`
 
-在默认的压缩情况下，支持dll配置，对于加速启动速度和命中缓存有很大提升，默认已经集成到start和build命令中
+Builds the app for production to the `build` folder.<br />
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
+The build is minified and the filenames include the hashes.<br />
+Your app is ready to be deployed!
 
-### `npm run daily`
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-日常发布，日常发布将会自动产生一个新的`daily/时间戳`分支进行发布
+### `npm run eject`
 
-### `npm run publish`
+**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-正式发布，发布分支必须在`master`分支
+If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-### `npm run bundle-report`
+Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-执行此命令，可打开资源打包视图，用于分析打包文件大小，及时定位大文件。
+You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-### `npm run test`
+## Learn More
 
-执行测试命令
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).

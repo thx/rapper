@@ -17,7 +17,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
 
     export function createFetch(fetchConfig: RequesterOption) {
       const rapperFetch = getRapperRequest(fetchConfig);
-      const sendRapperFetch = (modelName: string, requestParams: IUserFetchParams) => {
+      const sendRapperFetch = (modelName: keyof typeof RequestTypes, requestParams: IUserFetchParams) => {
         const { extra } = requestParams;
         if (extra && extra.type === 'normal') {
           return rapperFetch(requestParams);
