@@ -37,7 +37,7 @@
     "dist"
   ],
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "registry": "https://registry.npmjs.org"
   },
   "devDependencies": {
     "@types/json5": "0.0.30",
