@@ -16,7 +16,7 @@ const RequestPost = () => {
   return (
     <div>
       <div>
-        <span>post 请求</span>
+        <span style={{ color: 'red' }}>post 请求</span>
         <Button type="primary" style={{ marginLeft: '20px' }} onClick={doRequest}>
           点击发送请求
         </Button>

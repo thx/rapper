@@ -15,7 +15,7 @@ const Request = () => {
   return (
     <div>
       <div>
-        <span>普通redux请求</span>
+        <span style={{ color: 'red' }}>普通redux请求</span>
         <Button type="primary" style={{ marginLeft: '20px' }} onClick={doRequest}>
           点击发送请求
         </Button>

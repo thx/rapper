@@ -19,7 +19,7 @@ const RequestFormdata = () => {
   return (
     <div>
       <div>
-        <span>form data 请求</span>
+        <span style={{ color: 'red' }}>form data 请求</span>
         <Button type="primary" style={{ marginLeft: '20px' }} onClick={doRequest}>
           点击发送请求
         </Button>
