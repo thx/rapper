@@ -47,7 +47,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
   const { rapUrl, resSelector } = extr;
   const modelStr = await createModel(interfaces, extr);
   return `
-    import { RequesterOption, getRapperRequest } from './lib'
+    import { RequesterOption, getRapperRequest, IExtra } from './lib'
     ${modelStr}
 
     ${resSelector}
@@ -65,7 +65,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
             * @param extra 请求配置项`;
             return `
             ${creatInterfaceHelpStr(rapUrl, itf, extra)}
-            '${modelName}': (req?: IModels['${modelName}']['Req'], extra?: any) => {
+            '${modelName}': (req?: IModels['${modelName}']['Req'], extra?: IExtra) => {
               return rapperFetch({
                 url: '${itf.url}',
                 method: '${itf.method.toUpperCase()}',
@@ -113,6 +113,14 @@ function createDefaultFetch() {
       params?: object;
       extra?: IExtra;
     }
+
+    /** 请求的额外参数类型 */
+    export interface IExtra {
+      /**
+       * 请求头 content-type，默认是 'application/json'
+       */
+      contentType?: 'application/json' | 'multipart/form-data' | 'application/x-www-form-urlencoded' | 'text/plain' | 'text/html' | 'application/javascript';
+    }
     
     export interface IDefaultConfigObj {
       /** 'prefix' 前缀，统一设置 url 前缀，默认是 '' */
@@ -136,7 +144,8 @@ function createDefaultFetch() {
       let urlWithParams = url;
       const init: RequestInit = { ...fetchOption, method };
       if (method === 'GET') {
-        urlWithParams = url + '?' + locationStringify(params);
+        const qs = locationStringify(params)
+        urlWithParams = qs ? url + '?' + qs : url;
       } else if (
         method === 'POST' &&
         extra &&
@@ -178,7 +187,7 @@ function createDefaultFetch() {
           return defaultFetch({ url: parseUrl(url, prefix), method, params, extra, fetchOption });
         };
       }
-      return rapperFetch;
+      return wrapPreProcessRestfulUrl(rapperFetch);
     };
   `;
 }
@@ -187,6 +196,35 @@ export function createBaseLibCode(): IGeneratedCode {
   return {
     import: ``,
     body: `
+  /**
+   * 包装请求函数，预处理 Restful API 的 url，把 params 塞到 url 里面
+   */
+  export function wrapPreProcessRestfulUrl(fetch: (fetchParams: IUserFetchParams) => Promise<any>) {
+    return (fetchParams: IUserFetchParams) => {
+      return fetch({
+        ...fetchParams,
+        ...processRestfulUrl(fetchParams.url, fetchParams.params),
+      });
+    };
+  }
+  
+  export function processRestfulUrl(url: string, params: any) {
+    const urlSplit = url.split('/');
+    const newParams = { ...params };
+    for (let i = 0; i < urlSplit.length; ++i) {
+      const part = urlSplit[i];
+      if (part[0] === ':') {
+        const key = part.slice(1);
+        if (params.hasOwnProperty(key)) {
+          urlSplit[i] = params[key];
+          delete newParams[key];
+        }
+      }
+    }
+    return { url: urlSplit.join('/'), params: newParams };
+  }
+  
+    
   /**
    * search 参数转换，比如 { a: 1, b: 2, c: undefined } 转换成 "a=1&b=2"
    * 会自动删除 undefined

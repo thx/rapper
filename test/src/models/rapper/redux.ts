@@ -26,6 +26,12 @@ export const RequestTypes = {
     'POST/testFormData_SUCCESS',
     'POST/testFormData_FAILURE',
   ],
+
+  'GET/group/:groupId/member/:memberId': [
+    'GET/group/:groupId/member/:memberId_REQUEST',
+    'GET/group/:groupId/member/:memberId_SUCCESS',
+    'GET/group/:groupId/member/:memberId_FAILURE',
+  ],
 };
 
 /** store中存储的数据结构 */
@@ -60,6 +66,15 @@ interface IRapperStore {
   'POST/testFormData': Array<{
     request: IModels['POST/testFormData']['Req'];
     response: IModels['POST/testFormData']['Res'];
+    id: number;
+    requestTime: number;
+    responseTime: number;
+    isPending: boolean;
+  }>;
+
+  'GET/group/:groupId/member/:memberId': Array<{
+    request: IModels['GET/group/:groupId/member/:memberId']['Req'];
+    response: IModels['GET/group/:groupId/member/:memberId']['Res'];
     id: number;
     requestTime: number;
     responseTime: number;
@@ -132,6 +147,25 @@ export const useResponse = {
     type Res = IResponseTypes['POST/testFormData'];
     return useResponseData<TRapperStoreKey, Req, Res, Item>('POST/testFormData', filter);
   },
+
+  /**
+   * 接口名：RESTful 接口
+   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
+   */
+  /* tslint:disable */
+  'GET/group/:groupId/member/:memberId': function useData(
+    filter?:
+      | { request?: IModels['GET/group/:groupId/member/:memberId']['Req'] }
+      | { (storeData: IRapperStore['GET/group/:groupId/member/:memberId'][0]): boolean },
+  ) {
+    type Req = IModels['GET/group/:groupId/member/:memberId']['Req'];
+    type Item = IRapperStore['GET/group/:groupId/member/:memberId'][0];
+    type Res = IResponseTypes['GET/group/:groupId/member/:memberId'];
+    return useResponseData<TRapperStoreKey, Req, Res, Item>(
+      'GET/group/:groupId/member/:memberId',
+      filter,
+    );
+  },
 };
 
 export const useAllResponse = {
@@ -188,6 +222,21 @@ export const useAllResponse = {
       return selectedState as Array<IResponseTypes['POST/testFormData']>;
     });
   },
+
+  /**
+   * 接口名：RESTful 接口
+   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
+   */
+  /* tslint:disable */
+  'GET/group/:groupId/member/:memberId': function useData() {
+    return useSelector((state: IState) => {
+      const selectedState =
+        (state['$$rapperResponseData'] &&
+          state['$$rapperResponseData']['GET/group/:groupId/member/:memberId']) ||
+        [];
+      return selectedState as Array<IResponseTypes['GET/group/:groupId/member/:memberId']>;
+    });
+  },
 };
 
 /** 重置接口数据 */
@@ -233,6 +282,17 @@ export const clearResponseCache = {
     dispatchAction({
       type: '$$RAPPER_CLEAR_STORE',
       payload: { 'POST/testFormData': undefined },
+    });
+  },
+
+  /**
+   * 接口名：RESTful 接口
+   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
+   */
+  'GET/group/:groupId/member/:memberId': (): void => {
+    dispatchAction({
+      type: '$$RAPPER_CLEAR_STORE',
+      payload: { 'GET/group/:groupId/member/:memberId': undefined },
     });
   },
 };
@@ -285,6 +345,21 @@ export const rapperSelector = {
     type Res = IResponseTypes['POST/testFormData'];
     type Item = IRapperStore['POST/testFormData'][0];
     return getResponseData<TRapperStoreKey, Req, Res, Item>(state, 'POST/testFormData', filter);
+  },
+  'GET/group/:groupId/member/:memberId': (
+    state: IState,
+    filter?:
+      | { request?: IModels['GET/group/:groupId/member/:memberId']['Req'] }
+      | { (storeData: IRapperStore['GET/group/:groupId/member/:memberId'][0]): boolean },
+  ) => {
+    type Req = IModels['GET/group/:groupId/member/:memberId']['Req'];
+    type Res = IResponseTypes['GET/group/:groupId/member/:memberId'];
+    type Item = IRapperStore['GET/group/:groupId/member/:memberId'][0];
+    return getResponseData<TRapperStoreKey, Req, Res, Item>(
+      state,
+      'GET/group/:groupId/member/:memberId',
+      filter,
+    );
   },
 };
 

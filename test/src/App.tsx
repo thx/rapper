@@ -6,6 +6,7 @@ import RequestPost from './components/request-post';
 import RequestForm from './components/request-form';
 import ClassComponent from './components/class-component';
 import RequestNormal from './components/request-normal';
+import RequestRestful from './components/request-restful';
 import './App.css';
 
 const App: React.FC = () => {
@@ -26,6 +27,9 @@ const App: React.FC = () => {
         </div>
         <div className="card">
           <RequestNormal />
+        </div>
+        <div className="card">
+          <RequestRestful />
         </div>
       </div>
     </Provider>

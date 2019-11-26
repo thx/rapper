@@ -127,6 +127,18 @@ type Scope = 'request' | 'response';
 
 const removeComment = (str: string) => str.replace(/\/\*|\*\//g, '');
 
+function getRestfulPlaceHolders(itf: Interface.IRoot) {
+  const urlSplit = itf.url.split('/');
+  const restfulPlaceHolders: string[] = [];
+  for (let i = 0; i < urlSplit.length; ++i) {
+    const part = urlSplit[i];
+    if (part[0] === ':') {
+      restfulPlaceHolders.push(part.slice(1));
+    }
+  }
+  return restfulPlaceHolders;
+}
+
 function interfaceToJSONSchema(itf: Interface.IRoot, scope: Scope): JSONSchema4 {
   let properties = itf.properties.filter(p => p.scope === scope);
 
@@ -140,6 +152,20 @@ function interfaceToJSONSchema(itf: Interface.IRoot, scope: Scope): JSONSchema4 
       type: 'object',
     } as any,
   ];
+
+  if (scope === 'request') {
+    const placeHolders = getRestfulPlaceHolders(itf);
+    properties = [
+      ...properties,
+      ...placeHolders.map((name, index) => ({
+        name,
+        parentId: -1,
+        id: index + 100,
+        scope,
+        type: 'string',
+      })),
+    ] as any;
+  }
 
   function findChildProperties(parentId: number) {
     return _.chain(properties)

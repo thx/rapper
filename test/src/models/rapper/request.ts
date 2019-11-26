@@ -126,6 +126,18 @@ export interface IModels {
       value: string;
     };
   };
+
+  /**
+   * 接口名：RESTful 接口
+   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
+   */
+  'GET/group/:groupId/member/:memberId': {
+    Req: {
+      groupId?: string;
+      memberId?: string;
+    };
+    Res: {};
+  };
 }
 
 type ResSelector<T> = T;
@@ -135,6 +147,9 @@ export interface IResponseTypes {
   'GET/testGet': ResSelector<IModels['GET/testGet']['Res']>;
   'POST/testPost': ResSelector<IModels['POST/testPost']['Res']>;
   'POST/testFormData': ResSelector<IModels['POST/testFormData']['Res']>;
+  'GET/group/:groupId/member/:memberId': ResSelector<
+    IModels['GET/group/:groupId/member/:memberId']['Res']
+  >;
 }
 
 export function createFetch(fetchConfig: RequesterOption) {
@@ -217,6 +232,24 @@ export function createFetch(fetchConfig: RequesterOption) {
         params: req,
         extra,
       }) as Promise<IResponseTypes['POST/testFormData']>;
+    },
+
+    /**
+     * 接口名：RESTful 接口
+     * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
+     * @param req 请求参数
+     * @param extra 请求配置项
+     */
+    'GET/group/:groupId/member/:memberId': (
+      req?: IModels['GET/group/:groupId/member/:memberId']['Req'],
+      extra?: IExtra,
+    ) => {
+      return sendRapperFetch('GET/group/:groupId/member/:memberId', {
+        url: 'group/:groupId/member/:memberId',
+        method: 'GET',
+        params: req,
+        extra,
+      }) as Promise<IResponseTypes['GET/group/:groupId/member/:memberId']>;
     },
   };
 }

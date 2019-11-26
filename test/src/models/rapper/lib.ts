@@ -9,6 +9,34 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 /**
+ * 包装请求函数，预处理 Restful API 的 url，把 params 塞到 url 里面
+ */
+export function wrapPreProcessRestfulUrl(fetch: (fetchParams: IUserFetchParams) => Promise<any>) {
+  return (fetchParams: IUserFetchParams) => {
+    return fetch({
+      ...fetchParams,
+      ...processRestfulUrl(fetchParams.url, fetchParams.params),
+    });
+  };
+}
+
+export function processRestfulUrl(url: string, params: any) {
+  const urlSplit = url.split('/');
+  const newParams = { ...params };
+  for (let i = 0; i < urlSplit.length; ++i) {
+    const part = urlSplit[i];
+    if (part[0] === ':') {
+      const key = part.slice(1);
+      if (params.hasOwnProperty(key)) {
+        urlSplit[i] = params[key];
+        delete newParams[key];
+      }
+    }
+  }
+  return { url: urlSplit.join('/'), params: newParams };
+}
+
+/**
  * search 参数转换，比如 { a: 1, b: 2, c: undefined } 转换成 "a=1&b=2"
  * 会自动删除 undefined
  */
@@ -57,6 +85,20 @@ export interface IUserFetchParams {
   extra?: IExtra;
 }
 
+/** 请求的额外参数类型 */
+export interface IExtra {
+  /**
+   * 请求头 content-type，默认是 'application/json'
+   */
+  contentType?:
+    | 'application/json'
+    | 'multipart/form-data'
+    | 'application/x-www-form-urlencoded'
+    | 'text/plain'
+    | 'text/html'
+    | 'application/javascript';
+}
+
 export interface IDefaultConfigObj {
   /** 'prefix' 前缀，统一设置 url 前缀，默认是 '' */
   prefix: string;
@@ -79,7 +121,8 @@ const defaultFetch = async ({ url, method, params, extra, fetchOption }: IDefaul
   let urlWithParams = url;
   const init: RequestInit = { ...fetchOption, method };
   if (method === 'GET') {
-    urlWithParams = url + '?' + locationStringify(params);
+    const qs = locationStringify(params);
+    urlWithParams = qs ? url + '?' + qs : url;
   } else if (
     method === 'POST' &&
     extra &&
@@ -121,7 +164,7 @@ export const getRapperRequest = (fetchConfig: RequesterOption) => {
       return defaultFetch({ url: parseUrl(url, prefix), method, params, extra, fetchOption });
     };
   }
-  return rapperFetch;
+  return wrapPreProcessRestfulUrl(rapperFetch);
 };
 
 /** 请求类型 */
@@ -228,7 +271,7 @@ export interface IState {
   [key: string]: any;
 }
 
-/** 请求的额外参数类型 */
+/** 请求的额外参数类型, redux 模式对上面 IExtra 的补充 */
 export interface IExtra {
   /**
    * 请求的类型，默认不传 代表redux请求，会发送 Action，也存入redux store
@@ -236,16 +279,6 @@ export interface IExtra {
    * redux 代表redux请求，会发送 Action，也存入redux store
    */
   type?: 'normal' | 'redux';
-  /**
-   * 请求头 content-type，默认是 'application/json'
-   */
-  contentType?:
-    | 'application/json'
-    | 'multipart/form-data'
-    | 'application/x-www-form-urlencoded'
-    | 'text/plain'
-    | 'text/html'
-    | 'application/javascript';
 }
 
 /** 深比较 */

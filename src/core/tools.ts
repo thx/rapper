@@ -47,17 +47,6 @@ export function rap2name(itf: Interface.IRoot, urlMapper: IUrlMapper = t => t) {
 
   const urlSplit = apiUrl.split('/');
 
-  //接口地址为RESTful的，清除占位符
-  //api/:id/get -> api//get
-  //api/bid[0-9]{4}/get -> api//get
-  urlSplit.forEach((item, i) => {
-    if (/\:id/.test(item)) {
-      urlSplit[i] = '$id';
-    } else if (/[\[\]\{\}]/.test(item)) {
-      urlSplit[i] = '$regx';
-    }
-  });
-
   //只去除第一个为空的值，最后一个为空保留
   //有可能情况是接口 /api/login 以及 /api/login/ 需要同时存在
   if (urlSplit[0].trim() === '') {
