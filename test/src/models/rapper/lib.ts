@@ -331,13 +331,11 @@ function getFilterData<Req, Item extends { request: Req }>(
 }
 
 /** 以Hooks方式获取response数据 */
-export function useResponseData<
-  S extends { $$rapperResponseData: any },
-  M,
-  Req,
-  Item extends { request: Req }
->(modelName: M, filter?: IFilterObj<Req> | FilterFunc<Item>) {
-  const reduxData = useSelector((state: S) => {
+export function useResponseData<M, Req, Res, Item extends { request: Req }>(
+  modelName: M,
+  filter?: IFilterObj<Req> | FilterFunc<Item>,
+) {
+  const reduxData = useSelector((state: IState) => {
     return (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
   });
   const initData = getFilterData<Req, Item>(reduxData, filter);
@@ -356,13 +354,31 @@ export function useResponseData<
     setErrorMessage(result.errorMessage);
   }, [reduxData, filter, filteredData]);
 
-  return [filteredData, { id, isPending, errorMessage }];
+  return [filteredData, { id, isPending, errorMessage }] as [
+    Res | undefined,
+    {
+      /** 本次请求的唯一id */
+      id: number;
+      /** 是否正在请求中 */
+      isPending: boolean;
+      /** 请求错误信息 */
+      errorMessage?: string;
+    },
+  ];
 }
 
-/** 以connect方式获取response数据 */
-export function connectGetResponse(responseData: any) {
-  const current = Array.isArray(responseData) ? responseData.slice(-1) : [];
-  return current[0] ? current[0].response : undefined;
+/** class component获取response数据 */
+export function getResponseData<M, Req, Res, Item extends { request: Req }>(
+  state: IState,
+  modelName: M,
+  filter?: IFilterObj<Req> | FilterFunc<Item>,
+) {
+  const reduxData = (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
+  const result = getFilterData<Req, Item>(reduxData, filter);
+  return [
+    result.response || undefined,
+    { id: result.id, isPending: result.isPending || false, errorMessage: result.errorMessage },
+  ] as [Res | undefined, { id: number; isPending: boolean; errorMessage?: string }];
 }
 
 type dispatch = <Res>(action: TAction) => Promise<IAnyAction | Res>;

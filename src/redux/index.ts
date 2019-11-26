@@ -37,7 +37,7 @@ function createDynamicStr(interfaces: Array<Intf>, extr: ICreatorExtr): string {
   return `
     import { useSelector } from 'react-redux'
     import { IModels, IResponseTypes } from './request'
-    import { dispatchAction, useResponseData, connectGetResponse, IState } from './lib'
+    import { dispatchAction, useResponseData, getResponseData, IState } from './lib'
 
     ${createActionStr(interfaces, extr)}
     ${createUseRapStr(interfaces, extr)}

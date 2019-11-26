@@ -32,22 +32,21 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
   return `
     /** store中存储的数据结构 */
     interface IRapperStore {
-      '${RAPPER_STATE_KEY}': {
-        ${interfaces
-          .map(
-            ({ modelName }) => `
-        '${modelName}': Array<{
-          request: IModels['${modelName}']['Req']
-          response: IModels['${modelName}']['Res']
-          id: number
-          requestTime: number
-          responseTime: number
-          isPending: boolean
-        }>`,
-          )
-          .join(',\n\n')}
-      }
+      ${interfaces
+        .map(
+          ({ modelName }) => `
+      '${modelName}': Array<{
+        request: IModels['${modelName}']['Req']
+        response: IModels['${modelName}']['Res']
+        id: number
+        requestTime: number
+        responseTime: number
+        isPending: boolean
+      }>`,
+        )
+        .join(',\n\n')}
     }
+    type TRapperStoreKey = keyof IRapperStore
     
     export const useResponse = {
       ${interfaces
@@ -57,23 +56,14 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
       /* tslint:disable */
       '${itf.modelName}': function useData(
           filter?: { request?: IModels['${itf.modelName}']['Req'] } | { (
-              storeData: IRapperStore['${RAPPER_STATE_KEY}']['${itf.modelName}'][0]
+              storeData: IRapperStore['${itf.modelName}'][0]
           ): boolean }
       ) {
-        type M = keyof IRapperStore['${RAPPER_STATE_KEY}']
         type Req = IModels['${itf.modelName}']['Req']
-        type Item = IRapperStore['${RAPPER_STATE_KEY}']['${itf.modelName}'][0]
+        type Item = IRapperStore['${itf.modelName}'][0]
         type Res = IResponseTypes['${itf.modelName}']
-        return useResponseData<IRapperStore, M, Req, Item>('${
-          itf.modelName
-        }', filter) as [Res | undefined, {
-          /** 本次请求的唯一id */
-          id: number,
-          /** 是否正在请求中 */
-          isPending: boolean,
-          /** 请求错误信息 */
-          errorMessage?: string
-        } ]
+        return useResponseData<TRapperStoreKey, Req, Res, Item>(
+          '${itf.modelName}', filter)
       }`,
         )
         .join(',\n\n')}
@@ -121,9 +111,11 @@ export function createSelectorStr(interfaces: Array<Intf>): string {
     ${interfaces
       .map(
         ({ modelName }) => `
-      '${modelName}': (state: IState) => {
-        const responseData = state['${RAPPER_STATE_KEY}']['${modelName}']
-        return connectGetResponse(responseData) as IResponseTypes['${modelName}'] | undefined
+      '${modelName}': (state: IState, filter?: { request?: IModels['${modelName}']['Req'] } | { (storeData: IRapperStore['${modelName}'][0]): boolean }) => {
+        type Req = IModels['${modelName}']['Req'];
+        type Res = IResponseTypes['${modelName}'];
+        type Item = IRapperStore['${modelName}'][0];
+        return getResponseData<TRapperStoreKey, Req, Res, Item>(state, '${modelName}', filter);
       }
     `,
       )

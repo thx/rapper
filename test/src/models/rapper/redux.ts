@@ -7,7 +7,7 @@
 
 import { useSelector } from 'react-redux';
 import { IModels, IResponseTypes } from './request';
-import { dispatchAction, useResponseData, connectGetResponse, IState } from './lib';
+import { dispatchAction, useResponseData, getResponseData, IState } from './lib';
 
 /** 请求types */
 export const RequestTypes = {
@@ -30,44 +30,43 @@ export const RequestTypes = {
 
 /** store中存储的数据结构 */
 interface IRapperStore {
-  $$rapperResponseData: {
-    'GET/example/1574387719563': Array<{
-      request: IModels['GET/example/1574387719563']['Req'];
-      response: IModels['GET/example/1574387719563']['Res'];
-      id: number;
-      requestTime: number;
-      responseTime: number;
-      isPending: boolean;
-    }>;
+  'GET/example/1574387719563': Array<{
+    request: IModels['GET/example/1574387719563']['Req'];
+    response: IModels['GET/example/1574387719563']['Res'];
+    id: number;
+    requestTime: number;
+    responseTime: number;
+    isPending: boolean;
+  }>;
 
-    'GET/testGet': Array<{
-      request: IModels['GET/testGet']['Req'];
-      response: IModels['GET/testGet']['Res'];
-      id: number;
-      requestTime: number;
-      responseTime: number;
-      isPending: boolean;
-    }>;
+  'GET/testGet': Array<{
+    request: IModels['GET/testGet']['Req'];
+    response: IModels['GET/testGet']['Res'];
+    id: number;
+    requestTime: number;
+    responseTime: number;
+    isPending: boolean;
+  }>;
 
-    'POST/testPost': Array<{
-      request: IModels['POST/testPost']['Req'];
-      response: IModels['POST/testPost']['Res'];
-      id: number;
-      requestTime: number;
-      responseTime: number;
-      isPending: boolean;
-    }>;
+  'POST/testPost': Array<{
+    request: IModels['POST/testPost']['Req'];
+    response: IModels['POST/testPost']['Res'];
+    id: number;
+    requestTime: number;
+    responseTime: number;
+    isPending: boolean;
+  }>;
 
-    'POST/testFormData': Array<{
-      request: IModels['POST/testFormData']['Req'];
-      response: IModels['POST/testFormData']['Res'];
-      id: number;
-      requestTime: number;
-      responseTime: number;
-      isPending: boolean;
-    }>;
-  };
+  'POST/testFormData': Array<{
+    request: IModels['POST/testFormData']['Req'];
+    response: IModels['POST/testFormData']['Res'];
+    id: number;
+    requestTime: number;
+    responseTime: number;
+    isPending: boolean;
+  }>;
 }
+type TRapperStoreKey = keyof IRapperStore;
 
 export const useResponse = {
   /**
@@ -78,27 +77,12 @@ export const useResponse = {
   'GET/example/1574387719563': function useData(
     filter?:
       | { request?: IModels['GET/example/1574387719563']['Req'] }
-      | {
-          (
-            storeData: IRapperStore['$$rapperResponseData']['GET/example/1574387719563'][0],
-          ): boolean;
-        },
+      | { (storeData: IRapperStore['GET/example/1574387719563'][0]): boolean },
   ) {
-    type M = keyof IRapperStore['$$rapperResponseData'];
     type Req = IModels['GET/example/1574387719563']['Req'];
-    type Item = IRapperStore['$$rapperResponseData']['GET/example/1574387719563'][0];
+    type Item = IRapperStore['GET/example/1574387719563'][0];
     type Res = IResponseTypes['GET/example/1574387719563'];
-    return useResponseData<IRapperStore, M, Req, Item>('GET/example/1574387719563', filter) as [
-      Res | undefined,
-      {
-        /** 本次请求的唯一id */
-        id: number;
-        /** 是否正在请求中 */
-        isPending: boolean;
-        /** 请求错误信息 */
-        errorMessage?: string;
-      },
-    ];
+    return useResponseData<TRapperStoreKey, Req, Res, Item>('GET/example/1574387719563', filter);
   },
 
   /**
@@ -109,23 +93,12 @@ export const useResponse = {
   'GET/testGet': function useData(
     filter?:
       | { request?: IModels['GET/testGet']['Req'] }
-      | { (storeData: IRapperStore['$$rapperResponseData']['GET/testGet'][0]): boolean },
+      | { (storeData: IRapperStore['GET/testGet'][0]): boolean },
   ) {
-    type M = keyof IRapperStore['$$rapperResponseData'];
     type Req = IModels['GET/testGet']['Req'];
-    type Item = IRapperStore['$$rapperResponseData']['GET/testGet'][0];
+    type Item = IRapperStore['GET/testGet'][0];
     type Res = IResponseTypes['GET/testGet'];
-    return useResponseData<IRapperStore, M, Req, Item>('GET/testGet', filter) as [
-      Res | undefined,
-      {
-        /** 本次请求的唯一id */
-        id: number;
-        /** 是否正在请求中 */
-        isPending: boolean;
-        /** 请求错误信息 */
-        errorMessage?: string;
-      },
-    ];
+    return useResponseData<TRapperStoreKey, Req, Res, Item>('GET/testGet', filter);
   },
 
   /**
@@ -136,23 +109,12 @@ export const useResponse = {
   'POST/testPost': function useData(
     filter?:
       | { request?: IModels['POST/testPost']['Req'] }
-      | { (storeData: IRapperStore['$$rapperResponseData']['POST/testPost'][0]): boolean },
+      | { (storeData: IRapperStore['POST/testPost'][0]): boolean },
   ) {
-    type M = keyof IRapperStore['$$rapperResponseData'];
     type Req = IModels['POST/testPost']['Req'];
-    type Item = IRapperStore['$$rapperResponseData']['POST/testPost'][0];
+    type Item = IRapperStore['POST/testPost'][0];
     type Res = IResponseTypes['POST/testPost'];
-    return useResponseData<IRapperStore, M, Req, Item>('POST/testPost', filter) as [
-      Res | undefined,
-      {
-        /** 本次请求的唯一id */
-        id: number;
-        /** 是否正在请求中 */
-        isPending: boolean;
-        /** 请求错误信息 */
-        errorMessage?: string;
-      },
-    ];
+    return useResponseData<TRapperStoreKey, Req, Res, Item>('POST/testPost', filter);
   },
 
   /**
@@ -163,23 +125,12 @@ export const useResponse = {
   'POST/testFormData': function useData(
     filter?:
       | { request?: IModels['POST/testFormData']['Req'] }
-      | { (storeData: IRapperStore['$$rapperResponseData']['POST/testFormData'][0]): boolean },
+      | { (storeData: IRapperStore['POST/testFormData'][0]): boolean },
   ) {
-    type M = keyof IRapperStore['$$rapperResponseData'];
     type Req = IModels['POST/testFormData']['Req'];
-    type Item = IRapperStore['$$rapperResponseData']['POST/testFormData'][0];
+    type Item = IRapperStore['POST/testFormData'][0];
     type Res = IResponseTypes['POST/testFormData'];
-    return useResponseData<IRapperStore, M, Req, Item>('POST/testFormData', filter) as [
-      Res | undefined,
-      {
-        /** 本次请求的唯一id */
-        id: number;
-        /** 是否正在请求中 */
-        isPending: boolean;
-        /** 请求错误信息 */
-        errorMessage?: string;
-      },
-    ];
+    return useResponseData<TRapperStoreKey, Req, Res, Item>('POST/testFormData', filter);
   },
 };
 
@@ -287,23 +238,53 @@ export const clearResponseCache = {
 };
 
 export const rapperSelector = {
-  'GET/example/1574387719563': (state: IState) => {
-    const responseData = state['$$rapperResponseData']['GET/example/1574387719563'];
-    return connectGetResponse(responseData) as
-      | IResponseTypes['GET/example/1574387719563']
-      | undefined;
+  'GET/example/1574387719563': (
+    state: IState,
+    filter?:
+      | { request?: IModels['GET/example/1574387719563']['Req'] }
+      | { (storeData: IRapperStore['GET/example/1574387719563'][0]): boolean },
+  ) => {
+    type Req = IModels['GET/example/1574387719563']['Req'];
+    type Res = IResponseTypes['GET/example/1574387719563'];
+    type Item = IRapperStore['GET/example/1574387719563'][0];
+    return getResponseData<TRapperStoreKey, Req, Res, Item>(
+      state,
+      'GET/example/1574387719563',
+      filter,
+    );
   },
-  'GET/testGet': (state: IState) => {
-    const responseData = state['$$rapperResponseData']['GET/testGet'];
-    return connectGetResponse(responseData) as IResponseTypes['GET/testGet'] | undefined;
+  'GET/testGet': (
+    state: IState,
+    filter?:
+      | { request?: IModels['GET/testGet']['Req'] }
+      | { (storeData: IRapperStore['GET/testGet'][0]): boolean },
+  ) => {
+    type Req = IModels['GET/testGet']['Req'];
+    type Res = IResponseTypes['GET/testGet'];
+    type Item = IRapperStore['GET/testGet'][0];
+    return getResponseData<TRapperStoreKey, Req, Res, Item>(state, 'GET/testGet', filter);
   },
-  'POST/testPost': (state: IState) => {
-    const responseData = state['$$rapperResponseData']['POST/testPost'];
-    return connectGetResponse(responseData) as IResponseTypes['POST/testPost'] | undefined;
+  'POST/testPost': (
+    state: IState,
+    filter?:
+      | { request?: IModels['POST/testPost']['Req'] }
+      | { (storeData: IRapperStore['POST/testPost'][0]): boolean },
+  ) => {
+    type Req = IModels['POST/testPost']['Req'];
+    type Res = IResponseTypes['POST/testPost'];
+    type Item = IRapperStore['POST/testPost'][0];
+    return getResponseData<TRapperStoreKey, Req, Res, Item>(state, 'POST/testPost', filter);
   },
-  'POST/testFormData': (state: IState) => {
-    const responseData = state['$$rapperResponseData']['POST/testFormData'];
-    return connectGetResponse(responseData) as IResponseTypes['POST/testFormData'] | undefined;
+  'POST/testFormData': (
+    state: IState,
+    filter?:
+      | { request?: IModels['POST/testFormData']['Req'] }
+      | { (storeData: IRapperStore['POST/testFormData'][0]): boolean },
+  ) => {
+    type Req = IModels['POST/testFormData']['Req'];
+    type Res = IResponseTypes['POST/testFormData'];
+    type Item = IRapperStore['POST/testFormData'][0];
+    return getResponseData<TRapperStoreKey, Req, Res, Item>(state, 'POST/testFormData', filter);
   },
 };
 

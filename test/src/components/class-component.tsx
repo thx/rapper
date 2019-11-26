@@ -6,13 +6,10 @@ import fetch from '../models/fetcher';
 
 type ComponentProps = {
   colorData?: ResponseTypes['GET/testGet'];
+  isPending: boolean;
 };
 
 class ClassComponentView extends Component<ComponentProps> {
-  constructor(props: ComponentProps) {
-    super(props);
-  }
-
   doRequest() {
     fetch['GET/testGet']();
   }
@@ -22,9 +19,7 @@ class ClassComponentView extends Component<ComponentProps> {
   }
 
   render() {
-    const { colorData } = this.props;
-    /** Todo: 待改进rapperSelector API */
-    const isPending = false;
+    const { colorData, isPending } = this.props;
 
     const code = `fetch['GET/testGet']();`;
     return (
@@ -52,8 +47,10 @@ class ClassComponentView extends Component<ComponentProps> {
 }
 
 function mapStateToProps(state: any) {
+  const [colorData, { isPending }] = rapperSelector['GET/testGet'](state);
   return {
-    colorData: rapperSelector['GET/testGet'](state),
+    colorData,
+    isPending,
   };
 }
 export default connect(mapStateToProps)(ClassComponentView);
