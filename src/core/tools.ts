@@ -106,6 +106,9 @@ export function uniqueItfs(itfs: Array<Intf>) {
 /** 生成提示文案 */
 export function creatHeadHelpStr(rapUrl: string, projectId: number): string {
   return `
+  /* eslint-disable */
+  /* tslint:disable */
+  
   /**
    * 本文件由 Rapper 同步 Rap 平台接口，自动生成，请勿修改
    * Rap仓库 地址: ${rapUrl}/repository/editor?id=${projectId}

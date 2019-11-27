@@ -99,7 +99,6 @@ export default async function({
     indexCodeArr.push(Creator.createIndexStr());
   }
   const indexStr = `
-    /* eslint-disable */
     ${creatHeadHelpStr(rapUrl, projectId)}
     ${mixGeneratedCode(indexCodeArr)}
   `;
@@ -122,7 +121,6 @@ export default async function({
     });
   }
   requestStr = `
-    /* eslint-disable */
     ${creatHeadHelpStr(rapUrl, projectId)}
     ${requestStr}
   `;
@@ -137,7 +135,6 @@ export default async function({
       path: `${rapperPath}/${type}.ts`,
       content: format(
         `
-          /* eslint-disable */
           ${creatHeadHelpStr(rapUrl, projectId)}
           ${Creator.createDynamicStr(interfaces, { rapUrl, resSelector })}
         `,
@@ -151,7 +148,6 @@ export default async function({
     libCodeArr.push(Creator.createLibStr(interfaces, { rapUrl, resSelector }));
   }
   const libStr = `
-    /* eslint-disable */
     ${creatHeadHelpStr(rapUrl, projectId)}
     ${mixGeneratedCode(libCodeArr)}
   `;

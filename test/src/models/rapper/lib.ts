@@ -1,4 +1,5 @@
 /* eslint-disable */
+/* tslint:disable */
 
 /**
  * 本文件由 Rapper 同步 Rap 平台接口，自动生成，请勿修改
