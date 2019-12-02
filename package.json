@@ -24,6 +24,12 @@
   ],
   "author": "chibing.fy",
   "license": "ISC",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
   "dependencies": {
     "axios": "^0.19.0",
     "chalk": "^2.4.2",
@@ -31,19 +37,15 @@
     "json-schema-to-typescript": "^7.1.0",
     "json5": "^2.1.0",
     "lodash": "^4.17.15",
-    "mkdirp": "^0.5.1"
-  },
-  "files": [
-    "dist"
-  ],
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org"
+    "mkdirp": "^0.5.1",
+    "update-notifier": "^3.0.1"
   },
   "devDependencies": {
     "@types/json5": "0.0.30",
     "@types/lodash": "^4.14.144",
     "@types/react": "^16.9.2",
     "@types/react-redux": "^7.1.2",
+    "@types/update-notifier": "^2.5.0",
     "@typescript-eslint/eslint-plugin": "^2.5.0",
     "@typescript-eslint/parser": "^2.5.0",
     "eslint": "^6.5.1",

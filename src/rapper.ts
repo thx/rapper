@@ -41,6 +41,8 @@ export default async function({
   codeStyle,
   resSelector = 'type ResSelector<T> = T',
 }: IRapper) {
+  console.log(chalk.green('rapper: 正在同步 Rap 接口...'));
+
   /** 参数校验 */
   if (!type) {
     return new Promise(() => console.log(chalk.red('rapper: 请配置 type 参数')));
@@ -72,13 +74,17 @@ export default async function({
   try {
     interfaces = await getInterfaces(apiUrl);
   } catch (e) {
-    return new Promise(() => console.log(chalk.red(`rapper: 同步 rap 接口失败，${e}`)));
+    return new Promise(() => console.log(chalk.red(`rapper: 同步 Rap 接口失败，${e}`)));
   }
   if (!(Array.isArray(interfaces) && interfaces.length)) {
-    return new Promise(() => console.log(chalk.yellow('rapper: 没有课同步的 rap 接口')));
+    return new Promise(() =>
+      console.log(chalk.yellow('rapper: 没有可同步的接口，请在 Rap 添加接口')),
+    );
   }
+  console.log(chalk.green('rapper: 同步所有 Rap 接口成功'));
   interfaces = uniqueItfs(getIntfWithModelName(interfaces, urlMapper));
 
+  console.log(chalk.green('rapper: 正在生成模板代码...'));
   let Creator: {
     createIndexStr?: () => IGeneratedCode;
     createDynamicStr?: (interfaces: Array<Intf>, extr: ICreatorExtr) => string;
@@ -159,16 +165,14 @@ export default async function({
   /** Rap 接口引用扫描 */
   const scanResult = scanFile(interfaces, [rapperPath]);
   if (scanResult.length) {
-    console.log(
-      chalk.red('rapper: 同步失败，如下文件使用了已被 Rap 删除的接口，请确认后重新执行同步'),
-    );
+    console.log(chalk.red('rapper: 如下文件使用了已被 Rap 删除的接口，请确认后重新执行同步'));
     scanResult.forEach(({ key, filePath, start, line }) => {
       console.log(chalk.red(`  接口: ${key}, 所在文件: ${filePath}:${line}:${start}`));
     });
   } else {
     return Promise.all(outputFiles.map(({ path, content }) => writeFile(path, content)))
       .then(() => {
-        console.log(chalk.green(`rapper: 同步成功！共同步:${interfaces.length} 个接口`));
+        console.log(chalk.green(`rapper: 成功！共同步了 ${interfaces.length} 个接口`));
       })
       .catch(err => {
         console.log(chalk.red(err));
