@@ -2,10 +2,9 @@ import { rapper } from '../index';
 
 rapper({
   type: 'requester',
-  apiUrl:
-    'http://rap2api.taobao.org/repository/get?id=237514&token=B9KfU4VLueRL5cX1R2ZYXjy7VNIU0b0r',
+  apiUrl: 'https://rap2api.alibaba-inc.com/repository/get?id=3601',
   /** rap 前端地址，默认是 http://rap2.taobao.org */
-  rapUrl: 'https://rap2.taobao.org',
+  rapUrl: 'https://rap2.alibaba-inc.com',
   /** 输出文件的目录，默认是 ./src/rapper */
   rapperPath: './test/src/models/rapper',
   codeStyle: {

@@ -3,6 +3,26 @@ import axios from 'axios';
 import * as _ from 'lodash';
 import { IModules, ICollaborator, Interface, Intf, IUrlMapper } from '../types';
 
+function updateURLParameter(url: string, param: string, paramVal: string) {
+  let newAdditionalURL = '';
+  let tempArray = url.split('?');
+  const baseURL = tempArray[0];
+  const additionalURL = tempArray[1];
+  let temp = '';
+  if (additionalURL) {
+    tempArray = additionalURL.split('&');
+    for (let i = 0; i < tempArray.length; i++) {
+      if (tempArray[i].split('=')[0] != param) {
+        newAdditionalURL += temp + tempArray[i];
+        temp = '&';
+      }
+    }
+  }
+
+  const rowsTxt = temp + '' + param + '=' + paramVal;
+  return baseURL + '?' + newAdditionalURL + rowsTxt;
+}
+
 /** 从rap查询所有接口数据 */
 export async function getInterfaces(rapApiUrl: string) {
   const response = await axios.get(rapApiUrl);
@@ -18,9 +38,9 @@ export async function getInterfaces(rapApiUrl: string) {
 
   if (collaborators.length) {
     const collaboratorsInterfaces = await Promise.all(
-      collaborators.map(e => getInterfaces(rapApiUrl)),
+      collaborators.map(e => getInterfaces(updateURLParameter(rapApiUrl, 'id', e.id.toString()))),
     );
-    interfaces = interfaces.concat(collaboratorsInterfaces.flat());
+    interfaces = interfaces.concat(_.flatten(collaboratorsInterfaces));
   }
 
   return interfaces;
