@@ -41,7 +41,7 @@ export default async function({
   codeStyle,
   resSelector = 'type ResSelector<T> = T',
 }: IRapper) {
-  console.log(chalk.green('rapper: 正在同步 Rap 接口...'));
+  console.log(chalk.grey('rapper: 正在同步 Rap 接口...'));
 
   /** 参数校验 */
   if (!type) {
@@ -81,10 +81,10 @@ export default async function({
       console.log(chalk.yellow('rapper: 没有可同步的接口，请在 Rap 添加接口')),
     );
   }
-  console.log(chalk.green('rapper: 同步所有 Rap 接口成功'));
+  console.log(chalk.grey('rapper: 同步所有 Rap 接口成功'));
   interfaces = uniqueItfs(getIntfWithModelName(interfaces, urlMapper));
 
-  console.log(chalk.green('rapper: 正在生成模板代码...'));
+  console.log(chalk.grey('rapper: 正在生成模板代码...'));
   let Creator: {
     createIndexStr?: () => IGeneratedCode;
     createDynamicStr?: (interfaces: Array<Intf>, extr: ICreatorExtr) => string;
