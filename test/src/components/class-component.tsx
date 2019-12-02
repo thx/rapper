@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Spin } from 'antd';
 import { connect } from 'react-redux';
-import { rapperSelector, ResponseTypes, clearResponseCache } from '../models/rapper';
-import fetch from '../models/fetcher';
+import { fetch, rapperSelector, ResponseTypes, clearResponseCache } from '../models/rapper';
 
 type ComponentProps = {
   colorData?: ResponseTypes['GET/testGet'];

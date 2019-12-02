@@ -80,13 +80,13 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
     `;
 }
 
-export function createBaseIndexCode(): IGeneratedCode {
+export function createBaseIndexCode(apiHostname: string, projectId: number): IGeneratedCode {
   return {
     import: `
       import { createFetch, IModels } from './request'
     `,
     body: `
-      const fetch = createFetch({})
+      const fetch = createFetch({ prefix: '//${apiHostname}/app/mock/${projectId}' })
     `,
     export: `
       export { fetch, createFetch }

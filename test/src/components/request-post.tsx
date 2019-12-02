@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button, Spin } from 'antd';
-import fetch from '../models/fetcher';
-import { useResponse, clearResponseCache } from '../models/rapper';
+import { fetch, useResponse, clearResponseCache } from '../models/rapper';
 
 const RequestPost = () => {
   const [data, { isPending }] = useResponse['POST/testPost']();

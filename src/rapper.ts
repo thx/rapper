@@ -50,6 +50,7 @@ export default async function({
     return new Promise(() => console.log(chalk.red('rapper: type 参数配置错误，请重新配置')));
   }
   const apiParams = url.parse(apiUrl, true).query;
+  const apiHostname = url.parse(apiUrl).host;
   const projectId = parseInt(Array.isArray(apiParams.id) ? apiParams.id[0] : apiParams.id);
 
   DEFAULT_OPTIONS.style = {
@@ -100,7 +101,7 @@ export default async function({
   }
 
   /** 生成 index.ts */
-  const indexCodeArr: Array<IGeneratedCode> = [createBaseIndexCode()];
+  const indexCodeArr: Array<IGeneratedCode> = [createBaseIndexCode(apiHostname, projectId)];
   if (Creator.createIndexStr) {
     indexCodeArr.push(Creator.createIndexStr());
   }

@@ -18,7 +18,7 @@ import {
 import { rapperReducers, rapperEnhancer } from './lib';
 import { IResponseTypes } from './request';
 
-const fetch = createFetch({});
+const fetch = createFetch({ prefix: '//rap2api.taobao.org/app/mock/237514' });
 
 export { fetch, createFetch };
 export type Models = IModels;

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Spin } from 'antd';
-import { ResponseTypes } from '../models/rapper';
-import fetch from '../models/fetcher';
+import { fetch, ResponseTypes } from '../models/rapper';
 
 const RequestFormdata = () => {
   const [data, setData] = useState<
