@@ -25,8 +25,7 @@ function updateURLParameter(url: string, param: string, paramVal: string) {
 
 /** 从rap查询所有接口数据 */
 export async function getInterfaces(rapApiUrl: string) {
-  const response = await axios.get(rapApiUrl);
-
+  const response = await axios.get(rapApiUrl, { timeout: 1000 * 20 });
   const data = response.data.data;
   const modules: Array<IModules> = data.modules;
   const collaborators: Array<ICollaborator> = data.collaborators;
