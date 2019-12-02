@@ -107,15 +107,14 @@ export function uniqueItfs(itfs: Array<Intf>) {
     newItfs.push(dupItfs[0]);
     if (dupItfs.length > 1) {
       console.log(
-        chalk.yellow('发现重复接口，修改时间最晚的被采纳：\n') +
+        chalk.yellow('rapper: 发现重复接口，修改时间最晚的被采纳：\n') +
           dupItfs
             .map((itf, index) => {
-              const str = `${itf.name}: http://rap2.alibaba-inc.com/repository/editor?id=${itf.repositoryId}&mod=${itf.moduleId}&itf=${itf.id}`;
+              const str = `    ${itf.name}: http://rap2.alibaba-inc.com/repository/editor?id=${itf.repositoryId}&mod=${itf.moduleId}&itf=${itf.id}`;
 
               return index === 0 ? chalk.green(str) : chalk.gray(str);
             })
-            .join('\n') +
-          '\n',
+            .join('\n'),
       );
     }
   });
