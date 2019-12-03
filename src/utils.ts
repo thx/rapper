@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
 import * as fs from 'fs';
+import * as crypto from 'crypto';
 import { IGeneratedCode } from './types';
 
 export function withoutExt(p: string) {
@@ -54,4 +55,23 @@ export function isInRoot() {
   const cwd = process.cwd();
   const flag = fs.existsSync(path.resolve(cwd, 'package.json'));
   return flag;
+}
+
+/** 获取文件md5 */
+export function getMd5(fileContent: string) {
+  const hash = crypto.createHash('md5');
+  hash.update(fileContent);
+  return hash.digest('hex');
+}
+
+export function getOldProjectId(rappperPath: string): string | undefined {
+  const indexPath = path.resolve(process.cwd(), rappperPath, './index.ts');
+  try {
+    const content = fs.readFileSync(indexPath, 'UTF-8') || '';
+    const projectIdStr = content.split('\n')[1] || '';
+    const matchArr = projectIdStr.match(/\/\*\sRap仓库id:\s(\S*)\s\*\//) || [];
+    return matchArr[1];
+  } catch (err) {
+    return undefined;
+  }
 }
