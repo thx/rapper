@@ -124,6 +124,7 @@ export function uniqueItfs(itfs: Array<Intf>) {
 /** 生成提示文案 */
 export function creatHeadHelpStr(rapUrl: string, projectId: number): string {
   return `
+  /* Rap仓库id: ${projectId} */
   /* eslint-disable */
   /* tslint:disable */
   

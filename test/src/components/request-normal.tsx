@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Spin } from 'antd';
-import { fetch, ResponseTypes } from '../models/rapper';
+import { ResponseTypes } from '../models/rapper';
+import fetch from '../models/fetcher';
 
 const RequestFormdata = () => {
   const [data, setData] = useState<ResponseTypes['GET/testGet'] | undefined>(undefined);

@@ -1,3 +1,5 @@
+/* 6c8f5c18314c8d7a91b7a3ca7b8b3151 */
+/* Rap仓库id: 237514 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -18,7 +20,7 @@ import {
 import { rapperReducers, rapperEnhancer } from './lib';
 import { IResponseTypes } from './request';
 
-const fetch = createFetch({ prefix: '//rap2api.taobao.org/app/mock/237514' });
+const fetch = createFetch({});
 
 export { fetch, createFetch };
 export type Models = IModels;

@@ -11,9 +11,9 @@ import {
 } from './types';
 import { createBaseRequestStr, createBaseIndexCode, createBaseLibCode } from './core/base-creator';
 import ReduxCreator from './redux';
-import { writeFile, mixGeneratedCode } from './utils';
+import { writeFile, mixGeneratedCode, getMd5 } from './utils';
 import { getInterfaces, getIntfWithModelName, uniqueItfs, creatHeadHelpStr } from './core/tools';
-import scanFile from './core/scanFile';
+import { findDeleteFiles, findChangeFiles } from './core/scanFile';
 import url = require('url');
 
 export interface IRapper {
@@ -50,7 +50,6 @@ export default async function({
     return new Promise(() => console.log(chalk.red('rapper: type 参数配置错误，请重新配置')));
   }
   const apiParams = url.parse(apiUrl, true).query;
-  const apiHostname = url.parse(apiUrl).host;
   const projectId = parseInt(Array.isArray(apiParams.id) ? apiParams.id[0] : apiParams.id);
 
   DEFAULT_OPTIONS.style = {
@@ -67,8 +66,18 @@ export default async function({
   rapUrl = rapUrl.replace(/\/$/, '');
   apiUrl = apiUrl.replace(/\/$/, '');
 
+  /** 扫描找出生成的模板文件是否被手动修改过 */
+  const changeFiles = findChangeFiles(rapperPath);
+  if (changeFiles.length) {
+    console.log(chalk.red('rapper: 检测到您修改了 rapper 生成的模板代码，请恢复后再执行'));
+    changeFiles.forEach(str => {
+      console.log(chalk.yellow(`  ${str}`));
+    });
+    return;
+  }
+
   /** 输出文件集合 */
-  const outputFiles = [];
+  let outputFiles = [];
 
   /** 获取所有接口 */
   let interfaces: Array<Intf> = [];
@@ -101,7 +110,7 @@ export default async function({
   }
 
   /** 生成 index.ts */
-  const indexCodeArr: Array<IGeneratedCode> = [createBaseIndexCode(apiHostname, projectId)];
+  const indexCodeArr: Array<IGeneratedCode> = [createBaseIndexCode()];
   if (Creator.createIndexStr) {
     indexCodeArr.push(Creator.createIndexStr());
   }
@@ -163,12 +172,18 @@ export default async function({
     content: format(libStr, DEFAULT_OPTIONS),
   });
 
+  /** 生成的模板文件第一行增加MD5 */
+  outputFiles = outputFiles.map(item => ({
+    ...item,
+    content: `/* ${getMd5(item.content)} */\n${item.content}`,
+  }));
+
   /** Rap 接口引用扫描 */
-  const scanResult = scanFile(interfaces, [rapperPath]);
+  const scanResult = findDeleteFiles(interfaces, [rapperPath]);
   if (scanResult.length) {
     console.log(chalk.red('rapper: 如下文件使用了已被 Rap 删除的接口，请确认后重新执行同步'));
     scanResult.forEach(({ key, filePath, start, line }) => {
-      console.log(chalk.red(`  接口: ${key}, 所在文件: ${filePath}:${line}:${start}`));
+      console.log(chalk.yellow(`  接口: ${key}, 所在文件: ${filePath}:${line}:${start}`));
     });
   } else {
     return Promise.all(outputFiles.map(({ path, content }) => writeFile(path, content)))
