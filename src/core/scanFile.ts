@@ -4,9 +4,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import chalk from 'chalk';
-import * as crypto from 'crypto';
 import { Intf } from '../types';
 import { resolve } from 'path';
+import { getMd5 } from '../utils';
 
 /**
  * 获取所有需要扫描的文件
@@ -54,10 +54,7 @@ function isFileChange(contentArr: string[]): boolean {
   if (!oldMD5) {
     return false;
   }
-  const hash = crypto.createHash('md5');
-  hash.update(contentArr.slice(1).join('\n'));
-  const newMD5 = hash.digest('hex');
-  return oldMD5 !== newMD5;
+  return oldMD5 !== getMd5(contentArr.slice(1).join('\n'));
 }
 
 type TScanResult = Array<{

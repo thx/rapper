@@ -63,3 +63,15 @@ export function getMd5(fileContent: string) {
   hash.update(fileContent);
   return hash.digest('hex');
 }
+
+export function getOldProjectId(rappperPath: string): string | undefined {
+  const indexPath = path.resolve(process.cwd(), rappperPath, './index.ts');
+  try {
+    const content = fs.readFileSync(indexPath, 'UTF-8') || '';
+    const projectIdStr = content.split('\n')[1] || '';
+    const matchArr = projectIdStr.match(/\/\*\sRap仓库id:\s(\S*)\s\*\//) || [];
+    return matchArr[1];
+  } catch (err) {
+    return undefined;
+  }
+}

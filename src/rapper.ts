@@ -11,7 +11,7 @@ import {
 } from './types';
 import { createBaseRequestStr, createBaseIndexCode, createBaseLibCode } from './core/base-creator';
 import ReduxCreator from './redux';
-import { writeFile, mixGeneratedCode, getMd5 } from './utils';
+import { writeFile, mixGeneratedCode, getMd5, getOldProjectId } from './utils';
 import { getInterfaces, getIntfWithModelName, uniqueItfs, creatHeadHelpStr } from './core/tools';
 import { findDeleteFiles, findChangeFiles } from './core/scanFile';
 import url = require('url');
@@ -178,20 +178,23 @@ export default async function({
     content: `/* ${getMd5(item.content)} */\n${item.content}`,
   }));
 
-  /** Rap 接口引用扫描 */
-  const scanResult = findDeleteFiles(interfaces, [rapperPath]);
-  if (scanResult.length) {
-    console.log(chalk.red('rapper: 如下文件使用了已被 Rap 删除的接口，请确认后重新执行同步'));
-    scanResult.forEach(({ key, filePath, start, line }) => {
-      console.log(chalk.yellow(`  接口: ${key}, 所在文件: ${filePath}:${line}:${start}`));
-    });
-  } else {
-    return Promise.all(outputFiles.map(({ path, content }) => writeFile(path, content)))
-      .then(() => {
-        console.log(chalk.green(`rapper: 成功！共同步了 ${interfaces.length} 个接口`));
-      })
-      .catch(err => {
-        console.log(chalk.red(err));
+  /** Rap 接口引用扫描，如果 projectId 更改了就不再扫描，避免过多的报错信息展现在Terminal */
+  if (getOldProjectId(rapperPath) === String(projectId)) {
+    const scanResult = findDeleteFiles(interfaces, [rapperPath]);
+    if (scanResult.length) {
+      console.log(chalk.red('rapper: 如下文件使用了已被 Rap 删除的接口，请确认后重新执行同步'));
+      scanResult.forEach(({ key, filePath, start, line }) => {
+        console.log(chalk.yellow(`  接口: ${key}, 所在文件: ${filePath}:${line}:${start}`));
       });
+      return;
+    }
   }
+
+  return Promise.all(outputFiles.map(({ path, content }) => writeFile(path, content)))
+    .then(() => {
+      console.log(chalk.green(`rapper: 成功！共同步了 ${interfaces.length} 个接口`));
+    })
+    .catch(err => {
+      console.log(chalk.red(err));
+    });
 }
