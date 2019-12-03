@@ -175,7 +175,7 @@ export default async function({
   /** 生成的模板文件第一行增加MD5 */
   outputFiles = outputFiles.map(item => ({
     ...item,
-    content: `/* ${getMd5(item.content)} */\n${item.content}`,
+    content: `/* md5: ${getMd5(item.content)} */\n${item.content}`,
   }));
 
   /** Rap 接口引用扫描，如果 projectId 更改了就不再扫描，避免过多的报错信息展现在Terminal */

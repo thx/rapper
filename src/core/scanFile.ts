@@ -48,7 +48,7 @@ function getFiles(parentPath: string): string[] {
 
 /** 校验文件 MD5，是否被改动 */
 function isFileChange(contentArr: string[]): boolean {
-  const matchMD5 = contentArr[0].match(/\/\*\s(\S*)\s\*\//) || [];
+  const matchMD5 = contentArr[0].match(/\/\*\smd5:\s(\S*)\s\*\//) || [];
   const oldMD5 = matchMD5[1];
   /** 老版本没有写入md5，所以这里需要兼容 */
   if (!oldMD5) {
