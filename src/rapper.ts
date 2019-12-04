@@ -86,11 +86,6 @@ export default async function({
   } catch (e) {
     return new Promise(() => console.log(chalk.red(`rapper: 同步 Rap 接口失败，${e}`)));
   }
-  if (!(Array.isArray(interfaces) && interfaces.length)) {
-    return new Promise(() =>
-      console.log(chalk.yellow('rapper: 没有可同步的接口，请在 Rap 添加接口')),
-    );
-  }
   console.log(chalk.grey('rapper: 同步所有 Rap 接口成功'));
   interfaces = uniqueItfs(getIntfWithModelName(interfaces, urlMapper));
 
