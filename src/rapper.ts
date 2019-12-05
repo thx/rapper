@@ -15,6 +15,9 @@ import { writeFile, mixGeneratedCode, getMd5, getOldProjectId } from './utils';
 import { getInterfaces, getIntfWithModelName, uniqueItfs, creatHeadHelpStr } from './core/tools';
 import { findDeleteFiles, findChangeFiles } from './core/scanFile';
 import url = require('url');
+import latestVersion = require('latest-version');
+import semver from 'semver';
+import packageJson from '../package.json';
 
 export interface IRapper {
   /** 必填，redux、requester 等 */
@@ -41,6 +44,17 @@ export default async function({
   codeStyle,
   resSelector = 'type ResSelector<T> = T',
 }: IRapper) {
+  /** 检查版本，给出升级提示 */
+  try {
+    const newVersion = await latestVersion(packageJson.name);
+    if (semver.lt(packageJson.version, newVersion)) {
+      console.log(chalk.yellow('rapper 升级提示: '));
+      console.log(`  当前版本: ${chalk.grey(packageJson.version)}`);
+      console.log(`  最新版本: ${chalk.cyan(newVersion)}`);
+      console.log(`  运行 ${chalk.green(`npm i -D ${packageJson.name}@latest`)} 即可更新`);
+    }
+  } catch (err) {}
+
   console.log(chalk.grey('rapper: 正在同步 Rap 接口...'));
 
   /** 参数校验 */

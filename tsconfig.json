@@ -3,7 +3,9 @@
     "outDir": "dist", //输出目录
     "lib": ["esnext", "dom"],
     /** 自动生成声明文件.d.ts */
-    "declaration": true
+    "declaration": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   },
   "include": ["src"]
 }
