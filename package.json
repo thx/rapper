@@ -11,6 +11,7 @@
     "redux": "npm run build && npm run clean && node ./dist/build/redux"
   },
   "bin": {
+    "rap": "./dist/models.js",
     "rapper": "./dist/models.js"
   },
   "repository": {
