@@ -1,6 +1,6 @@
 {
   "name": "@ali/rap",
-  "version": "0.2.0-beta",
+  "version": "0.2.0",
   "description": "rapper, use http api as a function",
   "main": "./dist/index.js",
   "scripts": {
@@ -11,6 +11,7 @@
     "prepublishOnly": "npm run build"
   },
   "bin": {
+    "rap": "./dist/models.js",
     "rapper": "./dist/models.js"
   },
   "repository": {
@@ -53,7 +54,6 @@
     "eslint": "^6.5.1",
     "eslint-config-prettier": "^6.4.0",
     "eslint-plugin-prettier": "^3.1.1",
-    "husky": "^3.1.0",
     "react": "^16.9.0",
     "react-redux": "^7.1.1",
     "redux": "^4.0.4",
