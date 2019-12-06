@@ -11,11 +11,10 @@ import {
 } from './types';
 import { createBaseRequestStr, createBaseIndexCode, createBaseLibCode } from './core/base-creator';
 import ReduxCreator from './redux';
-import { writeFile, mixGeneratedCode, getMd5, getOldProjectId } from './utils';
+import { writeFile, mixGeneratedCode, getMd5, getOldProjectId, getLatestVersion } from './utils';
 import { getInterfaces, getIntfWithModelName, uniqueItfs, creatHeadHelpStr } from './core/tools';
 import { findDeleteFiles, findChangeFiles } from './core/scanFile';
 import url = require('url');
-import latestVersion = require('latest-version');
 import semver from 'semver';
 import packageJson from '../package.json';
 
@@ -46,14 +45,16 @@ export default async function({
 }: IRapper) {
   /** 检查版本，给出升级提示 */
   try {
-    const newVersion = await latestVersion(packageJson.name);
+    const newVersion = await getLatestVersion('@ali/rap');
     if (semver.lt(packageJson.version, newVersion)) {
       console.log(chalk.yellow('rapper 升级提示: '));
       console.log(`  当前版本: ${chalk.grey(packageJson.version)}`);
       console.log(`  最新版本: ${chalk.cyan(newVersion)}`);
       console.log(`  运行 ${chalk.green(`npm i -D ${packageJson.name}@latest`)} 即可更新`);
     }
-  } catch (err) {}
+  } catch (err) {
+    console.log('err', err);
+  }
 
   console.log(chalk.grey('rapper: 正在同步 Rap 接口...'));
 

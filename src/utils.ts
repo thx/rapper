@@ -2,7 +2,9 @@ import * as path from 'path';
 import * as mkdirp from 'mkdirp';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
+import axios from 'axios';
 import { IGeneratedCode } from './types';
+import latestVersion = require('latest-version');
 
 export function withoutExt(p: string) {
   return p.replace(/\.[^/.]+$/, '');
@@ -74,4 +76,17 @@ export function getOldProjectId(rappperPath: string): string | undefined {
   } catch (err) {
     return undefined;
   }
+}
+
+export async function getLatestVersion(name: string): Promise<string> {
+  let version = '';
+  console.log('name', name);
+  if (name.indexOf('@ali')) {
+    const url = `http://registry.npm.alibaba-inc.com/${name}/latest`;
+    const responseData = await axios.get(url, { timeout: 1000 * 20 });
+    console.log('responseData', responseData);
+  } else {
+    version = await latestVersion(name);
+  }
+  return version;
 }
