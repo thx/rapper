@@ -5,7 +5,8 @@
       "cmd": [
         "tnpm ii",
         "npm run build",
-        "mv ./ $BUILD_DEST"
+        "mv ./dist $BUILD_DEST/dist",
+        "mv ./package.json $BUILD_DEST/package.json"
       ]
     }
   }
