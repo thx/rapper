@@ -8,7 +8,9 @@
     "build": "./node_modules/typescript/bin/tsc -p tsconfig.json",
     "clean": "rm -rf test/model",
     "normal": "npm run build && npm run clean && node ./dist/build/normal",
-    "redux": "npm run build && npm run clean && node ./dist/build/redux"
+    "redux": "npm run build && npm run clean && node ./dist/build/redux",
+    "createDaily": "mpub createDaily",
+    "publish": "mpub publish"
   },
   "bin": {
     "rap": "./dist/models.js",
@@ -42,6 +44,7 @@
     "update-notifier": "^3.0.1"
   },
   "devDependencies": {
+    "@ali/mpub": "^1.0.4",
     "@types/json5": "0.0.30",
     "@types/lodash": "^4.14.144",
     "@types/react": "^16.9.2",
