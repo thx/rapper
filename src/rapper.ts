@@ -15,8 +15,9 @@ import { writeFile, mixGeneratedCode, getMd5, getOldProjectId, getLatestVersion 
 import { getInterfaces, getIntfWithModelName, uniqueItfs, creatHeadHelpStr } from './core/tools';
 import { findDeleteFiles, findChangeFiles } from './core/scanFile';
 import url = require('url');
-import semver from 'semver';
-import packageJson from '../package.json';
+import * as semver from 'semver';
+import * as ora from 'ora';
+const packageJson = require('../package.json');
 
 export interface IRapper {
   /** 必填，redux、requester 等 */
@@ -43,30 +44,30 @@ export default async function({
   codeStyle,
   resSelector = 'type ResSelector<T> = T',
 }: IRapper) {
+  const spinner = ora(chalk.grey('rapper: 开始检查版本')).start();
+
   /** 检查版本，给出升级提示 */
   try {
     const newVersion = await getLatestVersion('@ali/rap');
     if (semver.lt(packageJson.version, newVersion)) {
-      console.log(chalk.yellow('rapper 升级提示: '));
-      console.log(`  当前版本: ${chalk.grey(packageJson.version)}`);
-      console.log(`  最新版本: ${chalk.cyan(newVersion)}`);
-      console.log(`  运行 ${chalk.green(`npm i -D ${packageJson.name}@latest`)} 即可更新`);
+      spinner.warn(chalk.yellow('rapper 升级提示: '));
+      console.log(`    当前版本: ${chalk.grey(packageJson.version)}`);
+      console.log(`    最新版本: ${chalk.cyan(newVersion)}`);
+      console.log(`    运行 ${chalk.green(`npm i -D ${packageJson.name}@latest`)} 即可更新`);
     }
   } catch (err) {
-    console.log('err', err);
+    spinner.warn(`rapper 版本检查失败，${err.message}`);
   }
-
-  console.log(chalk.grey('rapper: 正在同步 Rap 接口...'));
 
   /** 参数校验 */
   if (!type) {
-    return new Promise(() => console.log(chalk.red('rapper: 请配置 type 参数')));
+    return new Promise(() => spinner.fail(chalk.red('rapper: 请配置 type 参数')));
   } else if (!['requester', 'redux'].includes(type)) {
-    return new Promise(() => console.log(chalk.red('rapper: type 参数配置错误，请重新配置')));
+    return new Promise(() => spinner.fail(chalk.red('rapper: type 参数配置错误，请重新配置')));
   }
+
   const apiParams = url.parse(apiUrl, true).query;
   const projectId = parseInt(Array.isArray(apiParams.id) ? apiParams.id[0] : apiParams.id);
-
   DEFAULT_OPTIONS.style = {
     ...DEFAULT_OPTIONS.style,
     singleQuote: true,
@@ -76,7 +77,6 @@ export default async function({
   if (codeStyle && typeof codeStyle === 'object') {
     DEFAULT_OPTIONS.style = { ...codeStyle };
   }
-
   rapperPath = rapperPath.replace(/\/$/, '');
   rapUrl = rapUrl.replace(/\/$/, '');
   apiUrl = apiUrl.replace(/\/$/, '');
@@ -84,27 +84,27 @@ export default async function({
   /** 扫描找出生成的模板文件是否被手动修改过 */
   const changeFiles = findChangeFiles(rapperPath);
   if (changeFiles.length) {
-    console.log(chalk.red('rapper: 检测到您修改了 rapper 生成的模板代码，请恢复后再执行'));
+    spinner.fail(chalk.red('rapper: 检测到您修改了 rapper 生成的模板代码，请恢复后再执行'));
     changeFiles.forEach(str => {
-      console.log(chalk.yellow(`  ${str}`));
+      console.log(chalk.yellow(`    ${str}`));
     });
     return;
   }
 
+  spinner.start(chalk.grey('rapper: 正在从 Rap 平台获取接口信息...'));
   /** 输出文件集合 */
   let outputFiles = [];
-
-  /** 获取所有接口 */
+  /** 所有接口集合 */
   let interfaces: Array<Intf> = [];
   try {
     interfaces = await getInterfaces(apiUrl);
   } catch (e) {
-    return new Promise(() => console.log(chalk.red(`rapper: 同步 Rap 接口失败，${e}`)));
+    return new Promise(() => spinner.fail(chalk.red(`rapper: 获取接口信息失败，${e}`)));
   }
-  console.log(chalk.grey('rapper: 同步所有 Rap 接口成功'));
+  spinner.succeed(chalk.grey('rapper: 获取接口信息成功'));
   interfaces = uniqueItfs(getIntfWithModelName(interfaces, urlMapper));
 
-  console.log(chalk.grey('rapper: 正在生成模板代码...'));
+  spinner.start(chalk.grey('rapper: 正在生成模板代码...'));
   let Creator: {
     createIndexStr?: () => IGeneratedCode;
     createDynamicStr?: (interfaces: Array<Intf>, extr: ICreatorExtr) => string;
@@ -192,9 +192,9 @@ export default async function({
   if (getOldProjectId(rapperPath) === String(projectId)) {
     const scanResult = findDeleteFiles(interfaces, [rapperPath]);
     if (scanResult.length) {
-      console.log(chalk.red('rapper: 如下文件使用了已被 Rap 删除的接口，请确认后重新执行同步'));
+      spinner.fail(chalk.red('rapper: 如下文件使用了已被 Rap 删除的接口，请确认后重新执行同步'));
       scanResult.forEach(({ key, filePath, start, line }) => {
-        console.log(chalk.yellow(`  接口: ${key}, 所在文件: ${filePath}:${line}:${start}`));
+        console.log(chalk.yellow(`    接口: ${key}, 所在文件: ${filePath}:${line}:${start}`));
       });
       return;
     }
@@ -202,9 +202,9 @@ export default async function({
 
   return Promise.all(outputFiles.map(({ path, content }) => writeFile(path, content)))
     .then(() => {
-      console.log(chalk.green(`rapper: 成功！共同步了 ${interfaces.length} 个接口`));
+      spinner.succeed(chalk.green(`rapper: 成功！共同步了 ${interfaces.length} 个接口`));
     })
     .catch(err => {
-      console.log(chalk.red(err));
+      spinner.fail(chalk.red(`rapper: 失败！${err.message}`));
     });
 }

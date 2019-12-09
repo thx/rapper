@@ -80,11 +80,10 @@ export function getOldProjectId(rappperPath: string): string | undefined {
 
 export async function getLatestVersion(name: string): Promise<string> {
   let version = '';
-  console.log('name', name);
-  if (name.indexOf('@ali')) {
+  if (name.indexOf('@ali') > -1) {
     const url = `http://registry.npm.alibaba-inc.com/${name}/latest`;
     const responseData = await axios.get(url, { timeout: 1000 * 20 });
-    console.log('responseData', responseData);
+    version = responseData.data.version;
   } else {
     version = await latestVersion(name);
   }

@@ -76,7 +76,7 @@ export interface IUrlMapper {
 }
 
 /** 生成模板类型 */
-export type RAPPER_TYPE = 'requester' | 'redux';
+export type RAPPER_TYPE = 'normal' | 'redux';
 
 /** 句尾逗号 */
 export enum TRAILING_COMMA {
