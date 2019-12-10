@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import axios from 'axios';
-import _ = require('lodash');
+import * as _ from 'lodash';
 import { IModules, ICollaborator, Interface, Intf, IUrlMapper } from '../types';
 
 function updateURLParameter(url: string, param: string, paramVal: string) {
