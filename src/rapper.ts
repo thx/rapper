@@ -11,7 +11,15 @@ import {
 } from './types';
 import { createBaseRequestStr, createBaseIndexCode, createBaseLibCode } from './core/base-creator';
 import ReduxCreator from './redux';
-import { writeFile, mixGeneratedCode, getMd5, getOldProjectId, getLatestVersion } from './utils';
+import {
+  writeFile,
+  mixGeneratedCode,
+  getMd5,
+  getOldProjectId,
+  getLatestVersion,
+  templateFilesOverwriteConfirm,
+  templateFilesRelyConfirm,
+} from './utils';
 import { getInterfaces, getIntfWithModelName, uniqueItfs, creatHeadHelpStr } from './core/tools';
 import { findDeleteFiles, findChangeFiles } from './core/scanFile';
 import url = require('url');
@@ -89,13 +97,19 @@ export default async function({
   spinner.start(chalk.grey('rapper: 检测模板代码是否被修改'));
   const changeFiles = findChangeFiles(rapperPath);
   if (changeFiles.length) {
-    spinner.fail(chalk.red('rapper: 检测到您修改了 rapper 生成的模板代码，请恢复后再执行'));
+    spinner.warn(chalk.yellow('rapper: 检测到如下模板代码被修改'));
     changeFiles.forEach(str => {
       console.log(chalk.yellow(`    ${str}`));
     });
-    return;
+    const { confirmed } = await templateFilesOverwriteConfirm();
+    if (!confirmed) {
+      console.log(chalk.red('更新操作已终止'));
+      process.exit(0);
+      return;
+    }
+  } else {
+    spinner.succeed(chalk.grey('rapper: 模板代码未被修改'));
   }
-  spinner.succeed(chalk.grey('rapper: 模板代码未被修改'));
 
   /** 输出文件集合 */
   let outputFiles = [];
@@ -115,14 +129,22 @@ export default async function({
   if (getOldProjectId(rapperPath) === String(projectId)) {
     const scanResult = findDeleteFiles(interfaces, [rapperPath]);
     if (scanResult.length) {
-      spinner.fail(chalk.red('rapper: 如下文件使用了已被 Rap 删除的接口，请确认后重新执行同步'));
+      spinner.warn(chalk.yellow('rapper: 如下文件使用了已被 Rap 删除的接口'));
       scanResult.forEach(({ key, filePath, start, line }) => {
         console.log(chalk.yellow(`    接口: ${key}, 所在文件: ${filePath}:${line}:${start}`));
       });
-      return;
+      const { confirmed } = await templateFilesRelyConfirm();
+      if (!confirmed) {
+        console.log(chalk.red('更新操作已终止'));
+        process.exit(0);
+        return;
+      }
+    } else {
+      spinner.succeed(chalk.grey('rapper: 未发现不合法依赖'));
     }
+  } else {
+    spinner.succeed(chalk.grey('rapper: 未发现不合法依赖'));
   }
-  spinner.succeed(chalk.grey('rapper: 未发现不合法依赖'));
 
   spinner.start(chalk.grey('rapper: 正在生成模板代码...'));
   let Creator: {

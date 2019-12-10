@@ -6,13 +6,13 @@ import fetch from '../models/fetcher';
 const RequestPost = () => {
   const [data, { isPending }] = useResponse['POST/testPost']();
   const doRequest = () => {
-    fetch['POST/testPost']({ id: '11' });
+    fetch['POST/testPost']({ id: 11, objectParams: { a: [1, 2], b: { b1: '1' } } });
   };
   const clearData = () => {
     clearResponseCache['POST/testPost']();
   };
 
-  const code = `fetch['POST/testPost']({ id: '11' });`;
+  const code = `fetch['POST/testPost']({ id: 11, objectParams: { a: [1, 2] } });`;
   return (
     <div>
       <div>

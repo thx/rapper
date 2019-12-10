@@ -2,7 +2,9 @@ import * as path from 'path';
 import * as mkdirp from 'mkdirp';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
+import * as inquirer from 'inquirer';
 import axios from 'axios';
+import chalk from 'chalk';
 import { IGeneratedCode } from './types';
 import latestVersion = require('latest-version');
 
@@ -88,4 +90,34 @@ export async function getLatestVersion(name: string): Promise<string> {
     version = await latestVersion(name);
   }
   return version;
+}
+
+/** 模板文件覆盖确认 */
+export async function templateFilesOverwriteConfirm() {
+  const question = [
+    {
+      name: 'confirmed',
+      type: 'confirm',
+      message: chalk.green(
+        '检测到您修改了 rapper 生成的模板代码，新生成的模板代码将覆盖您的修改，确定要继续么？',
+      ),
+      default: false,
+    },
+  ];
+  const answers = await inquirer.prompt(question);
+  return answers;
+}
+
+/** 存在接口依赖被删确认 */
+export async function templateFilesRelyConfirm() {
+  const question = [
+    {
+      name: 'confirmed',
+      type: 'confirm',
+      message: chalk.green('确定要继续么？'),
+      default: false,
+    },
+  ];
+  const answers = await inquirer.prompt(question);
+  return answers;
 }

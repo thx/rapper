@@ -10,7 +10,7 @@ const RequestFormdata = () => {
 
   const doRequest = () => {
     setIsPending(true);
-    fetch['GET/testGet']({ projectId: 11 }, { type: 'normal' })
+    fetch['GET/testGet']({ id: 11, objectParams: { a: [1, 2] } }, { type: 'normal' })
       .then(response => {
         setData(response);
       })
@@ -23,7 +23,7 @@ const RequestFormdata = () => {
     setData(undefined);
   };
 
-  const code = `fetch['GET/testGet']({ projectId: 11 }, { type: 'normal' });`;
+  const code = `fetch['GET/testGet']({ id: 11, objectParams: { a: [1, 2] } }, { type: 'normal' });`;
   return (
     <div>
       <div>

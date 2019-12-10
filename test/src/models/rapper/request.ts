@@ -1,4 +1,4 @@
-/* md5: 5c56d6339743b6b32fdfc630c37443a5 */
+/* md5: ae7789b88267f670d71b83cba95461c7 */
 /* Rap仓库id: 237514 */
 /* eslint-disable */
 /* tslint:disable */
@@ -88,6 +88,9 @@ export interface IModels {
   'GET/testGet': {
     Req: {
       id?: number;
+      objectParams?: {
+        a?: number[];
+      };
     };
     Res: {
       errcode: number;
@@ -103,6 +106,12 @@ export interface IModels {
   'POST/testPost': {
     Req: {
       id?: number;
+      objectParams?: {
+        a?: number[];
+        b?: {
+          b1?: string;
+        };
+      };
     };
     Res: {
       errcode: number;
