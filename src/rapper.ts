@@ -44,8 +44,8 @@ export default async function({
   codeStyle,
   resSelector = 'type ResSelector<T> = T',
 }: IRapper) {
-  const spinner = ora(chalk.grey('rapper: 开始检查版本')).start();
-
+  const spinner = ora(chalk.grey('rapper: 开始检查版本'));
+  spinner.start();
   /** 检查版本，给出升级提示 */
   try {
     const newVersion = await getLatestVersion('@ali/rap');
@@ -54,17 +54,21 @@ export default async function({
       console.log(`    当前版本: ${chalk.grey(packageJson.version)}`);
       console.log(`    最新版本: ${chalk.cyan(newVersion)}`);
       console.log(`    运行 ${chalk.green(`npm i -D ${packageJson.name}@latest`)} 即可更新`);
+    } else {
+      spinner.succeed(chalk.grey('rapper: 当前是最新版'));
     }
   } catch (err) {
     spinner.warn(`rapper 版本检查失败，${err.message}`);
   }
 
   /** 参数校验 */
+  spinner.start(chalk.grey('rapper: 开始校验参数'));
   if (!type) {
     return new Promise(() => spinner.fail(chalk.red('rapper: 请配置 type 参数')));
   } else if (!['requester', 'redux'].includes(type)) {
     return new Promise(() => spinner.fail(chalk.red('rapper: type 参数配置错误，请重新配置')));
   }
+  spinner.succeed(chalk.grey('rapper: 参数校验成功'));
 
   const apiParams = url.parse(apiUrl, true).query;
   const projectId = parseInt(Array.isArray(apiParams.id) ? apiParams.id[0] : apiParams.id);
@@ -82,6 +86,7 @@ export default async function({
   apiUrl = apiUrl.replace(/\/$/, '');
 
   /** 扫描找出生成的模板文件是否被手动修改过 */
+  spinner.start(chalk.grey('rapper: 检测模板代码是否被修改'));
   const changeFiles = findChangeFiles(rapperPath);
   if (changeFiles.length) {
     spinner.fail(chalk.red('rapper: 检测到您修改了 rapper 生成的模板代码，请恢复后再执行'));
@@ -90,19 +95,34 @@ export default async function({
     });
     return;
   }
+  spinner.succeed(chalk.grey('rapper: 模板代码未被修改'));
 
-  spinner.start(chalk.grey('rapper: 正在从 Rap 平台获取接口信息...'));
   /** 输出文件集合 */
   let outputFiles = [];
   /** 所有接口集合 */
   let interfaces: Array<Intf> = [];
+  spinner.start(chalk.grey('rapper: 正在从 Rap 平台获取接口信息...'));
   try {
     interfaces = await getInterfaces(apiUrl);
+    spinner.succeed(chalk.grey('rapper: 获取接口信息成功'));
   } catch (e) {
     return new Promise(() => spinner.fail(chalk.red(`rapper: 获取接口信息失败，${e}`)));
   }
-  spinner.succeed(chalk.grey('rapper: 获取接口信息成功'));
   interfaces = uniqueItfs(getIntfWithModelName(interfaces, urlMapper));
+
+  /** Rap 接口引用扫描，如果 projectId 更改了就不再扫描，避免过多的报错信息展现在Terminal */
+  spinner.start(chalk.grey('rapper: 正在扫描接口依赖'));
+  if (getOldProjectId(rapperPath) === String(projectId)) {
+    const scanResult = findDeleteFiles(interfaces, [rapperPath]);
+    if (scanResult.length) {
+      spinner.fail(chalk.red('rapper: 如下文件使用了已被 Rap 删除的接口，请确认后重新执行同步'));
+      scanResult.forEach(({ key, filePath, start, line }) => {
+        console.log(chalk.yellow(`    接口: ${key}, 所在文件: ${filePath}:${line}:${start}`));
+      });
+      return;
+    }
+  }
+  spinner.succeed(chalk.grey('rapper: 未发现不合法依赖'));
 
   spinner.start(chalk.grey('rapper: 正在生成模板代码...'));
   let Creator: {
@@ -187,18 +207,6 @@ export default async function({
     ...item,
     content: `/* md5: ${getMd5(item.content)} */\n${item.content}`,
   }));
-
-  /** Rap 接口引用扫描，如果 projectId 更改了就不再扫描，避免过多的报错信息展现在Terminal */
-  if (getOldProjectId(rapperPath) === String(projectId)) {
-    const scanResult = findDeleteFiles(interfaces, [rapperPath]);
-    if (scanResult.length) {
-      spinner.fail(chalk.red('rapper: 如下文件使用了已被 Rap 删除的接口，请确认后重新执行同步'));
-      scanResult.forEach(({ key, filePath, start, line }) => {
-        console.log(chalk.yellow(`    接口: ${key}, 所在文件: ${filePath}:${line}:${start}`));
-      });
-      return;
-    }
-  }
 
   return Promise.all(outputFiles.map(({ path, content }) => writeFile(path, content)))
     .then(() => {
