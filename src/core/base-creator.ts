@@ -239,6 +239,9 @@ export function createBaseLibCode(): IGeneratedCode {
         return str
       }
       str = str ? str + '&' : str
+      if (typeof value === 'object') {
+        value = JSON.stringify(value)
+      }
       return str + encodeURIComponent(key) + '=' + encodeURIComponent(value)
     }, '')
   }

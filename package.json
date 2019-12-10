@@ -6,9 +6,9 @@
   "scripts": {
     "lint": "eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
     "build": "./node_modules/typescript/bin/tsc -p tsconfig.json",
-    "clean": "rm -rf test/model",
-    "normal": "npm run build && npm run clean && node ./dist/build/normal",
-    "redux": "npm run build && npm run clean && node ./dist/build/redux",
+    "normal": "npm run build && node ./dist/build/normal",
+    "redux": "npm run build && node ./dist/build/redux",
+    "prepublish": "npm run build",
     "createDaily": "mpub createDaily",
     "publish": "mpub publish"
   },

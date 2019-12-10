@@ -1,4 +1,4 @@
-/* md5: d6d2357ab2045406e7f104f2825f19f0 */
+/* md5: 218d765c04ba0ecd5e6abc4bc5af2898 */
 /* Rap仓库id: 237514 */
 /* eslint-disable */
 /* tslint:disable */
@@ -53,6 +53,9 @@ export function locationStringify(
       return str;
     }
     str = str ? str + '&' : str;
+    if (typeof value === 'object') {
+      value = JSON.stringify(value);
+    }
     return str + encodeURIComponent(key) + '=' + encodeURIComponent(value);
   }, '');
 }

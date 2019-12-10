@@ -1,4 +1,4 @@
-/* md5: 60208d43c493bf50e7a158b1dfffa208 */
+/* md5: ae7789b88267f670d71b83cba95461c7 */
 /* Rap仓库id: 237514 */
 /* eslint-disable */
 /* tslint:disable */
@@ -87,7 +87,10 @@ export interface IModels {
    */
   'GET/testGet': {
     Req: {
-      projectId?: number;
+      id?: number;
+      objectParams?: {
+        a?: number[];
+      };
     };
     Res: {
       errcode: number;
@@ -102,7 +105,13 @@ export interface IModels {
    */
   'POST/testPost': {
     Req: {
-      id?: string;
+      id?: number;
+      objectParams?: {
+        a?: number[];
+        b?: {
+          b1?: string;
+        };
+      };
     };
     Res: {
       errcode: number;
@@ -250,7 +259,7 @@ export function createFetch(fetchConfig: RequesterOption) {
       extra?: IExtra,
     ) => {
       return sendRapperFetch('GET/group/:groupId/member/:memberId', {
-        url: 'group/:groupId/member/:memberId',
+        url: '/group/:groupId/member/:memberId',
         method: 'GET',
         params: req,
         extra,
