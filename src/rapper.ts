@@ -28,7 +28,7 @@ import * as ora from 'ora';
 const packageJson = require('../package.json');
 
 export interface IRapper {
-  /** 必填，redux、requester 等 */
+  /** 必填，redux、normal 等 */
   type: RAPPER_TYPE;
   /** 必填，api仓库地址，从仓库的数据按钮可以获得 */
   apiUrl: string;
@@ -73,7 +73,7 @@ export default async function({
   spinner.start(chalk.grey('rapper: 开始校验参数'));
   if (!type) {
     return new Promise(() => spinner.fail(chalk.red('rapper: 请配置 type 参数')));
-  } else if (!['requester', 'redux'].includes(type)) {
+  } else if (!['normal', 'redux'].includes(type)) {
     return new Promise(() => spinner.fail(chalk.red('rapper: type 参数配置错误，请重新配置')));
   }
   spinner.succeed(chalk.grey('rapper: 参数校验成功'));

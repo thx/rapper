@@ -267,17 +267,15 @@ export = function<Res extends {[x: string]: any}>(
 
 # 生成文档介绍
 
-## requester
+## normal
 
 - index.ts，入口文件（不建议修改，rapper() 会重置此文件）
-- base-fetch.ts，项目的公共请求方法，用户可在此加入自定义逻辑，比如请求、响应数据过滤（如有需要可以修改，项目初始化后就不会更新此文件）
 - model.ts，接口类型定义文件（不建议修改，rapper() 会重置此文件）
 - request.ts，接口请求文件（不建议修改，rapper() 会重置此文件）
 
 ## rapper
 
 - index.ts，入口文件（不建议修改，rapper() 会重置此文件）
-- base-fetch.ts，项目的公共请求方法，用户可在此加入自定义逻辑，比如请求、响应数据过滤（如有需要可以修改，项目初始化后就不会更新此文件）
 - model.ts，接口类型定义文件（不建议修改，rapper() 会重置此文件）
 - request.ts，接口请求文件（不建议修改，rapper() 会重置此文件）
 - runtime.ts，redux 运行时文件（不建议修改，rapper() 会重置此文件）
