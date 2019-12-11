@@ -3,10 +3,8 @@ import * as mkdirp from 'mkdirp';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
 import * as inquirer from 'inquirer';
-import axios from 'axios';
 import chalk from 'chalk';
 import { IGeneratedCode } from './types';
-import latestVersion = require('latest-version');
 
 export function withoutExt(p: string) {
   return p.replace(/\.[^/.]+$/, '');
@@ -78,18 +76,6 @@ export function getOldProjectId(rappperPath: string): string | undefined {
   } catch (err) {
     return undefined;
   }
-}
-
-export async function getLatestVersion(name: string): Promise<string> {
-  let version = '';
-  if (name.indexOf('@ali') > -1) {
-    const url = `http://registry.npm.alibaba-inc.com/${name}/latest`;
-    const responseData = await axios.get(url, { timeout: 1000 * 20 });
-    version = responseData.data.version;
-  } else {
-    version = await latestVersion(name);
-  }
-  return version;
 }
 
 /** 模板文件覆盖确认 */

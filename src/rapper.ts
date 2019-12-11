@@ -16,13 +16,13 @@ import {
   mixGeneratedCode,
   getMd5,
   getOldProjectId,
-  getLatestVersion,
   templateFilesOverwriteConfirm,
   templateFilesRelyConfirm,
 } from './utils';
 import { getInterfaces, getIntfWithModelName, uniqueItfs, creatHeadHelpStr } from './core/tools';
 import { findDeleteFiles, findChangeFiles } from './core/scanFile';
 import url = require('url');
+import latestVersion from 'latest-version';
 import * as semver from 'semver';
 import * as ora from 'ora';
 const packageJson = require('../package.json');
@@ -56,7 +56,7 @@ export default async function({
   spinner.start();
   /** 检查版本，给出升级提示 */
   try {
-    const newVersion = await getLatestVersion('@ali/rap');
+    const newVersion = await latestVersion('rap');
     if (semver.lt(packageJson.version, newVersion)) {
       spinner.warn(chalk.yellow('rapper 升级提示: '));
       console.log(`    当前版本: ${chalk.grey(packageJson.version)}`);
