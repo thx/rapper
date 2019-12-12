@@ -35,13 +35,9 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
       ${interfaces
         .map(
           ({ modelName }) => `
-      '${modelName}': Array<{
+      '${modelName}': Array<IInterfaceInfo & {
         request: IModels['${modelName}']['Req']
         response: IModels['${modelName}']['Res']
-        id: number
-        requestTime: number
-        responseTime: number
-        isPending: boolean
       }>`,
         )
         .join(',\n\n')}
@@ -80,7 +76,11 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
           const selectedState = (state['${RAPPER_STATE_KEY}'] && state['${RAPPER_STATE_KEY}']['${
             itf.modelName
           }']) || []
-          return selectedState as Array<IResponseTypes['${itf.modelName}']>
+          type TReturnItem = IInterfaceInfo & {
+            request?: IModels['GET/example/1574387719563']['Req'];
+            response?: IModels['GET/example/1574387719563']['Res'];
+          }
+          return selectedState as Array<TReturnItem>
         })
       }`,
         )
@@ -105,9 +105,9 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
     `;
 }
 
-export function createSelectorStr(interfaces: Array<Intf>): string {
+export function createBaseSelectorStr(interfaces: Array<Intf>): string {
   return `
-    export const rapperSelector = {
+    export const rapperBaseSelector = {
     ${interfaces
       .map(
         ({ modelName }) => `
@@ -116,6 +116,23 @@ export function createSelectorStr(interfaces: Array<Intf>): string {
         type Res = IResponseTypes['${modelName}'];
         type Item = IRapperStore['${modelName}'][0];
         return getResponseData<TRapperStoreKey, Req, Res, Item>(state, '${modelName}', filter);
+      }
+    `,
+      )
+      .join(',\n\n')}
+    }
+  `;
+}
+
+export function createDataSelectorStr(interfaces: Array<Intf>): string {
+  return `
+    export const rapperDataSelector = {
+    ${interfaces
+      .map(
+        ({ modelName }) => `
+      '${modelName}': (state: IState) => {
+        type Res = IResponseTypes['${modelName}'];
+        return getRapperDataSelector<TRapperStoreKey, Res>(state, '${modelName}');
       }
     `,
       )

@@ -133,22 +133,24 @@ export function createReduxRuntime(): string {
   }
   let fetchFunc: (params: IRequestParams) => Promise<any>;
   
-  /** redux store存的数据结构 */
-  interface IStateInterfaceItem {
+  export interface IInterfaceInfo {
     /** 请求的唯一id，暂时等于requestTime */
     id: number
     /** 请求时间 */
     requestTime: number
-    /** 请求参数 */
-    request?: any
     /** 是否正在 fetching */
     isPending: boolean
     /** 错误信息 */
     errorMessage?: string
     /** 响应时间 */
     reponseTime?: number
+  }
+  /** redux store存的数据结构 */
+  interface IStateInterfaceItem extends IInterfaceInfo {
+    /** 请求参数 */
+    request?: any;
     /** 请求响应数据 */
-    response?: any
+    response?: any;
   }
   interface IAssignDataProps {
     /** 合并前的State */
@@ -439,6 +441,13 @@ export function createTools(): string {
           result.response || undefined,
           { id: result.id, isPending: result.isPending || false, errorMessage: result.errorMessage },
         ] as [Res | undefined, { id: number; isPending: boolean; errorMessage?: string }];
+      }
+
+      /** class component获取response数据 */
+      export function getRapperDataSelector<M, Res>(state: IState, modelName: M) {
+        const reduxData = (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
+        const result = reduxData.length ? reduxData.slice(-1)[0] : {};
+        return result.response as Res | undefined;
       }
     `;
 }

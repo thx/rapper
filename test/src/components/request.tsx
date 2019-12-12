@@ -1,10 +1,14 @@
 import React from 'react';
 import { Button, Spin } from 'antd';
-import { useResponse, clearResponseCache } from '../models/rapper';
+import { useResponse, useAllResponse, clearResponseCache } from '../models/rapper';
 import fetch from '../models/fetcher';
 
 const Request = () => {
   const [data, { isPending }] = useResponse['GET/testGet']();
+  const allData = useAllResponse['GET/testGet']();
+  if (allData.length) {
+    const { id, request, response } = allData[0];
+  }
   const doRequest = () => {
     fetch['GET/testGet']();
   };
@@ -25,7 +29,7 @@ const Request = () => {
       </div>
       <Spin spinning={isPending}>
         <div>
-          <div style={{ margin: '20px 0' }}>fetch['GET/example/1565269104015']();</div>
+          <div style={{ margin: '20px 0' }}>fetch['GET/testGet']();</div>
           <div>
             <pre>{JSON.stringify(data, null, '  ')}</pre>
           </div>

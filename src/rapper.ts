@@ -129,7 +129,7 @@ export default async function({
   if (getOldProjectId(rapperPath) === String(projectId)) {
     const scanResult = findDeleteFiles(interfaces, [rapperPath]);
     if (scanResult.length) {
-      spinner.warn(chalk.yellow('rapper: 如下文件使用了已被 Rap 删除的接口'));
+      spinner.warn(chalk.yellow('rapper: 如下文件使用了已被 Rap 删除或修改的接口'));
       scanResult.forEach(({ key, filePath, start, line }) => {
         console.log(chalk.yellow(`    接口: ${key}, 所在文件: ${filePath}:${line}:${start}`));
       });

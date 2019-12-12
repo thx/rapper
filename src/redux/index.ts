@@ -1,5 +1,10 @@
 import { Intf, IGeneratedCode, ICreatorExtr } from '../types';
-import { createActionStr, createUseRapStr, createSelectorStr } from './reduxCreator';
+import {
+  createActionStr,
+  createUseRapStr,
+  createBaseSelectorStr,
+  createDataSelectorStr,
+} from './reduxCreator';
 import { createTools, createTypesStr, createReduxRuntime } from './libCreator';
 import { createBaseRequestStr } from './requesterCreator';
 
@@ -7,7 +12,7 @@ import { createBaseRequestStr } from './requesterCreator';
 function createIndexStr(): IGeneratedCode {
   return {
     import: `
-      import { useResponse, useAllResponse, clearResponseCache, rapperActions, rapperSelector } from './redux'
+      import { useResponse, useAllResponse, clearResponseCache, rapperActions, rapperBaseSelector, rapperDataSelector } from './redux'
       import { rapperReducers, rapperEnhancer } from './lib'
       import { IResponseTypes } from './request'
     `,
@@ -20,7 +25,8 @@ function createIndexStr(): IGeneratedCode {
         useAllResponse,
         /** 清除此接口的缓存 */
         clearResponseCache,
-        rapperSelector,
+        rapperBaseSelector,
+        rapperDataSelector,
         rapperActions,
         rapperReducers,
         rapperEnhancer,
@@ -37,11 +43,12 @@ function createDynamicStr(interfaces: Array<Intf>, extr: ICreatorExtr): string {
   return `
     import { useSelector } from 'react-redux'
     import { IModels, IResponseTypes } from './request'
-    import { dispatchAction, useResponseData, getResponseData, IState } from './lib'
+    import { dispatchAction, useResponseData, getResponseData, getRapperDataSelector, IState, IInterfaceInfo } from './lib'
 
     ${createActionStr(interfaces, extr)}
     ${createUseRapStr(interfaces, extr)}
-    ${createSelectorStr(interfaces)}
+    ${createBaseSelectorStr(interfaces)}
+    ${createDataSelectorStr(interfaces)}
 
     export const rapperActions = RequestTypes || []
   `;

@@ -100,7 +100,7 @@ export async function templateFilesRelyConfirm() {
     {
       name: 'confirmed',
       type: 'confirm',
-      message: chalk.green('确定要继续么？'),
+      message: chalk.green('确定要继续同步接口到本地吗? (会存在页面中调用的接口不存在的风险)？'),
       default: false,
     },
   ];

@@ -1,11 +1,17 @@
 import React, { Component } from 'react';
 import { Button, Spin } from 'antd';
 import { connect } from 'react-redux';
-import { rapperSelector, ResponseTypes, clearResponseCache } from '../models/rapper';
+import {
+  rapperBaseSelector,
+  rapperDataSelector,
+  ResponseTypes,
+  clearResponseCache,
+} from '../models/rapper';
 import fetch from '../models/fetcher';
 
 type ComponentProps = {
   colorData?: ResponseTypes['GET/testGet'];
+  colorDataFilter?: ResponseTypes['GET/testGet'];
   isPending: boolean;
 };
 
@@ -19,13 +25,13 @@ class ClassComponentView extends Component<ComponentProps> {
   }
 
   render() {
-    const { colorData, isPending } = this.props;
+    const { colorData, colorDataFilter, isPending } = this.props;
 
     const code = `fetch['GET/testGet']();`;
     return (
       <div>
         <div>
-          <span style={{ color: 'red' }}>class component 使用示例，rapperSelector</span>
+          <span style={{ color: 'red' }}>class component 使用示例，rapperBaseSelector</span>
           <Button type="primary" style={{ marginLeft: '20px' }} onClick={this.doRequest}>
             点击发送请求
           </Button>
@@ -39,6 +45,9 @@ class ClassComponentView extends Component<ComponentProps> {
             <div style={{ overflow: 'auto' }}>
               <pre>{JSON.stringify(colorData, null, '  ')}</pre>
             </div>
+            <div style={{ overflow: 'auto' }}>
+              <pre>{JSON.stringify(colorDataFilter, null, '  ')}</pre>
+            </div>
           </div>
         </Spin>
       </div>
@@ -47,9 +56,11 @@ class ClassComponentView extends Component<ComponentProps> {
 }
 
 function mapStateToProps(state: any) {
-  const [colorData, { isPending }] = rapperSelector['GET/testGet'](state);
+  const colorData = rapperDataSelector['GET/testGet'](state);
+  const [colorDataFilter, { isPending }] = rapperBaseSelector['GET/testGet'](state);
   return {
     colorData,
+    colorDataFilter,
     isPending,
   };
 }
