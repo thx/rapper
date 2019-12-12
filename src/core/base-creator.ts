@@ -84,12 +84,13 @@ export function createBaseIndexCode(): IGeneratedCode {
   return {
     import: `
       import { createFetch, IModels } from './request'
+      import { defaultFetch } from './lib'
     `,
     body: `
       const fetch = createFetch({})
     `,
     export: `
-      export { fetch, createFetch }
+      export { fetch, createFetch, defaultFetch }
       export type Models = IModels
     `,
   };
@@ -140,7 +141,7 @@ function createDefaultFetch() {
       },
     };
 
-    const defaultFetch = async ({ url, method, params, extra, fetchOption }: IDefaultFetchParams) => {
+    export const defaultFetch = async ({ url, method, params, extra, fetchOption }: IDefaultFetchParams) => {
       let urlWithParams = url;
       const init: RequestInit = { ...fetchOption, method };
       if (method === 'GET') {
