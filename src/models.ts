@@ -20,6 +20,7 @@ import { IRapper } from './rapper';
 
   let rapperConfig: IRapper;
   if (program.type && program.apiUrl && program.rapUrl) {
+    /** 通过 scripts 配置 */
     rapperConfig = {
       type: program.type,
       apiUrl: program.apiUrl,
@@ -28,7 +29,7 @@ import { IRapper } from './rapper';
     };
     program.resSelector && (rapperConfig.resSelector = program.resSelector);
   } else {
-    /** 兼容 Marquex 逻辑 */
+    /** 通过 package.json 的 rapper 字段配置 */
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const packageConfig = require(resolve(process.cwd(), './package.json'));
 
