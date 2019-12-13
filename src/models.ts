@@ -13,7 +13,8 @@ import { IRapper } from './rapper';
     .option('--type <typeName>', '设置类型')
     .option('--apiUrl <apiUrl>', '设置Rap平台后端地址')
     .option('--rapUrl <rapUrl>', '设置Rap平台前端地址')
-    .option('--rapperPath <rapperPath>', '设置生成代码所在目录');
+    .option('--rapperPath <rapperPath>', '设置生成代码所在目录')
+    .option('--resSelector <resSelector>', '响应数据类型转换配置');
 
   program.parse(process.argv);
 
@@ -25,6 +26,7 @@ import { IRapper } from './rapper';
       rapUrl: program.rapUrl,
       rapperPath: resolve(process.cwd(), program.rapperPath || './src/models/rapper/'),
     };
+    program.resSelector && (rapperConfig.resSelector = program.resSelector);
   } else {
     /** 兼容 Marquex 逻辑 */
     // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -34,7 +36,7 @@ import { IRapper } from './rapper';
       console.log(chalk.yellow('尚未在 package.json 中配置 rapper，请参考配置手册'));
       process.exit(1);
     }
-    const { projectId, type, rapUrl, apiUrl, rapperPath } = packageConfig.rapper;
+    const { projectId, type, rapUrl, apiUrl, rapperPath, resSelector } = packageConfig.rapper;
     if (!projectId) {
       console.log(chalk.yellow('尚未在 package.json 中配置 rapper.projectId'));
       process.exit(1);
@@ -45,6 +47,7 @@ import { IRapper } from './rapper';
       rapUrl,
       rapperPath: resolve(process.cwd(), rapperPath || './src/models/rapper/'),
     };
+    resSelector && (rapperConfig.resSelector = program.resSelector);
   }
 
   rapper(rapperConfig);
