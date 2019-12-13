@@ -48,7 +48,6 @@ export async function getInterfaces(rapApiUrl: string) {
  * 转换rap接口名称
  */
 export function rap2name(itf: Interface.IRoot, urlMapper: IUrlMapper = t => t) {
-  // copy from http://gitlab.alibaba-inc.com/thx/magix-cli/blob/master/util/rap.js
   const { method, url, repositoryId: projectId, id } = itf;
   const apiUrl = urlMapper(url);
 
@@ -99,25 +98,16 @@ export function uniqueItfs(itfs: Array<Intf>) {
     }
   });
   const newItfs: Array<Intf> = [];
+  let hasDuplicate = false;
   itfMap.forEach(dupItfs => {
-    dupItfs.sort(
-      // 后更改的在前面
-      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-    );
+    // 后更改的在前面
+    dupItfs.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
     newItfs.push(dupItfs[0]);
-    if (dupItfs.length > 1) {
-      console.log(
-        chalk.yellow('rapper: 发现重复接口，修改时间最晚的被采纳：\n') +
-          dupItfs
-            .map((itf, index) => {
-              const str = `    ${itf.name}: http://rap2.alibaba-inc.com/repository/editor?id=${itf.repositoryId}&mod=${itf.moduleId}&itf=${itf.id}`;
-
-              return index === 0 ? chalk.green(str) : chalk.gray(str);
-            })
-            .join('\n'),
-      );
+    if (!hasDuplicate && dupItfs.length > 1) {
+      hasDuplicate = true;
     }
   });
+  hasDuplicate && console.log(chalk.yellow('    发现重复接口，修改时间最晚的被采纳：'));
   return newItfs;
 }
 

@@ -17,7 +17,7 @@ export async function createModel(interfaces: Array<Intf>, extr: ICreatorExtr) {
             }
           `;
       } catch (error) {
-        throw chalk.red(`接口：http://rap2.alibaba-inc.com/repository/editor?id=${itf.repositoryId}&mod=${itf.moduleId}&itf=${itf.id}
+        throw chalk.red(`接口：${extr.rapUrl}/repository/editor?id=${itf.repositoryId}&mod=${itf.moduleId}&itf=${itf.id}
           生成出错
           ${error}`);
       }
