@@ -1,6 +1,6 @@
 ## 2019.12.13 v0.2.1
 
-- GET 请求参数默认使用 `JSON.stringfgify` 处理
+- GET 请求参数默认使用 `JSON.stringify` 处理
 - 增加一大波友好的用户提示
 - 修复 useResponse 类型定义错误
 - 移除 rapperSelector，新增 rapperDataSelector、rapperBaseSelector 代替
