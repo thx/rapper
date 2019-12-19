@@ -124,7 +124,7 @@ function createDefaultFetch() {
       /**
        * 请求 url 后面拼接的 query 参数，比如 POST 请求需要拼接 token 参数
        */
-      query?: object;
+      query?: { [key: string]: any };
     }
     
     export interface IDefaultConfigObj {

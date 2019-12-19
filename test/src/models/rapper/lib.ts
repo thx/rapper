@@ -1,4 +1,4 @@
-/* md5: a21435976d6bc1be4616b0d925029ddf */
+/* md5: 932ee1a961e933751416fa0b656a0d02 */
 /* Rap仓库id: 237514 */
 /* eslint-disable */
 /* tslint:disable */
@@ -106,7 +106,7 @@ export interface IExtra {
   /**
    * 请求 url 后面拼接的 query 参数，比如 POST 请求需要拼接 token 参数
    */
-  query?: object;
+  query?: { [key: string]: any };
 }
 
 export interface IDefaultConfigObj {
