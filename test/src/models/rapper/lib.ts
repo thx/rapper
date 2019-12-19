@@ -1,4 +1,4 @@
-/* md5: 932ee1a961e933751416fa0b656a0d02 */
+/* md5: 0d418cd20af9f37e46ecc44b729de7b5 */
 /* Rap仓库id: 237514 */
 /* eslint-disable */
 /* tslint:disable */
@@ -43,7 +43,7 @@ export function processRestfulUrl(url: string, params: any) {
  * search 参数转换，比如 { a: 1, b: 2, c: undefined } 转换成 "a=1&b=2"
  * 会自动删除 undefined
  */
-export function locationStringify(
+export function stringifyQueryString(
   obj: {
     [key: string]: any;
   } = {},
@@ -137,14 +137,14 @@ export const defaultFetch = async ({
   let urlWithParams = url;
   const init: RequestInit = { ...fetchOption, method };
   if (method === 'GET') {
-    const qs = locationStringify(params);
+    const qs = stringifyQueryString(params);
     urlWithParams = qs ? url + '?' + qs : url;
   } else if (
     method === 'POST' &&
     extra &&
     extra.contentType === 'application/x-www-form-urlencoded'
   ) {
-    init.body = locationStringify(params);
+    init.body = stringifyQueryString(params);
   } else if (method === 'POST' && extra && extra.contentType === 'multipart/form-data') {
     const formdata = new FormData();
     params &&
@@ -158,7 +158,7 @@ export const defaultFetch = async ({
 
   /** 请求 url，增加 query 参数 */
   if (extra && typeof extra.query === 'object') {
-    const qs = locationStringify(extra.query) || '';
+    const qs = stringifyQueryString(extra.query) || '';
     const connectStr = urlWithParams.indexOf('?') > -1 ? '&' : '?';
     urlWithParams += connectStr + qs;
   }

@@ -9,7 +9,7 @@ const Request = () => {
   if (allData.length) {
     const { id, request, response } = allData[0];
   }
-  const doRequest = async () => {
+  const doRequest = () => {
     fetch['GET/testGet']({ id: 1 }, { query: { testQuery: [1, 2] } });
   };
   const clearData = () => {

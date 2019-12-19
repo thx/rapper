@@ -149,14 +149,14 @@ function createDefaultFetch() {
       let urlWithParams = url;
       const init: RequestInit = { ...fetchOption, method };
       if (method === 'GET') {
-        const qs = locationStringify(params)
+        const qs = stringifyQueryString(params)
         urlWithParams = qs ? url + '?' + qs : url;
       } else if (
         method === 'POST' &&
         extra &&
         extra.contentType === 'application/x-www-form-urlencoded'
       ) {
-        init.body = locationStringify(params);
+        init.body = stringifyQueryString(params);
       } else if (method === 'POST' && extra && extra.contentType === 'multipart/form-data') {
         const formdata = new FormData();
         params &&
@@ -170,7 +170,7 @@ function createDefaultFetch() {
 
       /** 请求 url，增加 query 参数 */
       if (extra && typeof extra.query === 'object') {
-        const qs = locationStringify(extra.query) || '';
+        const qs = stringifyQueryString(extra.query) || '';
         const connectStr = urlWithParams.indexOf('?') > -1 ? '&' : '?';
         urlWithParams += connectStr + qs;
       }
@@ -241,7 +241,7 @@ export function createBaseLibCode(): IGeneratedCode {
    * search 参数转换，比如 { a: 1, b: 2, c: undefined } 转换成 "a=1&b=2"
    * 会自动删除 undefined
    */
-  export function locationStringify(
+  export function stringifyQueryString(
     obj: {
       [key: string]: any
     } = {}
