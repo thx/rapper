@@ -121,6 +121,10 @@ function createDefaultFetch() {
        * 请求头 content-type，默认是 'application/json'
        */
       contentType?: 'application/json' | 'multipart/form-data' | 'application/x-www-form-urlencoded' | 'text/plain' | 'text/html' | 'application/javascript';
+      /**
+       * 请求 url 后面拼接的 query 参数，比如 POST 请求需要拼接 token 参数
+       */
+      query?: object;
     }
     
     export interface IDefaultConfigObj {
@@ -162,6 +166,13 @@ function createDefaultFetch() {
         init.body = formdata;
       } else {
         init.body = typeof params === 'object' ? JSON.stringify(params) : params;
+      }
+
+      /** 请求 url，增加 query 参数 */
+      if (extra && typeof extra.query === 'object') {
+        const qs = locationStringify(extra.query) || '';
+        const connectStr = urlWithParams.indexOf('?') > -1 ? '&' : '?';
+        urlWithParams += connectStr + qs;
       }
 
       /** 用户自定义 Content-Type */

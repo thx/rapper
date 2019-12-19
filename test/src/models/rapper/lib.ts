@@ -1,4 +1,4 @@
-/* md5: 4ff8ac4104b8602af0edc60bd2145bba */
+/* md5: a21435976d6bc1be4616b0d925029ddf */
 /* Rap仓库id: 237514 */
 /* eslint-disable */
 /* tslint:disable */
@@ -103,6 +103,10 @@ export interface IExtra {
     | 'text/plain'
     | 'text/html'
     | 'application/javascript';
+  /**
+   * 请求 url 后面拼接的 query 参数，比如 POST 请求需要拼接 token 参数
+   */
+  query?: object;
 }
 
 export interface IDefaultConfigObj {
@@ -150,6 +154,13 @@ export const defaultFetch = async ({
     init.body = formdata;
   } else {
     init.body = typeof params === 'object' ? JSON.stringify(params) : params;
+  }
+
+  /** 请求 url，增加 query 参数 */
+  if (extra && typeof extra.query === 'object') {
+    const qs = locationStringify(extra.query) || '';
+    const connectStr = urlWithParams.indexOf('?') > -1 ? '&' : '?';
+    urlWithParams += connectStr + qs;
   }
 
   /** 用户自定义 Content-Type */
