@@ -1,4 +1,4 @@
-/* md5: ae3aa14dc7f592d644b370f963a68e57 */
+/* md5: 4ff8ac4104b8602af0edc60bd2145bba */
 /* Rap仓库id: 237514 */
 /* eslint-disable */
 /* tslint:disable */
@@ -342,18 +342,6 @@ function paramsFilter<
   return true;
 }
 
-/** 根据filter函数自定义筛选 */
-function functionFilter<I, Fil>(item: I, filter: Fil) {
-  if (filter !== undefined) {
-    if (typeof filter === 'function') {
-      return filter(item);
-    } else {
-      return false;
-    }
-  }
-  return true;
-}
-
 function getFilterData<Req, Item extends { request: Req }>(
   reduxData: any[],
   filter?: IFilterObj<Req> | FilterFunc<Item>,
@@ -361,9 +349,7 @@ function getFilterData<Req, Item extends { request: Req }>(
   let resultArr = [];
   if (filter) {
     if (typeof filter === 'function') {
-      resultArr = reduxData.filter((item: Item) =>
-        functionFilter<Item, typeof filter>(item, filter),
-      );
+      resultArr = reduxData.filter((item: Item) => filter(item));
     } else {
       resultArr = reduxData.filter((item: Item) =>
         paramsFilter<Req, Item, typeof filter>(item, filter),

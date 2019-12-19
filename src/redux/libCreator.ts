@@ -365,24 +365,12 @@ export function createTools(): string {
         }
         return true;
       }
-      
-      /** 根据filter函数自定义筛选 */
-      function functionFilter<I, Fil>(item: I, filter: Fil) {
-        if (filter !== undefined) {
-          if (typeof filter === 'function') {
-            return filter(item)
-          } else {
-            return false
-          }
-        }
-        return true
-      }
 
       function getFilterData<Req, Item extends { request: Req }>(reduxData: any[], filter?: IFilterObj<Req> | FilterFunc<Item>) {
         let resultArr = []
         if (filter) {
           if (typeof filter === 'function') {
-            resultArr = reduxData.filter((item: Item) => functionFilter<Item, typeof filter>(item, filter))
+            resultArr = reduxData.filter((item: Item) => filter(item))
           } else {
             resultArr = reduxData.filter((item: Item) => paramsFilter<Req, Item, typeof filter>(item, filter))
           }

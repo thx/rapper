@@ -37,7 +37,7 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
           ({ modelName }) => `
       '${modelName}': Array<IInterfaceInfo & {
         request: IModels['${modelName}']['Req']
-        response: IModels['${modelName}']['Res']
+        response: IResponseTypes['${modelName}']
       }>`,
         )
         .join(',\n\n')}
@@ -77,8 +77,8 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
             itf.modelName
           }']) || []
           type TReturnItem = IInterfaceInfo & {
-            request?: IModels['GET/example/1574387719563']['Req'];
-            response?: IModels['GET/example/1574387719563']['Res'];
+            request?: IModels['${itf.modelName}']['Req'];
+            response?: IResponseTypes['${itf.modelName}'];
           }
           return selectedState as Array<TReturnItem>
         })

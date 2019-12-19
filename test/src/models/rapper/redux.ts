@@ -1,4 +1,4 @@
-/* md5: e593061a5bef747f787fb5ee49efccb8 */
+/* md5: cd42b6949a77f41ca25c41f5872948db */
 /* Rap仓库id: 237514 */
 /* eslint-disable */
 /* tslint:disable */
@@ -49,35 +49,35 @@ interface IRapperStore {
   'GET/example/1574387719563': Array<
     IInterfaceInfo & {
       request: IModels['GET/example/1574387719563']['Req'];
-      response: IModels['GET/example/1574387719563']['Res'];
+      response: IResponseTypes['GET/example/1574387719563'];
     }
   >;
 
   'GET/testGet': Array<
     IInterfaceInfo & {
       request: IModels['GET/testGet']['Req'];
-      response: IModels['GET/testGet']['Res'];
+      response: IResponseTypes['GET/testGet'];
     }
   >;
 
   'POST/testPost': Array<
     IInterfaceInfo & {
       request: IModels['POST/testPost']['Req'];
-      response: IModels['POST/testPost']['Res'];
+      response: IResponseTypes['POST/testPost'];
     }
   >;
 
   'POST/testFormData': Array<
     IInterfaceInfo & {
       request: IModels['POST/testFormData']['Req'];
-      response: IModels['POST/testFormData']['Res'];
+      response: IResponseTypes['POST/testFormData'];
     }
   >;
 
   'GET/group/:groupId/member/:memberId': Array<
     IInterfaceInfo & {
       request: IModels['GET/group/:groupId/member/:memberId']['Req'];
-      response: IModels['GET/group/:groupId/member/:memberId']['Res'];
+      response: IResponseTypes['GET/group/:groupId/member/:memberId'];
     }
   >;
 }
@@ -182,7 +182,7 @@ export const useAllResponse = {
         [];
       type TReturnItem = IInterfaceInfo & {
         request?: IModels['GET/example/1574387719563']['Req'];
-        response?: IModels['GET/example/1574387719563']['Res'];
+        response?: IResponseTypes['GET/example/1574387719563'];
       };
       return selectedState as Array<TReturnItem>;
     });
@@ -198,8 +198,8 @@ export const useAllResponse = {
       const selectedState =
         (state['$$rapperResponseData'] && state['$$rapperResponseData']['GET/testGet']) || [];
       type TReturnItem = IInterfaceInfo & {
-        request?: IModels['GET/example/1574387719563']['Req'];
-        response?: IModels['GET/example/1574387719563']['Res'];
+        request?: IModels['GET/testGet']['Req'];
+        response?: IResponseTypes['GET/testGet'];
       };
       return selectedState as Array<TReturnItem>;
     });
@@ -215,8 +215,8 @@ export const useAllResponse = {
       const selectedState =
         (state['$$rapperResponseData'] && state['$$rapperResponseData']['POST/testPost']) || [];
       type TReturnItem = IInterfaceInfo & {
-        request?: IModels['GET/example/1574387719563']['Req'];
-        response?: IModels['GET/example/1574387719563']['Res'];
+        request?: IModels['POST/testPost']['Req'];
+        response?: IResponseTypes['POST/testPost'];
       };
       return selectedState as Array<TReturnItem>;
     });
@@ -232,8 +232,8 @@ export const useAllResponse = {
       const selectedState =
         (state['$$rapperResponseData'] && state['$$rapperResponseData']['POST/testFormData']) || [];
       type TReturnItem = IInterfaceInfo & {
-        request?: IModels['GET/example/1574387719563']['Req'];
-        response?: IModels['GET/example/1574387719563']['Res'];
+        request?: IModels['POST/testFormData']['Req'];
+        response?: IResponseTypes['POST/testFormData'];
       };
       return selectedState as Array<TReturnItem>;
     });
@@ -251,8 +251,8 @@ export const useAllResponse = {
           state['$$rapperResponseData']['GET/group/:groupId/member/:memberId']) ||
         [];
       type TReturnItem = IInterfaceInfo & {
-        request?: IModels['GET/example/1574387719563']['Req'];
-        response?: IModels['GET/example/1574387719563']['Res'];
+        request?: IModels['GET/group/:groupId/member/:memberId']['Req'];
+        response?: IResponseTypes['GET/group/:groupId/member/:memberId'];
       };
       return selectedState as Array<TReturnItem>;
     });
