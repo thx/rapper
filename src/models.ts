@@ -48,7 +48,7 @@ import { IRapper } from './rapper';
       rapUrl,
       rapperPath: resolve(process.cwd(), rapperPath || './src/models/rapper/'),
     };
-    resSelector && (rapperConfig.resSelector = program.resSelector);
+    resSelector && (rapperConfig.resSelector = resSelector);
   }
 
   rapper(rapperConfig);
