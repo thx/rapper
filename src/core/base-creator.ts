@@ -129,9 +129,10 @@ function createDefaultFetch() {
     
     export interface IDefaultConfigObj {
       /** 'prefix' 前缀，统一设置 url 前缀，默认是 '' */
-      prefix: string
+      prefix?: string;
       /** fetch 的第二参数，除了 body 和 method 都可以自定义 */
-      fetchOption: IDefaultFetchParams['fetchOption']
+      fetchOption?: IDefaultFetchParams['fetchOption'];
+      query?: { [key: string]: any };
     }
     export type FetchConfigObj =  Partial<IDefaultConfigObj>
     type FetchConfigFunc = <T>(params: IUserFetchParams) => Promise<T>
@@ -189,14 +190,24 @@ function createDefaultFetch() {
       if (typeof fetchConfig === 'function') {
         rapperFetch = fetchConfig;
       } else {
-        let { prefix, fetchOption } = fetchConfig;
+        let { prefix, fetchOption, query } = fetchConfig;
         prefix = prefix !== undefined ? prefix : defaultConfig.prefix;
         fetchOption = fetchOption !== undefined ? fetchOption : defaultConfig.fetchOption;
-    
+        query = typeof query === 'object' ? query : {};
+
         rapperFetch = (requestParams: IUserFetchParams) => {
           const { url, method, params, extra } = requestParams;
           fetchOption = fetchOption || {};
-          return defaultFetch({ url: parseUrl(url, prefix), method, params, extra, fetchOption });
+          let newExtra = typeof extra === 'object' ? extra : {};
+          const newQuery = typeof newExtra.query === 'object' ? { ...query, ...newExtra.query } : query;
+          newExtra = { ...newExtra, query: newQuery };
+          return defaultFetch({
+            url: parseUrl(url, prefix),
+            method,
+            params,
+            extra: newExtra,
+            fetchOption,
+          });
         };
       }
       return wrapPreProcessRestfulUrl(rapperFetch);

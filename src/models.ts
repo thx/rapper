@@ -27,7 +27,9 @@ import { IRapper } from './rapper';
       rapUrl: program.rapUrl,
       rapperPath: resolve(process.cwd(), program.rapperPath || './src/models/rapper/'),
     };
-    program.resSelector && (rapperConfig.resSelector = program.resSelector);
+    if (program.resSelector) {
+      rapperConfig = { ...rapperConfig, resSelector: program.resSelector };
+    }
   } else {
     /** 通过 package.json 的 rapper 字段配置 */
     // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -48,7 +50,9 @@ import { IRapper } from './rapper';
       rapUrl,
       rapperPath: resolve(process.cwd(), rapperPath || './src/models/rapper/'),
     };
-    resSelector && (rapperConfig.resSelector = resSelector);
+    if (resSelector) {
+      rapperConfig = { ...rapperConfig, resSelector: resSelector };
+    }
   }
 
   rapper(rapperConfig);
