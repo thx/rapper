@@ -129,7 +129,7 @@ function createDefaultFetch() {
     
     export interface IDefaultConfigObj {
       /** 'prefix' 前缀，统一设置 url 前缀，默认是 '' */
-      prefix: string;
+      prefix?: string;
       /** fetch 的第二参数，除了 body 和 method 都可以自定义 */
       fetchOption?: IDefaultFetchParams['fetchOption'];
       query?: { [key: string]: any };
