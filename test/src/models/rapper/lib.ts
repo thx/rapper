@@ -1,4 +1,4 @@
-/* md5: 8965d77663e6f6a4946aa681d648edb8 */
+/* md5: d110cf6a4c4f7bc80654ad239ac0e931 */
 /* Rap仓库id: 237514 */
 /* eslint-disable */
 /* tslint:disable */
@@ -62,7 +62,7 @@ export function stringifyQueryString(
 
 /** 拼接组合request链接 */
 function parseUrl(url: string, requestPrefix?: string): string {
-  const urlReg = /^((https?:)?\/\/(([a-zA-Z0-9]+-?)+[a-zA-Z0-9]+\.)+[a-zA-Z]+)(:\d+)?(\/.*)?(\?.*)?(#.*)?$/;
+  const urlReg = /^((https?:)?\/\/(([a-zA-Z0-9]+-?)+[a-zA-Z0-9]+\.)+[a-zA-Z]+)(:\d+)?(\/.*)?/;
   /** 如果url含有host，就不再混入prefix */
   if (urlReg.test(url)) {
     return url;
@@ -116,6 +116,7 @@ export interface IDefaultConfigObj {
   prefix?: string;
   /** fetch 的第二参数，除了 body 和 method 都可以自定义 */
   fetchOption?: IDefaultFetchParams['fetchOption'];
+  /** 全局的query参数，可以配置 object，或者自定义函数 */
   query?: { [key: string]: Json } | TQueryFunc;
 }
 export type FetchConfigObj = Partial<IDefaultConfigObj>;
