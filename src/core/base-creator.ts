@@ -283,7 +283,7 @@ export function createBaseLibCode(): IGeneratedCode {
 
   /** 拼接组合request链接 */
   function parseUrl(url: string, requestPrefix?: string): string {
-    const urlReg = /^((https?:)?\\/\\/(([a-zA-Z0-9]+-?)+[a-zA-Z0-9]+\\.)+[a-zA-Z]+)(:\\d+)?(\\/.*)?(\\?.*)?(#.*)?$/
+    const urlReg = /^((https?:)?\\/\\/(([a-zA-Z0-9]+-?)+[a-zA-Z0-9]+\\.)+[a-zA-Z]+)(:\\d+)?(\\/.*)?/
     /** 如果url含有host，就不再混入prefix */
     if (urlReg.test(url)) {
       return url
