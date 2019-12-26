@@ -1,4 +1,4 @@
-/* md5: 33aaf9e1ee66009acce96baf26daf130 */
+/* md5: 8965d77663e6f6a4946aa681d648edb8 */
 /* Rap仓库id: 237514 */
 /* eslint-disable */
 /* tslint:disable */
@@ -62,7 +62,7 @@ export function stringifyQueryString(
 
 /** 拼接组合request链接 */
 function parseUrl(url: string, requestPrefix?: string): string {
-  const urlReg = /^((https?:\/\/)?(([a-zA-Z0-9]+-?)+[a-zA-Z0-9]+\.)+[a-zA-Z]+)(:\d+)?(\/.*)?(\?.*)?(#.*)?$/;
+  const urlReg = /^((https?:)?\/\/(([a-zA-Z0-9]+-?)+[a-zA-Z0-9]+\.)+[a-zA-Z]+)(:\d+)?(\/.*)?(\?.*)?(#.*)?$/;
   /** 如果url含有host，就不再混入prefix */
   if (urlReg.test(url)) {
     return url;
@@ -75,6 +75,7 @@ function parseUrl(url: string, requestPrefix?: string): string {
   return requestPrefix + '/' + url;
 }
 
+type Json = string | number | boolean | null | { [property: string]: Json } | Json[];
 /** defaultFetch 参数 */
 export interface IDefaultFetchParams {
   url: string;
@@ -109,12 +110,13 @@ export interface IExtra {
   query?: { [key: string]: any };
 }
 
+type TQueryFunc = () => { [key: string]: Json };
 export interface IDefaultConfigObj {
   /** 'prefix' 前缀，统一设置 url 前缀，默认是 '' */
-  prefix: string;
+  prefix?: string;
   /** fetch 的第二参数，除了 body 和 method 都可以自定义 */
   fetchOption?: IDefaultFetchParams['fetchOption'];
-  query?: { [key: string]: any };
+  query?: { [key: string]: Json } | TQueryFunc;
 }
 export type FetchConfigObj = Partial<IDefaultConfigObj>;
 type FetchConfigFunc = <T>(params: IUserFetchParams) => Promise<T>;
@@ -181,13 +183,22 @@ export const getRapperRequest = (fetchConfig: RequesterOption) => {
     let { prefix, fetchOption, query } = fetchConfig;
     prefix = prefix !== undefined ? prefix : defaultConfig.prefix;
     fetchOption = fetchOption !== undefined ? fetchOption : defaultConfig.fetchOption;
-    query = typeof query === 'object' ? query : {};
+    /** 全局query参数处理 */
+    let defaultQuery: { [key: string]: Json };
+    if (typeof query === 'function') {
+      defaultQuery = query();
+    } else if (query && typeof query === 'object') {
+      defaultQuery = query;
+    } else {
+      defaultQuery = {};
+    }
 
     rapperFetch = (requestParams: IUserFetchParams) => {
       const { url, method, params, extra } = requestParams;
       fetchOption = fetchOption || {};
       let newExtra = typeof extra === 'object' ? extra : {};
-      const newQuery = typeof newExtra.query === 'object' ? { ...query, ...newExtra.query } : query;
+      const newQuery =
+        typeof newExtra.query === 'object' ? { ...defaultQuery, ...newExtra.query } : defaultQuery;
       newExtra = { ...newExtra, query: newQuery };
       return defaultFetch({
         url: parseUrl(url, prefix),

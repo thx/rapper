@@ -99,6 +99,7 @@ export function createBaseIndexCode(): IGeneratedCode {
 /** 生成 defaultFetch */
 function createDefaultFetch() {
   return `
+    type Json = string | number | boolean | null | { [property: string]: Json } | Json[];
     /** defaultFetch 参数 */
     export interface IDefaultFetchParams {
       url: string;
@@ -127,12 +128,13 @@ function createDefaultFetch() {
       query?: { [key: string]: any };
     }
     
+    type TQueryFunc = () => { [key: string]: Json };
     export interface IDefaultConfigObj {
       /** 'prefix' 前缀，统一设置 url 前缀，默认是 '' */
       prefix?: string;
       /** fetch 的第二参数，除了 body 和 method 都可以自定义 */
       fetchOption?: IDefaultFetchParams['fetchOption'];
-      query?: { [key: string]: any };
+      query?: { [key: string]: Json } | TQueryFunc;
     }
     export type FetchConfigObj =  Partial<IDefaultConfigObj>
     type FetchConfigFunc = <T>(params: IUserFetchParams) => Promise<T>
@@ -193,13 +195,22 @@ function createDefaultFetch() {
         let { prefix, fetchOption, query } = fetchConfig;
         prefix = prefix !== undefined ? prefix : defaultConfig.prefix;
         fetchOption = fetchOption !== undefined ? fetchOption : defaultConfig.fetchOption;
-        query = typeof query === 'object' ? query : {};
+        /** 全局query参数处理 */
+        let defaultQuery: { [key: string]: Json };
+        if (typeof query === 'function') {
+          defaultQuery = query();
+        } else if (query && typeof query === 'object') {
+          defaultQuery = query;
+        } else {
+          defaultQuery = {};
+        }
 
         rapperFetch = (requestParams: IUserFetchParams) => {
           const { url, method, params, extra } = requestParams;
           fetchOption = fetchOption || {};
           let newExtra = typeof extra === 'object' ? extra : {};
-          const newQuery = typeof newExtra.query === 'object' ? { ...query, ...newExtra.query } : query;
+          const newQuery =
+            typeof newExtra.query === 'object' ? { ...defaultQuery, ...newExtra.query } : defaultQuery;
           newExtra = { ...newExtra, query: newQuery };
           return defaultFetch({
             url: parseUrl(url, prefix),
@@ -271,7 +282,7 @@ export function createBaseLibCode(): IGeneratedCode {
 
   /** 拼接组合request链接 */
   function parseUrl(url: string, requestPrefix?: string): string {
-    const urlReg = /^((https?:\\/\\/)?(([a-zA-Z0-9]+-?)+[a-zA-Z0-9]+\\.)+[a-zA-Z]+)(:\\d+)?(\\/.*)?(\\?.*)?(#.*)?$/
+    const urlReg = /^((https?:)?\\/\\/(([a-zA-Z0-9]+-?)+[a-zA-Z0-9]+\\.)+[a-zA-Z]+)(:\\d+)?(\\/.*)?(\\?.*)?(#.*)?$/
     /** 如果url含有host，就不再混入prefix */
     if (urlReg.test(url)) {
       return url
