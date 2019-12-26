@@ -1,3 +1,8 @@
+## 2019.12.27 v0.2.2
+
+- 修复 prefix 解析错误
+- createFetch 支持 query 参数
+
 ## 2019.12.13 v0.2.1
 
 - GET 请求参数默认使用 `JSON.stringify` 处理
