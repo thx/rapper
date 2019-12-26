@@ -134,6 +134,7 @@ function createDefaultFetch() {
       prefix?: string;
       /** fetch 的第二参数，除了 body 和 method 都可以自定义 */
       fetchOption?: IDefaultFetchParams['fetchOption'];
+      /** 全局的query参数，可以配置 object，或者自定义函数 */
       query?: { [key: string]: Json } | TQueryFunc;
     }
     export type FetchConfigObj =  Partial<IDefaultConfigObj>
