@@ -208,10 +208,18 @@ function interfaceToJSONSchema(itf: Interface.IRoot, scope: Scope): JSONSchema4 
         } else if (type === 'array') {
           return inferArraySchema(p, childProperties, common);
         } else {
-          throw `type: ${type}
-          parentID: ${parentId}
-          itf.url: ${itf.url}
-          ${JSON.stringify(childProperties)}`;
+          // 解析失败，返回 any
+          return [
+            p.name,
+            {
+              type: ['string', 'number', 'boolean', 'object'],
+              ...common,
+            },
+          ];
+          // throw `type: ${type}
+          // parentID: ${parentId}
+          // itf.url: ${itf.url}
+          // ${JSON.stringify(childProperties)}`;
         }
       })
       .fromPairs()
