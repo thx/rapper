@@ -112,9 +112,10 @@ export function uniqueItfs(itfs: Array<Intf>) {
 }
 
 /** 生成提示文案 */
-export function creatHeadHelpStr(rapUrl: string, projectId: number): string {
+export function creatHeadHelpStr(rapUrl: string, projectId: number, rapperVersion: string): string {
   return `
   /* Rap仓库id: ${projectId} */
+  /* Rapper版本: ${rapperVersion} */
   /* eslint-disable */
   /* tslint:disable */
   
