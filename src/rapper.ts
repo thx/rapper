@@ -102,7 +102,7 @@ export default async function({
     return new Promise(() => {
       spinner.fail(
         chalk.red(
-          'rapper 升级提示: 当前环境 rapper 版本低于已经生成的模板文件版本，为避免低版本覆盖高版本，请您升级',
+          'rapper 执行失败: 当前环境 rapper 版本低于已经生成的模板文件版本，为避免低版本覆盖高版本，请您升级',
         ),
       );
       console.log(`  当前版本: ${chalk.grey(rapperVersion)}`);
