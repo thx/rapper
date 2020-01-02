@@ -137,18 +137,21 @@ export function findChangeFiles(rapperPath: string): string[] {
 }
 
 /**
- * 扫描找出生成模板文件的 rapper 版本
+ * 从模板文件的前6行中扫描找出生成模板文件的 rapper 版本
  */
 export function findRapperVersion(rapperPath: string): string {
   let version = '';
   try {
     const content = fs.readFileSync(`${rapperPath}/index.ts`, 'UTF-8') || '';
     const contentArr = content.split(/\r|\n|\r\n/);
-    if (contentArr.length && contentArr[2]) {
-      const matchMD5 = contentArr[2].match(/\/\*\sRapper版本:\s(\S*)\s\*\//) || [];
+    if (contentArr.length) {
+      const matchMD5 =
+        contentArr
+          .slice(0, 6)
+          .join('\n')
+          .match(/\/\*\sRapper版本:\s(\S*)\s\*\//) || [];
       version = matchMD5[1];
     }
   } catch (err) {}
-
   return version;
 }
