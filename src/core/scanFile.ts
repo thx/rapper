@@ -129,7 +129,7 @@ export function findChangeFiles(rapperPath: string): string[] {
     /** 读取文件的内容 */
     const content = fs.readFileSync(filePath, 'UTF-8') || '';
     /** 校验文件 MD5，是否被改动 */
-    if (isFileChange(content.split('\n'))) {
+    if (isFileChange(content.split(/\r|\n|\r\n/))) {
       changeList.push(resolve(process.cwd(), filePath));
     }
   });
@@ -143,7 +143,7 @@ export function findRapperVersion(rapperPath: string): string {
   let version = '';
   try {
     const content = fs.readFileSync(`${rapperPath}/index.ts`, 'UTF-8') || '';
-    const contentArr = content.split('\n');
+    const contentArr = content.split(/\r|\n|\r\n/);
     if (contentArr.length && contentArr[2]) {
       const matchMD5 = contentArr[2].match(/\/\*\sRapper版本:\s(\S*)\s\*\//) || [];
       version = matchMD5[1];
