@@ -8,9 +8,7 @@
     "build": "./node_modules/typescript/bin/tsc -p tsconfig.json",
     "normal": "npm run build && node ./dist/build/normal",
     "redux": "npm run build && node ./dist/build/redux",
-    "prepublishOnly": "npm run build",
-    "createDaily": "mpub createDaily",
-    "publish": "mpub publish"
+    "prepublishOnly": "npm run build"
   },
   "bin": {
     "rap": "./dist/models.js",
@@ -47,7 +45,6 @@
     "semver": "^6.3.0"
   },
   "devDependencies": {
-    "@ali/mpub": "^1.0.4",
     "@types/json5": "0.0.30",
     "@types/lodash": "^4.14.144",
     "@types/react": "^16.9.2",
