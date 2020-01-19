@@ -32,7 +32,7 @@ function inferArraySchema(
     // 子元素的类型可以从 value 中推断出来
     try {
       const arr: any[] | any = JSON5.parse(p.value);
-      if (Array.isArray(arr)) {
+      if (Array.isArray(arr) && arr.length) {
         const type = _.chain(arr)
           .map(e => typeof e)
           .uniq()
@@ -72,6 +72,16 @@ function inferArraySchema(
       const v: any[] | any = JSON5.parse(p.value);
 
       if (Array.isArray(v)) {
+        // 如果是空数组返回 any[]
+        if (!v.length) {
+          return [
+            p.name,
+            {
+              type: 'array',
+              ...common,
+            },
+          ];
+        }
         // 如果是数组使用数组元素类型
         const type = _.chain(v)
           .map(e => typeof e)
