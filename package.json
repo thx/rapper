@@ -1,6 +1,6 @@
 {
   "name": "@ali/rap",
-  "version": "0.2.2",
+  "version": "0.2.3-beta.0",
   "description": "rapper, use http api as a function",
   "main": "./dist/index.js",
   "scripts": {
