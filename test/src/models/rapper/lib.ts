@@ -1,6 +1,6 @@
-/* md5: 925560117592349d4d88c896f22be6dd */
+/* md5: e73e9731a4a016775ef233f00e703429 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 0.2.2-beta.1 */
+/* Rapper版本: 0.2.3-beta.1 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -127,7 +127,7 @@ export type RequesterOption = FetchConfigObj | FetchConfigFunc;
 const defaultConfig: IDefaultConfigObj = {
   prefix: '',
   fetchOption: {
-    headers: { 'Content-Type': 'application/json' },
+    headers: {},
     credentials: 'same-origin',
   },
 };
@@ -170,7 +170,14 @@ export const defaultFetch = async ({
 
   /** 用户自定义 Content-Type */
   if (extra && extra.contentType) {
-    init.headers = { ...init.headers, 'Content-Type': extra.contentType };
+    if (extra.contentType !== 'multipart/form-data') {
+      init.headers = {
+        ...init.headers,
+        'Content-Type': extra.contentType,
+      };
+    }
+  } else {
+    init.headers = { ...init.headers, 'Content-Type': 'application/json' };
   }
 
   const res = await fetch(urlWithParams, init);

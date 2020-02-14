@@ -144,7 +144,7 @@ function createDefaultFetch() {
     const defaultConfig: IDefaultConfigObj = {
       prefix: '',
       fetchOption: {
-        headers: { 'Content-Type': 'application/json' },
+        headers: {},
         credentials: 'same-origin',
       },
     };
@@ -181,7 +181,14 @@ function createDefaultFetch() {
 
       /** 用户自定义 Content-Type */
       if (extra && extra.contentType) {
-        init.headers = { ...init.headers, 'Content-Type': extra.contentType };
+        if (extra.contentType !== 'multipart/form-data') {
+          init.headers = {
+            ...init.headers,
+            'Content-Type': extra.contentType,
+          }
+        }
+      } else {
+        init.headers = { ...init.headers, 'Content-Type': 'application/json' }
       }
 
       const res = await fetch(urlWithParams, init);
