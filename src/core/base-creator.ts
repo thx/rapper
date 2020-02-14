@@ -180,6 +180,7 @@ function createDefaultFetch() {
       }
 
       /** 用户自定义 Content-Type */
+      /** 自主设置 multipart 无法正确设定 boundary，所以对 multipart/form-data 特殊处理 */
       if (extra && extra.contentType) {
         if (extra.contentType !== 'multipart/form-data') {
           init.headers = {
