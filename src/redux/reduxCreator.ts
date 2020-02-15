@@ -1,5 +1,5 @@
 import { Intf, ICreatorExtr } from '../types';
-import { RAPPER_STATE_KEY, RAPPER_CLEAR_STORE } from './index';
+import { RAPPER_STATE_KEY, RAPPER_CLEAR_STORE } from '../runtime/lib';
 import { creatInterfaceHelpStr } from '../core/tools';
 
 /** 定义 请求types */

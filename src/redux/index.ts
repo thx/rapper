@@ -5,15 +5,17 @@ import {
   createBaseSelectorStr,
   createDataSelectorStr,
 } from './reduxCreator';
-import { createTools, createTypesStr, createReduxRuntime } from './libCreator';
 import { createBaseRequestStr } from './requesterCreator';
+import { getPackageName } from '../utils';
+
+const packageName = getPackageName();
 
 /** 生成 index.ts */
 function createIndexStr(): IGeneratedCode {
   return {
     import: `
       import { useResponse, useAllResponse, clearResponseCache, rapperActions, rapperBaseSelector, rapperDataSelector } from './redux'
-      import { rapperReducers, rapperEnhancer } from './lib'
+      import { rapperReducers, rapperEnhancer } from '${packageName}/runtime/lib'
       import { IResponseTypes } from './request'
     `,
     body: '',
@@ -43,7 +45,7 @@ function createDynamicStr(interfaces: Array<Intf>, extr: ICreatorExtr): string {
   return `
     import { useSelector } from 'react-redux'
     import { IModels, IResponseTypes } from './request'
-    import { dispatchAction, useResponseData, getResponseData, getRapperDataSelector, IState, IInterfaceInfo } from './lib'
+    import { dispatchAction, useResponseData, getResponseData, getRapperDataSelector, IState, IInterfaceInfo } from '${packageName}/runtime/lib'
 
     ${createActionStr(interfaces, extr)}
     ${createUseRapStr(interfaces, extr)}
@@ -54,24 +56,4 @@ function createDynamicStr(interfaces: Array<Intf>, extr: ICreatorExtr): string {
   `;
 }
 
-/** 生成 lib.ts */
-function createLibStr(interfaces: Array<Intf>, extr: ICreatorExtr): IGeneratedCode {
-  return {
-    import: `
-      import { useState, useEffect } from 'react'
-      import { useSelector } from 'react-redux'
-    `,
-    body: `
-      ${createTypesStr()}
-      ${createTools()}
-      ${createReduxRuntime()}
-    `,
-    export: '',
-  };
-}
-
-export const RAPPER_REQUEST = '$$RAPPER_REQUEST';
-export const RAPPER_CLEAR_STORE = '$$RAPPER_CLEAR_STORE';
-export const RAPPER_UPDATE_STORE = '$$RAPPER_UPDATE_STORE';
-export const RAPPER_STATE_KEY = '$$rapperResponseData';
-export default { createIndexStr, createDynamicStr, createLibStr, createBaseRequestStr };
+export default { createIndexStr, createDynamicStr, createBaseRequestStr };

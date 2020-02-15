@@ -5,6 +5,7 @@ import * as crypto from 'crypto';
 import * as inquirer from 'inquirer';
 import chalk from 'chalk';
 import { IGeneratedCode } from './types';
+const packageJson = require('../package.json');
 
 export function withoutExt(p: string) {
   return p.replace(/\.[^/.]+$/, '');
@@ -106,4 +107,9 @@ export async function templateFilesRelyConfirm() {
   ];
   const answers = await inquirer.prompt(question);
   return answers;
+}
+
+/** 获取当前包名 */
+export function getPackageName() {
+  return packageJson.name;
 }

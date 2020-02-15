@@ -9,7 +9,7 @@ import {
   IGeneratedCode,
   ICreatorExtr,
 } from './types';
-import { createBaseRequestStr, createBaseIndexCode, createBaseLibCode } from './core/base-creator';
+import { createBaseRequestStr, createBaseIndexCode } from './core/base-creator';
 import ReduxCreator from './redux';
 import {
   writeFile,
@@ -172,7 +172,6 @@ export default async function({
   let Creator: {
     createIndexStr?: () => IGeneratedCode;
     createDynamicStr?: (interfaces: Array<Intf>, extr: ICreatorExtr) => string;
-    createLibStr?: (interfaces: Array<Intf>, extr: ICreatorExtr) => IGeneratedCode;
     createBaseRequestStr?: (interfaces: Array<Intf>, extr: ICreatorExtr) => Promise<string>;
   } = {};
   switch (type) {
@@ -231,20 +230,6 @@ export default async function({
         DEFAULT_OPTIONS,
       ),
     });
-
-  /** 生成静态的 lib */
-  const libCodeArr: Array<IGeneratedCode> = [createBaseLibCode()];
-  if (Creator.createLibStr) {
-    libCodeArr.push(Creator.createLibStr(interfaces, { rapUrl, resSelector }));
-  }
-  const libStr = `
-    ${creatHeadHelpStr(rapUrl, projectId, rapperVersion)}
-    ${mixGeneratedCode(libCodeArr)}
-  `;
-  outputFiles.push({
-    path: `${rapperPath}/lib.ts`,
-    content: format(libStr, DEFAULT_OPTIONS),
-  });
 
   /** 生成的模板文件第一行增加MD5 */
   outputFiles = outputFiles.map(item => ({

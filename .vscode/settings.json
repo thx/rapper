@@ -3,5 +3,14 @@
   "editor.formatOnSave": true,
   // 设置 eslint 保存时自动修复
   "eslint.autoFixOnSave": true,
-  "eslint.validate": ["javascript", { "language": "typescript", "autoFix": true }]
+  "eslint.validate": [
+    "javascript",
+    {
+      "language": "typescript",
+      "autoFix": true
+    }
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
 }

@@ -1,12 +1,15 @@
 import { createModel, createResponseTypes } from '../core/base-creator';
 import { Intf, ICreatorExtr } from '../types';
 import { creatInterfaceHelpStr } from '../core/tools';
-import { RAPPER_REQUEST } from './index';
+import { RAPPER_REQUEST } from '../runtime/lib';
+import { getPackageName } from '../utils';
+
+const packageName = getPackageName();
 
 export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreatorExtr) {
   const modelStr = await createModel(interfaces, extr);
   return `
-    import { dispatchAction, RequesterOption, IUserFetchParams, IExtra, getRapperRequest } from './lib'
+    import { dispatchAction, RequesterOption, IUserFetchParams, IExtra, getRapperRequest } from '${packageName}/runtime//lib'
     import { RequestTypes } from './redux'
 
     ${modelStr}
