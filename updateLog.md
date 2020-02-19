@@ -1,6 +1,7 @@
 ## 2019.2.14 v0.2.3
 
-- 修复 multipart/form-data 提交时，content-type 错误
+- 增加 content-type 是 multipart/form-data 的场景，可用于上传文件，form 表单提交
+- 修复了请求参数 params[key] = 0 时可能被忽略的 bug
 
 ## 2019.12.27 v0.2.2
 
