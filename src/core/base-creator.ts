@@ -165,7 +165,7 @@ function createDefaultFetch() {
         const formdata = new FormData();
         params &&
           Object.keys(params).forEach(key => {
-            params[key] && formdata.append(key, params[key]);
+            params[key] !== undefined && formdata.append(key, params[key]);
           });
         init.body = formdata;
       } else {

@@ -1,3 +1,7 @@
+## 2019.2.14 v0.2.3
+
+- 修复 multipart/form-data 提交时，content-type 错误
+
 ## 2019.12.27 v0.2.2
 
 - 修复 prefix 解析错误
