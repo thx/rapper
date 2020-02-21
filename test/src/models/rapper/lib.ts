@@ -1,6 +1,6 @@
-/* md5: e73e9731a4a016775ef233f00e703429 */
+/* md5: f6e325dbe53cc78147c7c102f500486e */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 0.2.3-beta.1 */
+/* Rapper版本: 0.2.3-beta.2 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -154,7 +154,7 @@ export const defaultFetch = async ({
     const formdata = new FormData();
     params &&
       Object.keys(params).forEach(key => {
-        params[key] && formdata.append(key, params[key]);
+        params[key] !== undefined && formdata.append(key, params[key]);
       });
     init.body = formdata;
   } else {
@@ -169,6 +169,7 @@ export const defaultFetch = async ({
   }
 
   /** 用户自定义 Content-Type */
+  /** 自主设置 multipart 无法正确设定 boundary，所以对 multipart/form-data 特殊处理 */
   if (extra && extra.contentType) {
     if (extra.contentType !== 'multipart/form-data') {
       init.headers = {
