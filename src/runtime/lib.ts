@@ -38,11 +38,13 @@ export function wrapPreProcessRestfulUrl(fetch: (fetchParams: IUserFetchParams) 
 /**
  * search 参数转换，比如 { a: 1, b: 2, c: undefined } 转换成 "a=1&b=2"
  * 会自动删除 undefined
+ * fn，可以是用户自定义的转换函数，默认是 JSON.stringify
  */
 export function stringifyQueryString(
   obj: {
     [key: string]: any;
   } = {},
+  fn: (input: any[] | object) => string = JSON.stringify,
 ): string {
   return Object.entries(obj).reduce((str, [key, value]) => {
     if (value === undefined) {
@@ -50,7 +52,7 @@ export function stringifyQueryString(
     }
     str = str ? str + '&' : str;
     if (typeof value === 'object') {
-      value = JSON.stringify(value);
+      value = fn(value);
     }
     return str + encodeURIComponent(key) + '=' + encodeURIComponent(value);
   }, '');
@@ -71,7 +73,7 @@ function parseUrl(url: string, requestPrefix?: string): string {
   return requestPrefix + '/' + url;
 }
 
-type Json = string | number | boolean | null | { [property: string]: Json } | Json[];
+type IJson = string | number | boolean | null | { [property: string]: IJson } | IJson[];
 /** defaultFetch 参数 */
 export interface IDefaultFetchParams {
   url: string;
@@ -104,22 +106,23 @@ export interface IExtra {
    * 请求 url 后面拼接的 query 参数，比如 POST 请求需要拼接 token 参数
    */
   query?: { [key: string]: any };
+  /**
+   * 用户自定义的queryString函数，默认是 JSON.stringify
+   */
+  queryStringFn?: (input: any[] | object) => string;
 }
 
 /** useRapper 的 extra */
-export interface IUseRapperExtra {
-  /** 自定义的fetch方法 */
-  fetch?: any;
-}
+export type IUseRapperExtra = IExtra;
 
-type TQueryFunc = () => { [key: string]: Json };
+type TQueryFunc = () => { [key: string]: IJson };
 export interface IDefaultConfigObj {
   /** 'prefix' 前缀，统一设置 url 前缀，默认是 '' */
   prefix?: string;
   /** fetch 的第二参数，除了 body 和 method 都可以自定义 */
   fetchOption?: IDefaultFetchParams['fetchOption'];
   /** 全局的query参数，可以配置 object，或者自定义函数 */
-  query?: { [key: string]: Json } | TQueryFunc;
+  query?: { [key: string]: IJson } | TQueryFunc;
 }
 export type FetchConfigObj = Partial<IDefaultConfigObj>;
 type FetchConfigFunc = <T>(params: IUserFetchParams) => Promise<T>;
@@ -143,14 +146,14 @@ export const defaultFetch = async ({
   let urlWithParams = url;
   const init: RequestInit = { ...fetchOption, method };
   if (method === 'GET') {
-    const qs = stringifyQueryString(params);
+    const qs = stringifyQueryString(params, extra.queryStringFn);
     urlWithParams = qs ? url + '?' + qs : url;
   } else if (
     method === 'POST' &&
     extra &&
     extra.contentType === 'application/x-www-form-urlencoded'
   ) {
-    init.body = stringifyQueryString(params);
+    init.body = stringifyQueryString(params, extra.queryStringFn);
   } else if (method === 'POST' && extra && extra.contentType === 'multipart/form-data') {
     const formdata = new FormData();
     params &&
@@ -164,7 +167,7 @@ export const defaultFetch = async ({
 
   /** 请求 url，增加 query 参数 */
   if (extra && typeof extra.query === 'object') {
-    const qs = stringifyQueryString(extra.query) || '';
+    const qs = stringifyQueryString(extra.query, extra.queryStringFn) || '';
     const connectStr = urlWithParams.indexOf('?') > -1 ? '&' : '?';
     urlWithParams += connectStr + qs;
   }
@@ -193,9 +196,12 @@ export const getRapperRequest = (fetchConfig: RequesterOption) => {
     let { prefix, fetchOption } = fetchConfig;
     const { query } = fetchConfig;
     prefix = prefix !== undefined ? prefix : defaultConfig.prefix;
-    fetchOption = fetchOption !== undefined ? fetchOption : defaultConfig.fetchOption;
+    fetchOption =
+      Object.prototype.toString.call(fetchOption) === '[object Object]'
+        ? fetchOption
+        : defaultConfig.fetchOption;
     /** 全局query参数处理 */
-    let defaultQuery: { [key: string]: Json };
+    let defaultQuery: { [key: string]: IJson };
     if (typeof query === 'function') {
       defaultQuery = query();
     } else if (query && typeof query === 'object') {
@@ -224,7 +230,7 @@ export const getRapperRequest = (fetchConfig: RequesterOption) => {
 };
 
 /** 请求类型 */
-type REQUEST_METHOD = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD';
+type REQUEST_METHOD = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
 interface IAction<T = any> {
   type: T;

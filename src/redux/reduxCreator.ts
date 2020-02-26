@@ -73,7 +73,7 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
       /* tslint:disable */
       '${itf.modelName}': function useData(
         requestParams: IModels['${itf.modelName}']['Req'],
-        extra?: IUseRapperExtra
+        extra?: IUseRapperExtra & { fetch?: ReturnType<typeof createFetch> }
       ) {
         type Req = IModels['${itf.modelName}']['Req']
         type Res = IResponseTypes['${itf.modelName}']
