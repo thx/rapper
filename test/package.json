@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ali/rap": "file:../",
     "@types/jest": "24.0.23",
     "@types/node": "12.12.11",
     "@types/react": "16.9.11",
@@ -14,8 +15,7 @@
     "react-scripts": "3.2.0",
     "redux": "^4.0.4",
     "redux-logger": "^3.0.6",
-    "typescript": "3.7.2",
-    "@ali/rap": "file:../"
+    "typescript": "^3.8.2"
   },
   "scripts": {
     "start": "react-scripts start",
