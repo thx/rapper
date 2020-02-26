@@ -106,6 +106,12 @@ export interface IExtra {
   query?: { [key: string]: any };
 }
 
+/** useRapper 的 extra */
+export interface IUseRapperExtra {
+  /** 自定义的fetch方法 */
+  fetch?: any;
+}
+
 type TQueryFunc = () => { [key: string]: Json };
 export interface IDefaultConfigObj {
   /** 'prefix' 前缀，统一设置 url 前缀，默认是 '' */
@@ -408,7 +414,7 @@ export function useResponseData<M, Req, Res, Item extends { request: Req }>(
     return (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
   });
   const initData = getFilterData<Req, Item>(reduxData, filter);
-  const [id, setId] = useState(initData.response || undefined);
+  const [id, setId] = useState(initData.id || undefined);
   const [filteredData, setFilteredData] = useState(initData.response || undefined);
   const [isPending, setIsPending] = useState(initData.isPending || false);
   const [errorMessage, setErrorMessage] = useState(initData.errorMessage || undefined);
@@ -455,6 +461,51 @@ export function getRapperDataSelector<M, Res>(state: IState, modelName: M) {
   const reduxData = (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
   const result = reduxData.length ? reduxData.slice(-1)[0] : {};
   return result.response as Res | undefined;
+}
+
+interface IRapperCommonParams<M, Req, Item> {
+  modelName: M;
+  fetcher: any;
+  requestParams: Req;
+  filter?: IFilterObj<Req> | FilterFunc<Item>;
+}
+/** useRapper */
+export function useRapperCommon<M, Req, Res>({
+  modelName,
+  fetcher,
+  requestParams,
+}: IRapperCommonParams<M, Req, {}>) {
+  const reduxData = useSelector((state: IState) => {
+    return (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
+  });
+  const initData = getFilterData<Req, { request: Req }>(reduxData);
+  const [filteredData, setFilteredData] = useState(initData.response || undefined);
+  const [isPending, setIsPending] = useState(initData.isPending || false);
+  const [errorMessage, setErrorMessage] = useState(initData.errorMessage || undefined);
+
+  useEffect(() => {
+    /** 过滤出一条最新的符合条件的数据 */
+    const result = getFilterData<Req, { request: Req }>(reduxData);
+    !looseEqual(result.response, filteredData) && setFilteredData(result.response || undefined);
+    setIsPending(result.isPending || false);
+    setErrorMessage(result.errorMessage);
+  }, [reduxData, filteredData]);
+
+  useEffect(() => {
+    if (!initData.id) {
+      fetcher(requestParams);
+    }
+  }, [initData.id]);
+
+  return [filteredData, { isPending, errorMessage }] as [
+    Res | undefined,
+    {
+      /** 是否正在请求中 */
+      isPending: boolean;
+      /** 请求错误信息 */
+      errorMessage?: string;
+    },
+  ];
 }
 
 type dispatch = <Res>(action: TAction) => Promise<IAnyAction | Res>;

@@ -50,7 +50,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
   const { rapUrl, resSelector } = extr;
   const modelStr = await createModel(interfaces, extr);
   return `
-    import { RequesterOption, getRapperRequest, IExtra } from '${packageName}/runtime/lib'
+    import { RequesterOption, getRapperRequest, IExtra } from '${packageName}/dist/runtime/lib'
     ${modelStr}
 
     ${resSelector}
@@ -87,7 +87,7 @@ export function createBaseIndexCode(): IGeneratedCode {
   return {
     import: `
       import { createFetch, IModels } from './request'
-      import { defaultFetch } from '${packageName}/runtime/lib'
+      import { defaultFetch } from '${packageName}/dist/runtime/lib'
     `,
     body: `
       const fetch = createFetch({})

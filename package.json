@@ -1,6 +1,6 @@
 {
   "name": "@ali/rap",
-  "version": "0.2.3",
+  "version": "0.2.1",
   "description": "rapper, use http api as a function",
   "main": "./dist/index.js",
   "scripts": {
@@ -48,6 +48,7 @@
     "@types/json5": "0.0.30",
     "@types/lodash": "^4.14.144",
     "@types/react": "^16.9.2",
+    "@types/react-dom": "^16.9.5",
     "@types/react-redux": "^7.1.2",
     "@types/semver": "^6.2.0",
     "@types/update-notifier": "^2.5.0",
@@ -57,6 +58,7 @@
     "eslint-config-prettier": "^6.4.0",
     "eslint-plugin-prettier": "^3.1.1",
     "react": "^16.9.0",
+    "react-dom": "^16.12.0",
     "react-redux": "^7.1.1",
     "redux": "^4.0.4",
     "typescript": "^3.7.4"

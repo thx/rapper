@@ -14,8 +14,8 @@ const packageName = getPackageName();
 function createIndexStr(): IGeneratedCode {
   return {
     import: `
-      import { useResponse, useAllResponse, clearResponseCache, rapperActions, rapperBaseSelector, rapperDataSelector } from './redux'
-      import { rapperReducers, rapperEnhancer } from '${packageName}/runtime/lib'
+      import { useResponse, useRapper, useAllResponse, clearResponseCache, rapperActions, rapperBaseSelector, rapperDataSelector } from './redux'
+      import { rapperReducers, rapperEnhancer } from '${packageName}/dist/runtime/lib'
       import { IResponseTypes } from './request'
     `,
     body: '',
@@ -23,6 +23,7 @@ function createIndexStr(): IGeneratedCode {
       export {
         /** 以Hooks的方式使用请求响应数据 */
         useResponse,
+        useRapper,
         /** 使用请求响应数据（包含缓存） */
         useAllResponse,
         /** 清除此接口的缓存 */
@@ -45,7 +46,8 @@ function createDynamicStr(interfaces: Array<Intf>, extr: ICreatorExtr): string {
   return `
     import { useSelector } from 'react-redux'
     import { IModels, IResponseTypes } from './request'
-    import { dispatchAction, useResponseData, getResponseData, getRapperDataSelector, IState, IInterfaceInfo } from '${packageName}/runtime/lib'
+    import { dispatchAction, useResponseData, getResponseData, getRapperDataSelector, IState, IInterfaceInfo, useRapperCommon, IUseRapperExtra } from '${packageName}/dist/runtime/lib'
+    import { fetch } from './index'
 
     ${createActionStr(interfaces, extr)}
     ${createUseRapStr(interfaces, extr)}

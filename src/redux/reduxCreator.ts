@@ -42,7 +42,7 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
         )
         .join(',\n\n')}
     }
-    type TRapperStoreKey = keyof IRapperStore
+    export type TRapperStoreKey = keyof IRapperStore
     
     export const useResponse = {
       ${interfaces
@@ -60,6 +60,29 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
         type Res = IResponseTypes['${itf.modelName}']
         return useResponseData<TRapperStoreKey, Req, Res, Item>(
           '${itf.modelName}', filter)
+      }`,
+        )
+        .join(',\n\n')}
+    }
+
+    export const useRapper = {
+      ${interfaces
+        .map(
+          itf => `
+      ${creatInterfaceHelpStr(extr.rapUrl, itf)}
+      /* tslint:disable */
+      '${itf.modelName}': function useData(
+        requestParams: IModels['${itf.modelName}']['Req'],
+        extra?: IUseRapperExtra
+      ) {
+        type Req = IModels['${itf.modelName}']['Req']
+        type Res = IResponseTypes['${itf.modelName}']
+        const rapperFetch = (extra && extra.fetch) ? extra.fetch : fetch
+        return useRapperCommon<TRapperStoreKey, Req, Res>({
+          modelName: '${itf.modelName}',
+          fetcher: rapperFetch['${itf.modelName}'],
+          requestParams,
+        })
       }`,
         )
         .join(',\n\n')}

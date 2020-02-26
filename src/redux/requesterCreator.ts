@@ -9,7 +9,7 @@ const packageName = getPackageName();
 export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreatorExtr) {
   const modelStr = await createModel(interfaces, extr);
   return `
-    import { dispatchAction, RequesterOption, IUserFetchParams, IExtra, getRapperRequest } from '${packageName}/runtime//lib'
+    import { dispatchAction, RequesterOption, IUserFetchParams, IExtra, getRapperRequest } from '${packageName}/dist/runtime/lib'
     import { RequestTypes } from './redux'
 
     ${modelStr}

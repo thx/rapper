@@ -1,6 +1,6 @@
-/* md5: 3b9d9cea51f834d1c04528d4e93a01f5 */
+/* md5: bc1049117d3b7f6aca26bc2c537f077a */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 0.2.3-beta.2 */
+/* Rapper版本: 0.2.3 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -9,7 +9,13 @@
  * Rap仓库 地址: https://rap2.taobao.org/repository/editor?id=237514
  */
 
-import { dispatchAction, RequesterOption, IUserFetchParams, IExtra, getRapperRequest } from './lib';
+import {
+  dispatchAction,
+  RequesterOption,
+  IUserFetchParams,
+  IExtra,
+  getRapperRequest,
+} from '@ali/rap/dist/runtime/lib';
 import { RequestTypes } from './redux';
 
 export interface IModels {

@@ -1,6 +1,6 @@
-/* md5: 24b7131815444b595e398dadb09620df */
+/* md5: 28897eda891b6af0ccf4a8502ef915de */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 0.2.3-beta.2 */
+/* Rapper版本: 0.2.3 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -18,7 +18,10 @@ import {
   getRapperDataSelector,
   IState,
   IInterfaceInfo,
-} from './lib';
+  useRapperCommon,
+  IUseRapperExtra,
+} from '@ali/rap/dist/runtime/lib';
+import { fetch } from './index';
 
 /** 请求types */
 export const RequestTypes = {
@@ -82,7 +85,7 @@ interface IRapperStore {
     }
   >;
 }
-type TRapperStoreKey = keyof IRapperStore;
+export type TRapperStoreKey = keyof IRapperStore;
 
 export const useResponse = {
   /**
@@ -166,6 +169,103 @@ export const useResponse = {
       'GET/group/:groupId/member/:memberId',
       filter,
     );
+  },
+};
+
+export const useRapper = {
+  /**
+   * 接口名：示例接口
+   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1376440
+   */
+  /* tslint:disable */
+  'GET/example/1574387719563': function useData(
+    requestParams: IModels['GET/example/1574387719563']['Req'],
+    extra?: IUseRapperExtra,
+  ) {
+    type Req = IModels['GET/example/1574387719563']['Req'];
+    type Res = IResponseTypes['GET/example/1574387719563'];
+    const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
+    return useRapperCommon<TRapperStoreKey, Req, Res>({
+      modelName: 'GET/example/1574387719563',
+      fetcher: rapperFetch['GET/example/1574387719563'],
+      requestParams,
+    });
+  },
+
+  /**
+   * 接口名：GET请求
+   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
+   */
+  /* tslint:disable */
+  'GET/testGet': function useData(
+    requestParams: IModels['GET/testGet']['Req'],
+    extra?: IUseRapperExtra,
+  ) {
+    type Req = IModels['GET/testGet']['Req'];
+    type Res = IResponseTypes['GET/testGet'];
+    const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
+    return useRapperCommon<TRapperStoreKey, Req, Res>({
+      modelName: 'GET/testGet',
+      fetcher: rapperFetch['GET/testGet'],
+      requestParams,
+    });
+  },
+
+  /**
+   * 接口名：POST 请求
+   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
+   */
+  /* tslint:disable */
+  'POST/testPost': function useData(
+    requestParams: IModels['POST/testPost']['Req'],
+    extra?: IUseRapperExtra,
+  ) {
+    type Req = IModels['POST/testPost']['Req'];
+    type Res = IResponseTypes['POST/testPost'];
+    const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
+    return useRapperCommon<TRapperStoreKey, Req, Res>({
+      modelName: 'POST/testPost',
+      fetcher: rapperFetch['POST/testPost'],
+      requestParams,
+    });
+  },
+
+  /**
+   * 接口名：form表单提交请求
+   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377106
+   */
+  /* tslint:disable */
+  'POST/testFormData': function useData(
+    requestParams: IModels['POST/testFormData']['Req'],
+    extra?: IUseRapperExtra,
+  ) {
+    type Req = IModels['POST/testFormData']['Req'];
+    type Res = IResponseTypes['POST/testFormData'];
+    const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
+    return useRapperCommon<TRapperStoreKey, Req, Res>({
+      modelName: 'POST/testFormData',
+      fetcher: rapperFetch['POST/testFormData'],
+      requestParams,
+    });
+  },
+
+  /**
+   * 接口名：RESTful 接口
+   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
+   */
+  /* tslint:disable */
+  'GET/group/:groupId/member/:memberId': function useData(
+    requestParams: IModels['GET/group/:groupId/member/:memberId']['Req'],
+    extra?: IUseRapperExtra,
+  ) {
+    type Req = IModels['GET/group/:groupId/member/:memberId']['Req'];
+    type Res = IResponseTypes['GET/group/:groupId/member/:memberId'];
+    const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
+    return useRapperCommon<TRapperStoreKey, Req, Res>({
+      modelName: 'GET/group/:groupId/member/:memberId',
+      fetcher: rapperFetch['GET/group/:groupId/member/:memberId'],
+      requestParams,
+    });
   },
 };
 

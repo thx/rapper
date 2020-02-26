@@ -1,6 +1,6 @@
-/* md5: 6dbc6ad2f60cac6b3c2bd032788a6541 */
+/* md5: 930099ff316588b9c0beee50f6c6cc8d */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 0.2.3-beta.2 */
+/* Rapper版本: 0.2.3 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -10,17 +10,18 @@
  */
 
 import { createFetch, IModels } from './request';
-import { defaultFetch } from './lib';
+import { defaultFetch } from '@ali/rap/dist/runtime/lib';
 
 import {
   useResponse,
+  useRapper,
   useAllResponse,
   clearResponseCache,
   rapperActions,
   rapperBaseSelector,
   rapperDataSelector,
 } from './redux';
-import { rapperReducers, rapperEnhancer } from './lib';
+import { rapperReducers, rapperEnhancer } from '@ali/rap/dist/runtime/lib';
 import { IResponseTypes } from './request';
 
 const fetch = createFetch({});
@@ -31,6 +32,7 @@ export type Models = IModels;
 export {
   /** 以Hooks的方式使用请求响应数据 */
   useResponse,
+  useRapper,
   /** 使用请求响应数据（包含缓存） */
   useAllResponse,
   /** 清除此接口的缓存 */
