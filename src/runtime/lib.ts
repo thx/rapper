@@ -149,12 +149,16 @@ export const defaultFetch = async ({
     const qs = stringifyQueryString(params, extra.queryStringFn);
     urlWithParams = qs ? url + '?' + qs : url;
   } else if (
-    method === 'POST' &&
+    ['POST', 'DELETE', 'PUT'].includes(method) &&
     extra &&
     extra.contentType === 'application/x-www-form-urlencoded'
   ) {
     init.body = stringifyQueryString(params, extra.queryStringFn);
-  } else if (method === 'POST' && extra && extra.contentType === 'multipart/form-data') {
+  } else if (
+    ['POST', 'DELETE', 'PUT'].includes(method) &&
+    extra &&
+    extra.contentType === 'multipart/form-data'
+  ) {
     const formdata = new FormData();
     params &&
       Object.keys(params).forEach(key => {

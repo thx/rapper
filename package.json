@@ -61,7 +61,7 @@
     "react-dom": "^16.12.0",
     "react-redux": "^7.1.1",
     "redux": "^4.0.4",
-    "typescript": "^3.7.4"
+    "typescript": "^3.8.2"
   },
   "types": "./dist/index.d.ts"
 }
