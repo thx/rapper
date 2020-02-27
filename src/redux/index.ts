@@ -15,10 +15,11 @@ function createIndexStr(): IGeneratedCode {
   return {
     import: `
       import { useResponse, useRapper, useAllResponse, clearResponseCache, rapperActions, rapperBaseSelector, rapperDataSelector } from './redux'
-      import { rapperReducers, rapperEnhancer } from '${packageName}/dist/runtime/lib'
       import { IResponseTypes } from './request'
     `,
-    body: '',
+    body: `
+      const { rapperReducers, rapperEnhancer } = runtimeLib
+    `,
     export: `
       export {
         /** 以Hooks的方式使用请求响应数据 */
@@ -46,7 +47,7 @@ function createDynamicStr(interfaces: Array<Intf>, extr: ICreatorExtr): string {
   return `
     import { useSelector } from 'react-redux'
     import { IModels, IResponseTypes, createFetch } from './request'
-    import { dispatchAction, useResponseData, getResponseData, getRapperDataSelector, IState, IInterfaceInfo, useRapperCommon, IUseRapperExtra } from '${packageName}/dist/runtime/lib'
+    import { runtimeLib } from '${packageName}'
     import { fetch } from './index'
 
     ${createActionStr(interfaces, extr)}

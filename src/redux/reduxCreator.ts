@@ -35,7 +35,7 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
       ${interfaces
         .map(
           ({ modelName }) => `
-      '${modelName}': Array<IInterfaceInfo & {
+      '${modelName}': Array<runtimeLib.IInterfaceInfo & {
         request: IModels['${modelName}']['Req']
         response: IResponseTypes['${modelName}']
       }>`,
@@ -58,7 +58,7 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
         type Req = IModels['${itf.modelName}']['Req']
         type Item = IRapperStore['${itf.modelName}'][0]
         type Res = IResponseTypes['${itf.modelName}']
-        return useResponseData<TRapperStoreKey, Req, Res, Item>(
+        return runtimeLib.useResponseData<TRapperStoreKey, Req, Res, Item>(
           '${itf.modelName}', filter)
       }`,
         )
@@ -73,12 +73,12 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
       /* tslint:disable */
       '${itf.modelName}': function useData(
         requestParams: IModels['${itf.modelName}']['Req'],
-        extra?: IUseRapperExtra & { fetch?: ReturnType<typeof createFetch> }
+        extra?: runtimeLib.IUseRapperExtra & { fetch?: ReturnType<typeof createFetch> }
       ) {
         type Req = IModels['${itf.modelName}']['Req']
         type Res = IResponseTypes['${itf.modelName}']
         const rapperFetch = (extra && extra.fetch) ? extra.fetch : fetch
-        return useRapperCommon<TRapperStoreKey, Req, Res>({
+        return runtimeLib.useRapperCommon<TRapperStoreKey, Req, Res>({
           modelName: '${itf.modelName}',
           fetcher: rapperFetch['${itf.modelName}'],
           requestParams,
@@ -95,11 +95,11 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
       ${creatInterfaceHelpStr(extr.rapUrl, itf)}
       /* tslint:disable */
       '${itf.modelName}': function useData() {
-        return useSelector((state: IState) => {
+        return useSelector((state: runtimeLib.IState) => {
           const selectedState = (state['${RAPPER_STATE_KEY}'] && state['${RAPPER_STATE_KEY}']['${
             itf.modelName
           }']) || []
-          type TReturnItem = IInterfaceInfo & {
+          type TReturnItem = runtimeLib.IInterfaceInfo & {
             request?: IModels['${itf.modelName}']['Req'];
             response?: IResponseTypes['${itf.modelName}'];
           }
@@ -117,7 +117,7 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
           itf => `
       ${creatInterfaceHelpStr(extr.rapUrl, itf)}
       '${itf.modelName}': (): void => {
-        dispatchAction({
+        runtimeLib.dispatchAction({
           type: '${RAPPER_CLEAR_STORE}', 
           payload: { '${itf.modelName}': undefined }
         })
@@ -134,11 +134,11 @@ export function createBaseSelectorStr(interfaces: Array<Intf>): string {
     ${interfaces
       .map(
         ({ modelName }) => `
-      '${modelName}': (state: IState, filter?: { request?: IModels['${modelName}']['Req'] } | { (storeData: IRapperStore['${modelName}'][0]): boolean }) => {
+      '${modelName}': (state: runtimeLib.IState, filter?: { request?: IModels['${modelName}']['Req'] } | { (storeData: IRapperStore['${modelName}'][0]): boolean }) => {
         type Req = IModels['${modelName}']['Req'];
         type Res = IResponseTypes['${modelName}'];
         type Item = IRapperStore['${modelName}'][0];
-        return getResponseData<TRapperStoreKey, Req, Res, Item>(state, '${modelName}', filter);
+        return runtimeLib.getResponseData<TRapperStoreKey, Req, Res, Item>(state, '${modelName}', filter);
       }
     `,
       )
@@ -153,9 +153,9 @@ export function createDataSelectorStr(interfaces: Array<Intf>): string {
     ${interfaces
       .map(
         ({ modelName }) => `
-      '${modelName}': (state: IState) => {
+      '${modelName}': (state: runtimeLib.IState) => {
         type Res = IResponseTypes['${modelName}'];
-        return getRapperDataSelector<TRapperStoreKey, Res>(state, '${modelName}');
+        return runtimeLib.getRapperDataSelector<TRapperStoreKey, Res>(state, '${modelName}');
       }
     `,
       )

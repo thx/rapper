@@ -50,15 +50,16 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
   const { rapUrl, resSelector } = extr;
   const modelStr = await createModel(interfaces, extr);
   return `
-    import { RequesterOption, getRapperRequest, IExtra } from '${packageName}/dist/runtime/lib'
+    import { runtimeLib } from '${packageName}'
+
     ${modelStr}
 
     ${resSelector}
   
     ${createResponseTypes(interfaces)}
 
-    export function createFetch(fetchConfig: RequesterOption) {
-      const rapperFetch = getRapperRequest(fetchConfig)
+    export function createFetch(fetchConfig: runtimeLib.RequesterOption) {
+      const rapperFetch = runtimeLib.getRapperRequest(fetchConfig)
 
       return {
         ${interfaces
@@ -68,7 +69,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
             * @param extra 请求配置项`;
             return `
             ${creatInterfaceHelpStr(rapUrl, itf, extra)}
-            '${modelName}': (req?: IModels['${modelName}']['Req'], extra?: IExtra) => {
+            '${modelName}': (req?: IModels['${modelName}']['Req'], extra?: runtimeLib.IExtra) => {
               return rapperFetch({
                 url: '${itf.url}',
                 method: '${itf.method.toUpperCase()}',
@@ -87,9 +88,10 @@ export function createBaseIndexCode(): IGeneratedCode {
   return {
     import: `
       import { createFetch, IModels } from './request'
-      import { defaultFetch } from '${packageName}/dist/runtime/lib'
+      import { runtimeLib } from '${packageName}'
     `,
     body: `
+      const { defaultFetch } = runtimeLib
       const fetch = createFetch({})
     `,
     export: `

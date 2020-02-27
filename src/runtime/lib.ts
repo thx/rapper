@@ -73,7 +73,7 @@ function parseUrl(url: string, requestPrefix?: string): string {
   return requestPrefix + '/' + url;
 }
 
-type IJson = string | number | boolean | null | { [property: string]: IJson } | IJson[];
+type IJSON = string | number | boolean | null | { [property: string]: IJSON } | IJSON[];
 /** defaultFetch 参数 */
 export interface IDefaultFetchParams {
   url: string;
@@ -115,14 +115,14 @@ export interface IExtra {
 /** useRapper 的 extra */
 export type IUseRapperExtra = IExtra;
 
-type TQueryFunc = () => { [key: string]: IJson };
+type TQueryFunc = () => { [key: string]: IJSON };
 export interface IDefaultConfigObj {
   /** 'prefix' 前缀，统一设置 url 前缀，默认是 '' */
   prefix?: string;
   /** fetch 的第二参数，除了 body 和 method 都可以自定义 */
   fetchOption?: IDefaultFetchParams['fetchOption'];
   /** 全局的query参数，可以配置 object，或者自定义函数 */
-  query?: { [key: string]: IJson } | TQueryFunc;
+  query?: { [key: string]: IJSON } | TQueryFunc;
 }
 export type FetchConfigObj = Partial<IDefaultConfigObj>;
 type FetchConfigFunc = <T>(params: IUserFetchParams) => Promise<T>;
@@ -205,7 +205,7 @@ export const getRapperRequest = (fetchConfig: RequesterOption) => {
         ? fetchOption
         : defaultConfig.fetchOption;
     /** 全局query参数处理 */
-    let defaultQuery: { [key: string]: IJson };
+    let defaultQuery: { [key: string]: IJSON };
     if (typeof query === 'function') {
       defaultQuery = query();
     } else if (query && typeof query === 'object') {

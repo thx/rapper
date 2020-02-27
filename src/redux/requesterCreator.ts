@@ -9,7 +9,7 @@ const packageName = getPackageName();
 export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreatorExtr) {
   const modelStr = await createModel(interfaces, extr);
   return `
-    import { dispatchAction, RequesterOption, IUserFetchParams, IExtra, getRapperRequest } from '${packageName}/dist/runtime/lib'
+    import { runtimeLib } from '${packageName}'
     import { RequestTypes } from './redux'
 
     ${modelStr}
@@ -18,9 +18,9 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
   
     ${createResponseTypes(interfaces)}
 
-    export function createFetch(fetchConfig: RequesterOption) {
-      const rapperFetch = getRapperRequest(fetchConfig);
-      const sendRapperFetch = (modelName: keyof typeof RequestTypes, requestParams: IUserFetchParams) => {
+    export function createFetch(fetchConfig: runtimeLib.RequesterOption) {
+      const rapperFetch = runtimeLib.getRapperRequest(fetchConfig);
+      const sendRapperFetch = (modelName: keyof typeof RequestTypes, requestParams: runtimeLib.IUserFetchParams) => {
         const { extra } = requestParams;
         if (extra && extra.type === 'normal') {
           return rapperFetch(requestParams);
@@ -29,7 +29,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
             type: '${RAPPER_REQUEST}',
             payload: { ...requestParams, modelName, types: RequestTypes[modelName] },
           };
-          return dispatchAction(action, rapperFetch);
+          return runtimeLib.dispatchAction(action, rapperFetch);
         }
       };
 
@@ -41,7 +41,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
           * @param extra 请求配置项`;
           return `
           ${creatInterfaceHelpStr(extr.rapUrl, itf, extrText)}
-          '${modelName}': (req?: IModels['${modelName}']['Req'], extra?: IExtra) => {
+          '${modelName}': (req?: IModels['${modelName}']['Req'], extra?: runtimeLib.IExtra) => {
             return sendRapperFetch('${modelName}', {
               url: '${url}',
               method: '${method.toUpperCase()}',
