@@ -1,6 +1,6 @@
-/* md5: bc1049117d3b7f6aca26bc2c537f077a */
+/* md5: 0bb466488b66e9dcd35d22c4b9bb6ce5 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 0.2.3 */
+/* Rapper版本: 1.0.0-beta.0 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -9,13 +9,7 @@
  * Rap仓库 地址: https://rap2.taobao.org/repository/editor?id=237514
  */
 
-import {
-  dispatchAction,
-  RequesterOption,
-  IUserFetchParams,
-  IExtra,
-  getRapperRequest,
-} from '@ali/rap/dist/runtime/lib';
+import { runtimeLib } from '@ali/rap';
 import { RequestTypes } from './redux';
 
 export interface IModels {
@@ -174,11 +168,11 @@ export interface IResponseTypes {
   >;
 }
 
-export function createFetch(fetchConfig: RequesterOption) {
-  const rapperFetch = getRapperRequest(fetchConfig);
+export function createFetch(fetchConfig: runtimeLib.RequesterOption) {
+  const rapperFetch = runtimeLib.getRapperRequest(fetchConfig);
   const sendRapperFetch = (
     modelName: keyof typeof RequestTypes,
-    requestParams: IUserFetchParams,
+    requestParams: runtimeLib.IUserFetchParams,
   ) => {
     const { extra } = requestParams;
     if (extra && extra.type === 'normal') {
@@ -188,7 +182,7 @@ export function createFetch(fetchConfig: RequesterOption) {
         type: '$$RAPPER_REQUEST',
         payload: { ...requestParams, modelName, types: RequestTypes[modelName] },
       };
-      return dispatchAction(action, rapperFetch);
+      return runtimeLib.dispatchAction(action, rapperFetch);
     }
   };
 
@@ -201,7 +195,7 @@ export function createFetch(fetchConfig: RequesterOption) {
      */
     'GET/example/1574387719563': (
       req?: IModels['GET/example/1574387719563']['Req'],
-      extra?: IExtra,
+      extra?: runtimeLib.IExtra,
     ) => {
       return sendRapperFetch('GET/example/1574387719563', {
         url: '/example/1574387719563',
@@ -217,7 +211,7 @@ export function createFetch(fetchConfig: RequesterOption) {
      * @param req 请求参数
      * @param extra 请求配置项
      */
-    'GET/testGet': (req?: IModels['GET/testGet']['Req'], extra?: IExtra) => {
+    'GET/testGet': (req?: IModels['GET/testGet']['Req'], extra?: runtimeLib.IExtra) => {
       return sendRapperFetch('GET/testGet', {
         url: '/testGet',
         method: 'GET',
@@ -232,7 +226,7 @@ export function createFetch(fetchConfig: RequesterOption) {
      * @param req 请求参数
      * @param extra 请求配置项
      */
-    'POST/testPost': (req?: IModels['POST/testPost']['Req'], extra?: IExtra) => {
+    'POST/testPost': (req?: IModels['POST/testPost']['Req'], extra?: runtimeLib.IExtra) => {
       return sendRapperFetch('POST/testPost', {
         url: '/testPost',
         method: 'POST',
@@ -247,7 +241,7 @@ export function createFetch(fetchConfig: RequesterOption) {
      * @param req 请求参数
      * @param extra 请求配置项
      */
-    'POST/testFormData': (req?: IModels['POST/testFormData']['Req'], extra?: IExtra) => {
+    'POST/testFormData': (req?: IModels['POST/testFormData']['Req'], extra?: runtimeLib.IExtra) => {
       return sendRapperFetch('POST/testFormData', {
         url: '/testFormData',
         method: 'POST',
@@ -264,7 +258,7 @@ export function createFetch(fetchConfig: RequesterOption) {
      */
     'GET/group/:groupId/member/:memberId': (
       req?: IModels['GET/group/:groupId/member/:memberId']['Req'],
-      extra?: IExtra,
+      extra?: runtimeLib.IExtra,
     ) => {
       return sendRapperFetch('GET/group/:groupId/member/:memberId', {
         url: '/group/:groupId/member/:memberId',

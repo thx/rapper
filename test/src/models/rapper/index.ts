@@ -1,6 +1,6 @@
-/* md5: 930099ff316588b9c0beee50f6c6cc8d */
+/* md5: 9af73bee3b639a25b7923040ba1f407f */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 0.2.3 */
+/* Rapper版本: 1.0.0-beta.0 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -10,7 +10,7 @@
  */
 
 import { createFetch, IModels } from './request';
-import { defaultFetch } from '@ali/rap/dist/runtime/lib';
+import { runtimeLib } from '@ali/rap';
 
 import {
   useResponse,
@@ -21,10 +21,12 @@ import {
   rapperBaseSelector,
   rapperDataSelector,
 } from './redux';
-import { rapperReducers, rapperEnhancer } from '@ali/rap/dist/runtime/lib';
 import { IResponseTypes } from './request';
 
+const { defaultFetch } = runtimeLib;
 const fetch = createFetch({});
+
+const { rapperReducers, rapperEnhancer } = runtimeLib;
 
 export { fetch, createFetch, defaultFetch };
 export type Models = IModels;
