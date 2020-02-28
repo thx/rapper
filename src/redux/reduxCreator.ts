@@ -1,5 +1,5 @@
 import { Intf, ICreatorExtr } from '../types';
-import { RAPPER_STATE_KEY, RAPPER_CLEAR_STORE } from '../runtime/lib';
+import { RAPPER_STATE_KEY, RAPPER_CLEAR_STORE } from '../runtime/reduxLib';
 import { creatInterfaceHelpStr } from '../core/tools';
 
 /** 定义 请求types */
@@ -35,7 +35,7 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
       ${interfaces
         .map(
           ({ modelName }) => `
-      '${modelName}': Array<runtimeLib.IInterfaceInfo & {
+      '${modelName}': Array<reduxLib.IInterfaceInfo & {
         request: IModels['${modelName}']['Req']
         response: IResponseTypes['${modelName}']
       }>`,
@@ -58,7 +58,7 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
         type Req = IModels['${itf.modelName}']['Req']
         type Item = IRapperStore['${itf.modelName}'][0]
         type Res = IResponseTypes['${itf.modelName}']
-        return runtimeLib.useResponseData<TRapperStoreKey, Req, Res, Item>(
+        return reduxLib.useResponseData<TRapperStoreKey, Req, Res, Item>(
           '${itf.modelName}', filter)
       }`,
         )
@@ -73,16 +73,17 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
       /* tslint:disable */
       '${itf.modelName}': function useData(
         requestParams: IModels['${itf.modelName}']['Req'],
-        extra?: runtimeLib.IUseRapperExtra & { fetch?: ReturnType<typeof createFetch> }
+        extra?: reduxLib.IUseRapperExtra & { fetch?: ReturnType<typeof createFetch> }
       ) {
         type Req = IModels['${itf.modelName}']['Req']
         type Res = IResponseTypes['${itf.modelName}']
         type IFetcher = typeof rapperFetch['GET/example/1574387719563']
         const rapperFetch = (extra && extra.fetch) ? extra.fetch : fetch
-        return runtimeLib.useRapperCommon<TRapperStoreKey, Req, Res, IFetcher>({
+        return reduxLib.useRapperCommon<TRapperStoreKey, Req, Res, IFetcher>({
           modelName: '${itf.modelName}',
           fetcher: rapperFetch['${itf.modelName}'],
           requestParams,
+          extra,
         })
       }`,
         )
@@ -96,11 +97,11 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
       ${creatInterfaceHelpStr(extr.rapUrl, itf)}
       /* tslint:disable */
       '${itf.modelName}': function useData() {
-        return useSelector((state: runtimeLib.IState) => {
+        return useSelector((state: reduxLib.IState) => {
           const selectedState = (state['${RAPPER_STATE_KEY}'] && state['${RAPPER_STATE_KEY}']['${
             itf.modelName
           }']) || []
-          type TReturnItem = runtimeLib.IInterfaceInfo & {
+          type TReturnItem = reduxLib.IInterfaceInfo & {
             request?: IModels['${itf.modelName}']['Req'];
             response?: IResponseTypes['${itf.modelName}'];
           }
@@ -118,7 +119,7 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
           itf => `
       ${creatInterfaceHelpStr(extr.rapUrl, itf)}
       '${itf.modelName}': (): void => {
-        runtimeLib.dispatchAction({
+        reduxLib.dispatchAction({
           type: '${RAPPER_CLEAR_STORE}', 
           payload: { '${itf.modelName}': undefined }
         })
@@ -135,11 +136,11 @@ export function createBaseSelectorStr(interfaces: Array<Intf>): string {
     ${interfaces
       .map(
         ({ modelName }) => `
-      '${modelName}': (state: runtimeLib.IState, filter?: { request?: IModels['${modelName}']['Req'] } | { (storeData: IRapperStore['${modelName}'][0]): boolean }) => {
+      '${modelName}': (state: reduxLib.IState, filter?: { request?: IModels['${modelName}']['Req'] } | { (storeData: IRapperStore['${modelName}'][0]): boolean }) => {
         type Req = IModels['${modelName}']['Req'];
         type Res = IResponseTypes['${modelName}'];
         type Item = IRapperStore['${modelName}'][0];
-        return runtimeLib.getResponseData<TRapperStoreKey, Req, Res, Item>(state, '${modelName}', filter);
+        return reduxLib.getResponseData<TRapperStoreKey, Req, Res, Item>(state, '${modelName}', filter);
       }
     `,
       )
@@ -154,9 +155,9 @@ export function createDataSelectorStr(interfaces: Array<Intf>): string {
     ${interfaces
       .map(
         ({ modelName }) => `
-      '${modelName}': (state: runtimeLib.IState) => {
+      '${modelName}': (state: reduxLib.IState) => {
         type Res = IResponseTypes['${modelName}'];
-        return runtimeLib.getRapperDataSelector<TRapperStoreKey, Res>(state, '${modelName}');
+        return reduxLib.getRapperDataSelector<TRapperStoreKey, Res>(state, '${modelName}');
       }
     `,
       )

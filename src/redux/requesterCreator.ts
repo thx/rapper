@@ -1,7 +1,7 @@
 import { createModel, createResponseTypes } from '../core/base-creator';
 import { Intf, ICreatorExtr } from '../types';
 import { creatInterfaceHelpStr } from '../core/tools';
-import { RAPPER_REQUEST } from '../runtime/lib';
+import { RAPPER_REQUEST } from '../runtime/reduxLib';
 import { getPackageName } from '../utils';
 
 const packageName = getPackageName();
@@ -9,7 +9,8 @@ const packageName = getPackageName();
 export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreatorExtr) {
   const modelStr = await createModel(interfaces, extr);
   return `
-    import { runtimeLib } from '${packageName}'
+    import commonLib from '${packageName}/runtime/commonLib'
+    import reduxLib from '${packageName}/runtime/reduxLib'
     import { RequestTypes } from './redux'
 
     ${modelStr}
@@ -18,9 +19,9 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
   
     ${createResponseTypes(interfaces)}
 
-    export function createFetch(fetchConfig: runtimeLib.RequesterOption) {
-      const rapperFetch = runtimeLib.getRapperRequest(fetchConfig);
-      const sendRapperFetch = (modelName: keyof typeof RequestTypes, requestParams: runtimeLib.IUserFetchParams) => {
+    export function createFetch(fetchConfig: commonLib.RequesterOption) {
+      const rapperFetch = reduxLib.getRapperRequest(fetchConfig);
+      const sendRapperFetch = (modelName: keyof typeof RequestTypes, requestParams: reduxLib.IUserFetchParams) => {
         const { extra } = requestParams;
         if (extra && extra.type === 'normal') {
           return rapperFetch(requestParams);
@@ -29,7 +30,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
             type: '${RAPPER_REQUEST}',
             payload: { ...requestParams, modelName, types: RequestTypes[modelName] },
           };
-          return runtimeLib.dispatchAction(action, rapperFetch);
+          return reduxLib.dispatchAction(action, rapperFetch);
         }
       };
 
@@ -41,7 +42,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
           * @param extra 请求配置项`;
           return `
           ${creatInterfaceHelpStr(extr.rapUrl, itf, extrText)}
-          '${modelName}': (req?: IModels['${modelName}']['Req'], extra?: runtimeLib.IExtra) => {
+          '${modelName}': (req?: IModels['${modelName}']['Req'], extra?: reduxLib.IReduxExtra) => {
             return sendRapperFetch('${modelName}', {
               url: '${url}',
               method: '${method.toUpperCase()}',

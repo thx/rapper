@@ -50,7 +50,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
   const { rapUrl, resSelector } = extr;
   const modelStr = await createModel(interfaces, extr);
   return `
-    import { runtimeLib } from '${packageName}'
+    import commonLib from '${packageName}/runtime/commonLib'
 
     ${modelStr}
 
@@ -58,8 +58,8 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
   
     ${createResponseTypes(interfaces)}
 
-    export function createFetch(fetchConfig: runtimeLib.RequesterOption) {
-      const rapperFetch = runtimeLib.getRapperRequest(fetchConfig)
+    export function createFetch(fetchConfig: commonLib.RequesterOption) {
+      const rapperFetch = commonLib.getRapperRequest(fetchConfig)
 
       return {
         ${interfaces
@@ -69,7 +69,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
             * @param extra 请求配置项`;
             return `
             ${creatInterfaceHelpStr(rapUrl, itf, extra)}
-            '${modelName}': (req?: IModels['${modelName}']['Req'], extra?: runtimeLib.IExtra) => {
+            '${modelName}': (req?: IModels['${modelName}']['Req'], extra?: commonLib.IExtra) => {
               return rapperFetch({
                 url: '${itf.url}',
                 method: '${itf.method.toUpperCase()}',
@@ -88,10 +88,10 @@ export function createBaseIndexCode(): IGeneratedCode {
   return {
     import: `
       import { createFetch, IModels } from './request'
-      import { runtimeLib } from '${packageName}'
+      import commonLib from '${packageName}/runtime/commonLib'
     `,
     body: `
-      const { defaultFetch } = runtimeLib
+      const { defaultFetch } = commonLib
       const fetch = createFetch({})
     `,
     export: `
