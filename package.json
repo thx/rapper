@@ -5,7 +5,7 @@
   "main": "./dist/index.js",
   "scripts": {
     "lint": "eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
-    "build": "./node_modules/typescript/bin/tsc -p tsconfig.json",
+    "build": "./node_modules/typescript/bin/tsc -p tsconfig.json && node ./script/move-runtime",
     "normal": "npm run build && node ./dist/build/normal",
     "redux": "npm run build && node ./dist/build/redux",
     "prepublishOnly": "npm run build"
@@ -57,6 +57,7 @@
     "eslint": "^6.5.1",
     "eslint-config-prettier": "^6.4.0",
     "eslint-plugin-prettier": "^3.1.1",
+    "mv": "^2.1.1",
     "react": "^16.9.0",
     "react-dom": "^16.12.0",
     "react-redux": "^7.1.1",
