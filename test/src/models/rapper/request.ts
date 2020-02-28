@@ -1,4 +1,4 @@
-/* md5: 0bb466488b66e9dcd35d22c4b9bb6ce5 */
+/* md5: 570e4d18e1fcb051b833387385ca717c */
 /* Rap仓库id: 237514 */
 /* Rapper版本: 1.0.0-beta.0 */
 /* eslint-disable */
@@ -9,7 +9,7 @@
  * Rap仓库 地址: https://rap2.taobao.org/repository/editor?id=237514
  */
 
-import { runtimeLib } from '@ali/rap';
+import { runtimeLib } from '@ali/mc-rap';
 import { RequestTypes } from './redux';
 
 export interface IModels {

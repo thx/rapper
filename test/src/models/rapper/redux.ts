@@ -1,4 +1,4 @@
-/* md5: 30f99257100aef3ebc2142212998fc7d */
+/* md5: efdbe339138ca49410d65cdb8c3d3548 */
 /* Rap仓库id: 237514 */
 /* Rapper版本: 1.0.0-beta.0 */
 /* eslint-disable */
@@ -11,7 +11,7 @@
 
 import { useSelector } from 'react-redux';
 import { IModels, IResponseTypes, createFetch } from './request';
-import { runtimeLib } from '@ali/rap';
+import { runtimeLib } from '@ali/mc-rap';
 import { fetch } from './index';
 
 /** 请求types */
@@ -178,8 +178,9 @@ export const useRapper = {
   ) {
     type Req = IModels['GET/example/1574387719563']['Req'];
     type Res = IResponseTypes['GET/example/1574387719563'];
+    type IFetcher = typeof rapperFetch['GET/example/1574387719563'];
     const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
-    return runtimeLib.useRapperCommon<TRapperStoreKey, Req, Res>({
+    return runtimeLib.useRapperCommon<TRapperStoreKey, Req, Res, IFetcher>({
       modelName: 'GET/example/1574387719563',
       fetcher: rapperFetch['GET/example/1574387719563'],
       requestParams,

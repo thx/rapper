@@ -1,4 +1,4 @@
-/* md5: 9af73bee3b639a25b7923040ba1f407f */
+/* md5: bde4ff8da9bf57f19067c43c23cc1859 */
 /* Rap仓库id: 237514 */
 /* Rapper版本: 1.0.0-beta.0 */
 /* eslint-disable */
@@ -10,7 +10,7 @@
  */
 
 import { createFetch, IModels } from './request';
-import { runtimeLib } from '@ali/rap';
+import { runtimeLib } from '@ali/mc-rap';
 
 import {
   useResponse,

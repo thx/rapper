@@ -473,18 +473,18 @@ export function getRapperDataSelector<M, Res>(state: IState, modelName: M) {
   return result.response as Res | undefined;
 }
 
-interface IRapperCommonParams<M, Req, Item> {
+interface IRapperCommonParams<M, Req, Item, IFetcher> {
   modelName: M;
-  fetcher: any;
+  fetcher: IFetcher;
   requestParams: Req;
   filter?: IFilterObj<Req> | FilterFunc<Item>;
 }
 /** useRapper */
-export function useRapperCommon<M, Req, Res>({
+export function useRapperCommon<M, Req, Res, IFetcher extends (requestParams: any) => any>({
   modelName,
   fetcher,
   requestParams,
-}: IRapperCommonParams<M, Req, {}>) {
+}: IRapperCommonParams<M, Req, {}, IFetcher>) {
   const reduxData = useSelector((state: IState) => {
     return (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
   });
@@ -507,13 +507,15 @@ export function useRapperCommon<M, Req, Res>({
     }
   }, [initData.id]);
 
-  return [filteredData, { isPending, errorMessage }] as [
+  return [filteredData, { isPending, errorMessage, request: fetcher }] as [
     Res | undefined,
     {
       /** 是否正在请求中 */
       isPending: boolean;
       /** 请求错误信息 */
       errorMessage?: string;
+      /** 请求函数 */
+      request: IFetcher;
     },
   ];
 }

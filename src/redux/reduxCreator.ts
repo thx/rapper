@@ -77,8 +77,9 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
       ) {
         type Req = IModels['${itf.modelName}']['Req']
         type Res = IResponseTypes['${itf.modelName}']
+        type IFetcher = typeof rapperFetch['GET/example/1574387719563']
         const rapperFetch = (extra && extra.fetch) ? extra.fetch : fetch
-        return runtimeLib.useRapperCommon<TRapperStoreKey, Req, Res>({
+        return runtimeLib.useRapperCommon<TRapperStoreKey, Req, Res, IFetcher>({
           modelName: '${itf.modelName}',
           fetcher: rapperFetch['${itf.modelName}'],
           requestParams,
