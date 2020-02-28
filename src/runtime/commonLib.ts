@@ -3,6 +3,12 @@ type IJSON = string | number | boolean | null | { [property: string]: IJSON } | 
 /** 请求的额外参数类型 */
 export interface IExtra {
   /**
+   * 请求的类型，默认不传 代表redux请求，会发送 Action，也存入redux store
+   * normal 代表普通请求，不发送 Action，也不存入redux store
+   * redux 代表redux请求，会发送 Action，也存入redux store
+   */
+  type?: 'normal' | 'redux';
+  /**
    * 请求头 content-type，默认是 'application/json'
    */
   contentType?:
@@ -31,7 +37,7 @@ interface IDefaultFetchParams {
   fetchOption: Omit<RequestInit, 'body' | 'method'>;
 }
 /** defaultFetch 参数 */
-interface IUserFetchParams {
+export interface IUserFetchParams {
   url: string;
   method: IDefaultFetchParams['method'];
   params?: object;
@@ -51,7 +57,7 @@ interface IDefaultConfigObj {
 
 type FetchConfigObj = Partial<IDefaultConfigObj>;
 type FetchConfigFunc = <T>(params: IUserFetchParams) => Promise<T>;
-type RequesterOption = FetchConfigObj | FetchConfigFunc;
+export type RequesterOption = FetchConfigObj | FetchConfigFunc;
 
 /**
  * search 参数转换，比如 { a: 1, b: 2, c: undefined } 转换成 "a=1&b=2"
@@ -134,6 +140,7 @@ export const defaultFetch = async ({
   extra,
   fetchOption,
 }: IDefaultFetchParams) => {
+  extra = extra || {};
   let urlWithParams = url;
   const init: RequestInit = { ...fetchOption, method };
   if (method === 'GET') {
@@ -141,13 +148,11 @@ export const defaultFetch = async ({
     urlWithParams = qs ? url + '?' + qs : url;
   } else if (
     ['POST', 'DELETE', 'PUT'].includes(method) &&
-    extra &&
     extra.contentType === 'application/x-www-form-urlencoded'
   ) {
     init.body = stringifyQueryString(params, extra.queryStringFn);
   } else if (
     ['POST', 'DELETE', 'PUT'].includes(method) &&
-    extra &&
     extra.contentType === 'multipart/form-data'
   ) {
     const formdata = new FormData();
@@ -161,14 +166,14 @@ export const defaultFetch = async ({
   }
 
   /** 请求 url，增加 query 参数 */
-  if (extra && typeof extra.query === 'object') {
+  if (typeof extra.query === 'object') {
     const qs = stringifyQueryString(extra.query, extra.queryStringFn) || '';
     const connectStr = urlWithParams.indexOf('?') > -1 ? '&' : '?';
     urlWithParams += connectStr + qs;
   }
 
   /** 用户自定义 Content-Type */
-  if (extra && extra.contentType) {
+  if (extra.contentType) {
     if (extra.contentType !== 'multipart/form-data') {
       init.headers = {
         ...init.headers,

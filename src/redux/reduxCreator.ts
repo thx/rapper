@@ -1,5 +1,4 @@
 import { Intf, ICreatorExtr } from '../types';
-import { RAPPER_STATE_KEY, RAPPER_CLEAR_STORE } from '../runtime/reduxLib';
 import { creatInterfaceHelpStr } from '../core/tools';
 
 /** 定义 请求types */
@@ -77,8 +76,8 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
       ) {
         type Req = IModels['${itf.modelName}']['Req']
         type Res = IResponseTypes['${itf.modelName}']
-        type IFetcher = typeof rapperFetch['GET/example/1574387719563']
         const rapperFetch = (extra && extra.fetch) ? extra.fetch : fetch
+        type IFetcher = typeof rapperFetch['${itf.modelName}']
         return reduxLib.useRapperCommon<TRapperStoreKey, Req, Res, IFetcher>({
           modelName: '${itf.modelName}',
           fetcher: rapperFetch['${itf.modelName}'],
@@ -98,7 +97,7 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
       /* tslint:disable */
       '${itf.modelName}': function useData() {
         return useSelector((state: reduxLib.IState) => {
-          const selectedState = (state['${RAPPER_STATE_KEY}'] && state['${RAPPER_STATE_KEY}']['${
+          const selectedState = (state['$$rapperResponseData'] && state['$$rapperResponseData']['${
             itf.modelName
           }']) || []
           type TReturnItem = reduxLib.IInterfaceInfo & {
@@ -120,7 +119,7 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
       ${creatInterfaceHelpStr(extr.rapUrl, itf)}
       '${itf.modelName}': (): void => {
         reduxLib.dispatchAction({
-          type: '${RAPPER_CLEAR_STORE}', 
+          type: '$$RAPPER_CLEAR_STORE', 
           payload: { '${itf.modelName}': undefined }
         })
       }`,

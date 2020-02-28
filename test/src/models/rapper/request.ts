@@ -1,6 +1,6 @@
-/* md5: 6bfa3f3941af077b8364a6f4ff7bfe48 */
+/* md5: 9b00e86098c5667b42d5abe240f21a9e */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.0.0-beta.1 */
+/* Rapper版本: 1.0.0-beta.9 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -9,8 +9,8 @@
  * Rap仓库 地址: https://rap2.taobao.org/repository/editor?id=237514
  */
 
-import commonLib from '@ali/mc-rap/runtime/commonLib';
-import reduxLib from '@ali/mc-rap/runtime/reduxLib';
+import * as commonLib from '@ali/mc-rap/runtime/commonLib';
+import * as reduxLib from '@ali/mc-rap/runtime/reduxLib';
 import { RequestTypes } from './redux';
 
 export interface IModels {
@@ -170,10 +170,10 @@ export interface IResponseTypes {
 }
 
 export function createFetch(fetchConfig: commonLib.RequesterOption) {
-  const rapperFetch = reduxLib.getRapperRequest(fetchConfig);
+  const rapperFetch = commonLib.getRapperRequest(fetchConfig);
   const sendRapperFetch = (
     modelName: keyof typeof RequestTypes,
-    requestParams: reduxLib.IUserFetchParams,
+    requestParams: commonLib.IUserFetchParams,
   ) => {
     const { extra } = requestParams;
     if (extra && extra.type === 'normal') {
@@ -196,7 +196,7 @@ export function createFetch(fetchConfig: commonLib.RequesterOption) {
      */
     'GET/example/1574387719563': (
       req?: IModels['GET/example/1574387719563']['Req'],
-      extra?: reduxLib.IReduxExtra,
+      extra?: commonLib.IExtra,
     ) => {
       return sendRapperFetch('GET/example/1574387719563', {
         url: '/example/1574387719563',
@@ -212,7 +212,7 @@ export function createFetch(fetchConfig: commonLib.RequesterOption) {
      * @param req 请求参数
      * @param extra 请求配置项
      */
-    'GET/testGet': (req?: IModels['GET/testGet']['Req'], extra?: reduxLib.IReduxExtra) => {
+    'GET/testGet': (req?: IModels['GET/testGet']['Req'], extra?: commonLib.IExtra) => {
       return sendRapperFetch('GET/testGet', {
         url: '/testGet',
         method: 'GET',
@@ -227,7 +227,7 @@ export function createFetch(fetchConfig: commonLib.RequesterOption) {
      * @param req 请求参数
      * @param extra 请求配置项
      */
-    'POST/testPost': (req?: IModels['POST/testPost']['Req'], extra?: reduxLib.IReduxExtra) => {
+    'POST/testPost': (req?: IModels['POST/testPost']['Req'], extra?: commonLib.IExtra) => {
       return sendRapperFetch('POST/testPost', {
         url: '/testPost',
         method: 'POST',
@@ -242,10 +242,7 @@ export function createFetch(fetchConfig: commonLib.RequesterOption) {
      * @param req 请求参数
      * @param extra 请求配置项
      */
-    'POST/testFormData': (
-      req?: IModels['POST/testFormData']['Req'],
-      extra?: reduxLib.IReduxExtra,
-    ) => {
+    'POST/testFormData': (req?: IModels['POST/testFormData']['Req'], extra?: commonLib.IExtra) => {
       return sendRapperFetch('POST/testFormData', {
         url: '/testFormData',
         method: 'POST',
@@ -262,7 +259,7 @@ export function createFetch(fetchConfig: commonLib.RequesterOption) {
      */
     'GET/group/:groupId/member/:memberId': (
       req?: IModels['GET/group/:groupId/member/:memberId']['Req'],
-      extra?: reduxLib.IReduxExtra,
+      extra?: commonLib.IExtra,
     ) => {
       return sendRapperFetch('GET/group/:groupId/member/:memberId', {
         url: '/group/:groupId/member/:memberId',

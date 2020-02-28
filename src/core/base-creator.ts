@@ -50,7 +50,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
   const { rapUrl, resSelector } = extr;
   const modelStr = await createModel(interfaces, extr);
   return `
-    import commonLib from '${packageName}/runtime/commonLib'
+    import * as commonLib from '${packageName}/runtime/commonLib'
 
     ${modelStr}
 
@@ -88,7 +88,7 @@ export function createBaseIndexCode(): IGeneratedCode {
   return {
     import: `
       import { createFetch, IModels } from './request'
-      import commonLib from '${packageName}/runtime/commonLib'
+      import * as commonLib from '${packageName}/runtime/commonLib'
     `,
     body: `
       const { defaultFetch } = commonLib

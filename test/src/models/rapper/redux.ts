@@ -1,6 +1,6 @@
-/* md5: e63a120e276ec9be158161659fe82746 */
+/* md5: cec8aa8f579576f580661ca90552b187 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.0.0-beta.1 */
+/* Rapper版本: 1.0.0-beta.9 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -11,7 +11,7 @@
 
 import { useSelector } from 'react-redux';
 import { IModels, IResponseTypes, createFetch } from './request';
-import reduxLib from '@ali/mc-rap/runtime/reduxLib';
+import * as reduxLib from '@ali/mc-rap/runtime/reduxLib';
 import { fetch } from './index';
 
 /** 请求types */
@@ -178,8 +178,8 @@ export const useRapper = {
   ) {
     type Req = IModels['GET/example/1574387719563']['Req'];
     type Res = IResponseTypes['GET/example/1574387719563'];
-    type IFetcher = typeof rapperFetch['GET/example/1574387719563'];
     const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
+    type IFetcher = typeof rapperFetch['GET/example/1574387719563'];
     return reduxLib.useRapperCommon<TRapperStoreKey, Req, Res, IFetcher>({
       modelName: 'GET/example/1574387719563',
       fetcher: rapperFetch['GET/example/1574387719563'],
@@ -199,8 +199,8 @@ export const useRapper = {
   ) {
     type Req = IModels['GET/testGet']['Req'];
     type Res = IResponseTypes['GET/testGet'];
-    type IFetcher = typeof rapperFetch['GET/example/1574387719563'];
     const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
+    type IFetcher = typeof rapperFetch['GET/testGet'];
     return reduxLib.useRapperCommon<TRapperStoreKey, Req, Res, IFetcher>({
       modelName: 'GET/testGet',
       fetcher: rapperFetch['GET/testGet'],
@@ -220,8 +220,8 @@ export const useRapper = {
   ) {
     type Req = IModels['POST/testPost']['Req'];
     type Res = IResponseTypes['POST/testPost'];
-    type IFetcher = typeof rapperFetch['GET/example/1574387719563'];
     const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
+    type IFetcher = typeof rapperFetch['POST/testPost'];
     return reduxLib.useRapperCommon<TRapperStoreKey, Req, Res, IFetcher>({
       modelName: 'POST/testPost',
       fetcher: rapperFetch['POST/testPost'],
@@ -241,8 +241,8 @@ export const useRapper = {
   ) {
     type Req = IModels['POST/testFormData']['Req'];
     type Res = IResponseTypes['POST/testFormData'];
-    type IFetcher = typeof rapperFetch['GET/example/1574387719563'];
     const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
+    type IFetcher = typeof rapperFetch['POST/testFormData'];
     return reduxLib.useRapperCommon<TRapperStoreKey, Req, Res, IFetcher>({
       modelName: 'POST/testFormData',
       fetcher: rapperFetch['POST/testFormData'],
@@ -262,8 +262,8 @@ export const useRapper = {
   ) {
     type Req = IModels['GET/group/:groupId/member/:memberId']['Req'];
     type Res = IResponseTypes['GET/group/:groupId/member/:memberId'];
-    type IFetcher = typeof rapperFetch['GET/example/1574387719563'];
     const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
+    type IFetcher = typeof rapperFetch['GET/group/:groupId/member/:memberId'];
     return reduxLib.useRapperCommon<TRapperStoreKey, Req, Res, IFetcher>({
       modelName: 'GET/group/:groupId/member/:memberId',
       fetcher: rapperFetch['GET/group/:groupId/member/:memberId'],

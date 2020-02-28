@@ -115,16 +115,6 @@ export interface IState {
   [key: string]: any;
 }
 
-/** 请求的额外参数类型, redux 模式对上面 IExtra 的补充 */
-export interface IReduxExtra extends IExtra {
-  /**
-   * 请求的类型，默认不传 代表redux请求，会发送 Action，也存入redux store
-   * normal 代表普通请求，不发送 Action，也不存入redux store
-   * redux 代表redux请求，会发送 Action，也存入redux store
-   */
-  type?: 'normal' | 'redux';
-}
-
 /** 深比较 */
 function looseEqual(newData: any, oldData: any): boolean {
   const newType = Object.prototype.toString.call(newData);

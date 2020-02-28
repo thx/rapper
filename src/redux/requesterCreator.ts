@@ -1,7 +1,6 @@
 import { createModel, createResponseTypes } from '../core/base-creator';
 import { Intf, ICreatorExtr } from '../types';
 import { creatInterfaceHelpStr } from '../core/tools';
-import { RAPPER_REQUEST } from '../runtime/reduxLib';
 import { getPackageName } from '../utils';
 
 const packageName = getPackageName();
@@ -9,8 +8,8 @@ const packageName = getPackageName();
 export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreatorExtr) {
   const modelStr = await createModel(interfaces, extr);
   return `
-    import commonLib from '${packageName}/runtime/commonLib'
-    import reduxLib from '${packageName}/runtime/reduxLib'
+    import * as commonLib from '${packageName}/runtime/commonLib'
+    import * as reduxLib from '${packageName}/runtime/reduxLib'
     import { RequestTypes } from './redux'
 
     ${modelStr}
@@ -20,14 +19,14 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
     ${createResponseTypes(interfaces)}
 
     export function createFetch(fetchConfig: commonLib.RequesterOption) {
-      const rapperFetch = reduxLib.getRapperRequest(fetchConfig);
-      const sendRapperFetch = (modelName: keyof typeof RequestTypes, requestParams: reduxLib.IUserFetchParams) => {
+      const rapperFetch = commonLib.getRapperRequest(fetchConfig);
+      const sendRapperFetch = (modelName: keyof typeof RequestTypes, requestParams: commonLib.IUserFetchParams) => {
         const { extra } = requestParams;
         if (extra && extra.type === 'normal') {
           return rapperFetch(requestParams);
         } else {
           const action = {
-            type: '${RAPPER_REQUEST}',
+            type: '$$RAPPER_REQUEST',
             payload: { ...requestParams, modelName, types: RequestTypes[modelName] },
           };
           return reduxLib.dispatchAction(action, rapperFetch);
@@ -42,7 +41,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
           * @param extra 请求配置项`;
           return `
           ${creatInterfaceHelpStr(extr.rapUrl, itf, extrText)}
-          '${modelName}': (req?: IModels['${modelName}']['Req'], extra?: reduxLib.IReduxExtra) => {
+          '${modelName}': (req?: IModels['${modelName}']['Req'], extra?: commonLib.IExtra) => {
             return sendRapperFetch('${modelName}', {
               url: '${url}',
               method: '${method.toUpperCase()}',

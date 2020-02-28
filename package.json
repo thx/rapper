@@ -1,6 +1,6 @@
 {
-  "name": "@ali/mc-rap",
-  "version": "1.0.0-beta.1",
+  "name": "@ali/rap",
+  "version": "1.0.0-beta.0",
   "description": "rapper, use http api as a function",
   "main": "./dist/index.js",
   "scripts": {
@@ -26,7 +26,8 @@
   "author": "chibing.fy",
   "license": "ISC",
   "files": [
-    "dist"
+    "dist",
+    "runtime"
   ],
   "publishConfig": {
     "registry": "http://registry.npm.alibaba-inc.com"
