@@ -6,7 +6,9 @@
         "tnpm ii",
         "npm run build",
         "mkdir -p $BUILD_DEST/dist",
+        "mkdir -p $BUILD_DEST/runtime",
         "mv ./dist $BUILD_DEST",
+        "mv ./runtime $BUILD_DEST",
         "mv ./package.json $BUILD_DEST"
       ]
     }
