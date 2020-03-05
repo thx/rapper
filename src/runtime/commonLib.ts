@@ -23,7 +23,7 @@ export interface IExtra {
    */
   query?: { [key: string]: any };
   /**
-   * 用户自定义的queryString函数，默认是 JSON.stringify
+   * 用户自定义的queryString函数，默认使用JSON.stringify处理，例如 { a: 1, b: 2 } 结果是 a=1&b=2
    */
   queryStringFn?: (input: any[] | object) => string;
 }

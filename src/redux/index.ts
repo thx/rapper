@@ -14,7 +14,7 @@ const packageName = getPackageName();
 function createIndexStr(): IGeneratedCode {
   return {
     import: `
-      import { useResponse, useRapper, useAllResponse, clearResponseCache, rapperActions, rapperBaseSelector, rapperDataSelector } from './redux'
+      import { useResponse, useAPI, useAllResponse, clearResponseCache, rapperActions, rapperBaseSelector, rapperDataSelector } from './redux'
       import { IResponseTypes } from './request'
       import * as reduxLib from '${packageName}/runtime/reduxLib'
     `,
@@ -25,7 +25,7 @@ function createIndexStr(): IGeneratedCode {
       export {
         /** 以Hooks的方式使用请求响应数据 */
         useResponse,
-        useRapper,
+        useAPI,
         /** 使用请求响应数据（包含缓存） */
         useAllResponse,
         /** 清除此接口的缓存 */

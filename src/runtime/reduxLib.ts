@@ -8,8 +8,16 @@ export const RAPPER_CLEAR_STORE = '$$RAPPER_CLEAR_STORE';
 export const RAPPER_UPDATE_STORE = '$$RAPPER_UPDATE_STORE';
 export const RAPPER_STATE_KEY = '$$rapperResponseData';
 
-/** useRapper 的 extra */
-export type IUseRapperExtra = IExtra;
+/** useAPI 的 extra */
+export interface IUseAPIExtra extends Pick<IExtra, 'contentType' | 'query' | 'queryStringFn'> {
+  /**
+   * 支持三种模式
+   * auto，默认模式，判断缓存是否有接口数据，有就返回，没有就自动发送请求
+   * paramsMatch，参数匹配模式，判断缓存中是否有请求参数相同的数据，有就返回，没有就自动发送请求
+   * manual，手动模式，不自动发送请求，返回数据是通过 request 请求得到的最新数据
+   */
+  mode: 'auto' | 'paramsMatch' | 'manual';
+}
 
 /** 请求类型 */
 type REQUEST_METHOD = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -244,36 +252,43 @@ export function getRapperDataSelector<M, Res>(state: IState, modelName: M) {
 interface IRapperCommonParams<M, Req, Item, IFetcher> {
   modelName: M;
   fetcher: IFetcher;
-  requestParams: Req;
-  extra?: IExtra;
+  requestParams?: Req;
+  extra?: IUseAPIExtra;
   filter?: IFilterObj<Req> | FilterFunc<Item>;
 }
-/** useRapper */
-export function useRapperCommon<
+/** useAPI */
+export function useAPICommon<
   M,
   Req,
   Res,
-  IFetcher extends (requestParams: any, extra?: IExtra) => any
+  IFetcher extends (requestParams?: Req, extra?: IExtra) => any
 >({ modelName, fetcher, requestParams, extra }: IRapperCommonParams<M, Req, {}, IFetcher>) {
+  const { mode, ...otherExtra } = extra || {};
   const reduxData = useSelector((state: IState) => {
     return (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
   });
-  const initData = getFilterData<Req, { request: Req }>(reduxData);
+  const initData = getFilterData<Req, { request: Req }>(
+    reduxData,
+    mode === 'paramsMatch' ? requestParams : undefined,
+  );
   const [filteredData, setFilteredData] = useState(initData.response || undefined);
   const [isPending, setIsPending] = useState(initData.isPending || false);
   const [errorMessage, setErrorMessage] = useState(initData.errorMessage || undefined);
 
   useEffect(() => {
     /** 过滤出一条最新的符合条件的数据 */
-    const result = getFilterData<Req, { request: Req }>(reduxData);
+    const result = getFilterData<Req, { request: Req }>(
+      reduxData,
+      mode === 'paramsMatch' ? requestParams : undefined,
+    );
     !looseEqual(result.response, filteredData) && setFilteredData(result.response || undefined);
     setIsPending(result.isPending || false);
     setErrorMessage(result.errorMessage);
   }, [reduxData, filteredData]);
 
   useEffect(() => {
-    if (!initData.id) {
-      fetcher(requestParams, extra);
+    if (mode !== 'manual' && !initData.id) {
+      fetcher(requestParams, otherExtra);
     }
   }, [initData.id]);
 

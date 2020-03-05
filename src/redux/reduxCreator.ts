@@ -64,21 +64,21 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
         .join(',\n\n')}
     }
 
-    export const useRapper = {
+    export const useAPI = {
       ${interfaces
         .map(
           itf => `
       ${creatInterfaceHelpStr(extr.rapUrl, itf)}
       /* tslint:disable */
       '${itf.modelName}': function useData(
-        requestParams: IModels['${itf.modelName}']['Req'],
-        extra?: reduxLib.IUseRapperExtra & { fetch?: ReturnType<typeof createFetch> }
+        requestParams?: IModels['${itf.modelName}']['Req'],
+        extra?: reduxLib.IUseAPIExtra & { fetch?: ReturnType<typeof createFetch> }
       ) {
         type Req = IModels['${itf.modelName}']['Req']
         type Res = IResponseTypes['${itf.modelName}']
         const rapperFetch = (extra && extra.fetch) ? extra.fetch : fetch
         type IFetcher = typeof rapperFetch['${itf.modelName}']
-        return reduxLib.useRapperCommon<TRapperStoreKey, Req, Res, IFetcher>({
+        return reduxLib.useAPICommon<TRapperStoreKey, Req, Res, IFetcher>({
           modelName: '${itf.modelName}',
           fetcher: rapperFetch['${itf.modelName}'],
           requestParams,
