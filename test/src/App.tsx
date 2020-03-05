@@ -2,6 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import store from './models/store';
 import Request from './components/request';
+import UseAPI from './components/useAPI';
 import RequestPost from './components/request-post';
 import RequestForm from './components/request-form';
 import ClassComponent from './components/class-component';
@@ -15,6 +16,9 @@ const App: React.FC = () => {
       <div className="App">
         <div className="card">
           <Request />
+        </div>
+        <div className="card">
+          <UseAPI />
         </div>
         <div className="card">
           <RequestPost />

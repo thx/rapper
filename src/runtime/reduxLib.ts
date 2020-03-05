@@ -16,7 +16,7 @@ export interface IUseAPIExtra extends Pick<IExtra, 'contentType' | 'query' | 'qu
    * paramsMatch，参数匹配模式，判断缓存中是否有请求参数相同的数据，有就返回，没有就自动发送请求
    * manual，手动模式，不自动发送请求，返回数据是通过 request 请求得到的最新数据
    */
-  mode: 'auto' | 'paramsMatch' | 'manual';
+  mode?: 'auto' | 'paramsMatch' | 'manual';
 }
 
 /** 请求类型 */
@@ -263,7 +263,7 @@ export function useAPICommon<
   Res,
   IFetcher extends (requestParams?: Req, extra?: IExtra) => any
 >({ modelName, fetcher, requestParams, extra }: IRapperCommonParams<M, Req, {}, IFetcher>) {
-  const { mode, ...otherExtra } = extra || {};
+  const { mode = 'auto', ...otherExtra } = extra || {};
   const reduxData = useSelector((state: IState) => {
     return (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
   });
