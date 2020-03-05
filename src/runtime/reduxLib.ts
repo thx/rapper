@@ -12,11 +12,11 @@ export const RAPPER_STATE_KEY = '$$rapperResponseData';
 export interface IUseAPIExtra extends Pick<IExtra, 'contentType' | 'query' | 'queryStringFn'> {
   /**
    * 支持三种模式
-   * auto，默认模式，判断缓存是否有接口数据，有就返回，没有就自动发送请求
-   * paramsMatch，参数匹配模式，判断缓存中是否有请求参数相同的数据，有就返回，没有就自动发送请求
+   * paramsMatch，参数匹配模式（默认模式），判断缓存中是否有请求参数相同的数据，有就返回，没有就自动发送请求
+   * notMatch，不进行参数匹配模式，判断缓存是否有接口数据，有就返回，没有就自动发送请求
    * manual，手动模式，不自动发送请求，返回数据是通过 request 请求得到的最新数据
    */
-  mode?: 'auto' | 'paramsMatch' | 'manual';
+  mode?: 'paramsMatch' | 'notMatch' | 'manual';
 }
 
 /** 请求类型 */
@@ -172,7 +172,7 @@ function paramsFilter<
   return true;
 }
 
-function getFilterData<Req, Item extends { request: Req }>(
+function getFilteredData<Req, Item extends { request: Req }>(
   reduxData: any[],
   filter?: IFilterObj<Req> | FilterFunc<Item>,
 ) {
@@ -199,7 +199,7 @@ export function useResponseData<M, Req, Res, Item extends { request: Req }>(
   const reduxData = useSelector((state: IState) => {
     return (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
   });
-  const initData = getFilterData<Req, Item>(reduxData, filter);
+  const initData = getFilteredData<Req, Item>(reduxData, filter);
   const [id, setId] = useState(initData.id || undefined);
   const [filteredData, setFilteredData] = useState(initData.response || undefined);
   const [isPending, setIsPending] = useState(initData.isPending || false);
@@ -207,7 +207,7 @@ export function useResponseData<M, Req, Res, Item extends { request: Req }>(
 
   useEffect(() => {
     /** 过滤出一条最新的符合条件的数据 */
-    const result = getFilterData<Req, Item>(reduxData, filter);
+    const result = getFilteredData<Req, Item>(reduxData, filter);
 
     !looseEqual(result.response, filteredData) && setFilteredData(result.response || undefined);
     setId(result.id);
@@ -235,7 +235,7 @@ export function getResponseData<M, Req, Res, Item extends { request: Req }>(
   filter?: IFilterObj<Req> | FilterFunc<Item>,
 ) {
   const reduxData = (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
-  const result = getFilterData<Req, Item>(reduxData, filter);
+  const result = getFilteredData<Req, Item>(reduxData, filter);
   return [
     result.response || undefined,
     { id: result.id, isPending: result.isPending || false, errorMessage: result.errorMessage },
@@ -263,13 +263,13 @@ export function useAPICommon<
   Res,
   IFetcher extends (requestParams?: Req, extra?: IExtra) => any
 >({ modelName, fetcher, requestParams, extra }: IRapperCommonParams<M, Req, {}, IFetcher>) {
-  const { mode = 'auto', ...otherExtra } = extra || {};
+  const { mode = 'paramsMatch', ...otherExtra } = extra || {};
   const reduxData = useSelector((state: IState) => {
     return (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
   });
-  const initData = getFilterData<Req, { request: Req }>(
+  const initData = getFilteredData<Req, { request: Req }>(
     reduxData,
-    mode === 'paramsMatch' ? requestParams : undefined,
+    mode === 'notMatch' ? undefined : requestParams,
   );
   const [filteredData, setFilteredData] = useState(initData.response || undefined);
   const [isPending, setIsPending] = useState(initData.isPending || false);
@@ -277,9 +277,9 @@ export function useAPICommon<
 
   useEffect(() => {
     /** 过滤出一条最新的符合条件的数据 */
-    const result = getFilterData<Req, { request: Req }>(
+    const result = getFilteredData<Req, { request: Req }>(
       reduxData,
-      mode === 'paramsMatch' ? requestParams : undefined,
+      mode === 'notMatch' ? undefined : requestParams,
     );
     !looseEqual(result.response, filteredData) && setFilteredData(result.response || undefined);
     setIsPending(result.isPending || false);
