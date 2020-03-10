@@ -456,8 +456,8 @@ export function rapperEnhancer(config?: IEnhancerProps): any {
       } = action.payload;
       const state = store.getState();
       const cacheData = state?.$$rapperResponseData[modelName] || [];
-      const cacheDataPendingLength = cacheData.filter(item => item.isPending);
-      if (cacheDataPendingLength >= maxCacheLength) {
+      const cacheDataPending = cacheData.filter(item => item.isPending) || [];
+      if (cacheDataPending.length >= maxCacheLength) {
         const errorMessage = `当前配置的缓存区最多支持${maxCacheLength}个并发请求，如需要更大的缓存区，请修改 maxCacheLength 参数`;
         store.dispatch({
           type: FAILURE,
