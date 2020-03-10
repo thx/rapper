@@ -371,10 +371,6 @@ function assignData({
   maxCacheLength,
 }: IAssignDataProps) {
   const newState = { ...oldState };
-  if (typeof maxCacheLength !== 'number' || maxCacheLength < 1) {
-    maxCacheLength = 2;
-  }
-
   let data = newState[interfaceKey] || [];
   if (isPending === true) {
     /** 只存最近 maxCacheLength 个数据 */
@@ -398,7 +394,10 @@ export const rapperReducers = {
 /** store enhancer */
 export function rapperEnhancer(config?: IEnhancerProps): any {
   config = config || {};
-  const { maxCacheLength = 2 } = config;
+  let { maxCacheLength } = config;
+  if (typeof maxCacheLength !== 'number' || maxCacheLength < 1) {
+    maxCacheLength = 6;
+  }
 
   return (next: IStoreCreator) => (reducers: Reducer<any, any>, ...args: any[]) => {
     const store = next(reducers, ...args);
@@ -407,7 +406,7 @@ export function rapperEnhancer(config?: IEnhancerProps): any {
     const newReducers = (state: any, action: TAction): IStore => {
       if (state && !state.$$rapperResponseData) {
         throw Error(
-          'rapper初始化配置失败，rootReducer应该加入rapperReducers，具体请查看demo配置: https://www.yuque.com/rap/rapper/redux#e391cb1c',
+          'rapper初始化配置失败，rootReducer应该加入rapperReducers，具体请查看demo配置: https://www.yuque.com/rap/rapper/react-install#rYm5X',
         );
       }
 
@@ -455,8 +454,19 @@ export function rapperEnhancer(config?: IEnhancerProps): any {
         extra,
         types: [REQUEST, SUCCESS, FAILURE],
       } = action.payload;
-      const requestTime = new Date().getTime();
+      const state = store.getState();
+      const cacheData = state?.$$rapperResponseData[modelName] || [];
+      const cacheDataPendingLength = cacheData.filter(item => item.isPending);
+      if (cacheDataPendingLength >= maxCacheLength) {
+        const errorMessage = `当前配置的缓存区最多支持${maxCacheLength}个并发请求，如需要更大的缓存区，请修改 maxCacheLength 参数`;
+        store.dispatch({
+          type: FAILURE,
+          payload: errorMessage,
+        });
+        return Promise.reject(errorMessage);
+      }
 
+      const requestTime = new Date().getTime();
       store.dispatch({ type: REQUEST });
       store.dispatch({
         type: RAPPER_UPDATE_STORE,

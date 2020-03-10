@@ -179,13 +179,13 @@ const rapData = useResponse['GET/adgroup/price/update$'](({ request, response })
 
 ### 2、请求响应数据缓存长度设置
 
-我们可以将多次请求响应的数据缓存起来，默认缓存最近 2 次请求的数据，当然也可以通过配置 `maxCacheLength` 来自定义缓存长度
+我们可以将多次请求响应的数据缓存起来，默认缓存最近 6 次请求的数据，当然也可以通过配置 `maxCacheLength` 来自定义缓存长度
 
 ```js
 import { rapperEnhancer } from 'model/rapper';
 
 rapperEnhancer({
-  maxCacheLength: 3, // 也支持 Infinity
+  maxCacheLength: 6, // 也支持 Infinity
 });
 ```
 
