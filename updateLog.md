@@ -1,4 +1,9 @@
-## 2019.2.20 v0.2.3
+## 2020.03.20 v1.0.0
+
+- 新增 useAPI
+- lib 移入 node_modules，相应的，用户需要将包依赖由 devDependencies 改成 dependencies
+
+## 2020.2.20 v0.2.3
 
 - 增加 content-type 是 multipart/form-data 的场景，可用于上传文件，form 表单提交
 - 修复了请求参数 params[key] = 0 时可能被忽略的 bug
