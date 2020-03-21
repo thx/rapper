@@ -41,12 +41,12 @@ Rapper 在此基础上更进一步，利用这些已经录入的接口数据为�
 4. 引入生成的 fetch 函数，调用它就能发起请求并返回带有类型的相应数据
 
 ```javascript
-// 从生成的代码中引入 requester
+// 从生成的代码中引入 fetch
 import { fetch } from './rapper/index';
-// 直接使用 requester 调用请求函数，能获得请求/返回类型校验/提示
+// 直接使用 fetch 调用请求函数，能获得请求/返回类型校验/提示
 (async function() {
-  //                         alt+点击可以查看接口信息
-  const res = await requester['GET/example/rapper']({
+  // alt+点击可以查看接口信息
+  const res = await fetch['GET/example/rapper']({
     foo: '123',
   });
   const nameList = res.taskList.map(e => e.name);
@@ -68,18 +68,18 @@ import { fetch } from './rapper/index';
 以往发送一个请求要写繁杂的 interface/action/reducer/effect，现在这些都会为你准备好，你只需要使用即可：
 
 ```javascript
-const [result, loading] = useResponse['GET/duck/fetchColor'];
+const [result, { id, isFetching }] = useResponse['GET/duck/fetchColor'];
 
 useEffect(() => {
-  if (!result && !loading) {
+  if (!result && !id) {
     fetch['GET/duck/fetchColor'](params);
   }
-}, [result, loading, params]);
+}, [result, id, params]);
 ```
 
 ## 文档
 
-想要在生产中深度使用 Rapper，你可能还需要自定义请求函数、对返回的数据做统一的类型转换、具体了解 rapper-redux 的 API，请参考我们的文档：https://www.yuque.com/rap/rapper
+想要在生产中深度使用 Rapper，你可能还需要自定义请求函数、对返回的数据做统一的类型转换，具体请参考我们的文档：https://www.yuque.com/rap/rapper
 
 ## 联系我们
 
