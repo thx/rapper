@@ -1,6 +1,6 @@
-/* md5: c7eb9ef160e9ff5544520e7064e5d8a9 */
+/* md5: c2a34f0121960fa926d43ded6ae144c0 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.0.0-beta.21 */
+/* Rapper版本: 1.0.1-beta.0 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -16,12 +16,6 @@ import { fetch } from './index';
 
 /** 请求types */
 export const RequestTypes = {
-  'GET/example/1574387719563': [
-    'GET/example/1574387719563_REQUEST',
-    'GET/example/1574387719563_SUCCESS',
-    'GET/example/1574387719563_FAILURE',
-  ],
-
   'GET/testGet': ['GET/testGet_REQUEST', 'GET/testGet_SUCCESS', 'GET/testGet_FAILURE'],
 
   'POST/testPost': ['POST/testPost_REQUEST', 'POST/testPost_SUCCESS', 'POST/testPost_FAILURE'],
@@ -43,13 +37,6 @@ export const RequestTypes = {
 
 /** store中存储的数据结构 */
 interface IRapperStore {
-  'GET/example/1574387719563': Array<
-    reduxLib.IInterfaceInfo & {
-      request: IModels['GET/example/1574387719563']['Req'];
-      response: IResponseTypes['GET/example/1574387719563'];
-    }
-  >;
-
   'GET/testGet': Array<
     reduxLib.IInterfaceInfo & {
       request: IModels['GET/testGet']['Req'];
@@ -88,25 +75,6 @@ interface IRapperStore {
 export type TRapperStoreKey = keyof IRapperStore;
 
 export const useResponse = {
-  /**
-   * 接口名：示例接口
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1376440
-   */
-  /* tslint:disable */
-  'GET/example/1574387719563': function useData(
-    filter?:
-      | { request?: IModels['GET/example/1574387719563']['Req'] }
-      | { (storeData: IRapperStore['GET/example/1574387719563'][0]): boolean },
-  ) {
-    type Req = IModels['GET/example/1574387719563']['Req'];
-    type Item = IRapperStore['GET/example/1574387719563'][0];
-    type Res = IResponseTypes['GET/example/1574387719563'];
-    return reduxLib.useResponseData<TRapperStoreKey, Req, Res, Item>(
-      'GET/example/1574387719563',
-      filter,
-    );
-  },
-
   /**
    * 接口名：GET请求
    * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
@@ -192,27 +160,6 @@ export const useResponse = {
 };
 
 export const useAPI = {
-  /**
-   * 接口名：示例接口
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1376440
-   */
-  /* tslint:disable */
-  'GET/example/1574387719563': function useData(
-    requestParams?: IModels['GET/example/1574387719563']['Req'],
-    extra?: reduxLib.IUseAPIExtra & { fetch?: ReturnType<typeof createFetch> },
-  ) {
-    type Req = IModels['GET/example/1574387719563']['Req'];
-    type Res = IResponseTypes['GET/example/1574387719563'];
-    const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
-    type IFetcher = typeof rapperFetch['GET/example/1574387719563'];
-    return reduxLib.useAPICommon<TRapperStoreKey, Req, Res, IFetcher>({
-      modelName: 'GET/example/1574387719563',
-      fetcher: rapperFetch['GET/example/1574387719563'],
-      requestParams,
-      extra,
-    });
-  },
-
   /**
    * 接口名：GET请求
    * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
@@ -321,25 +268,6 @@ export const useAPI = {
 
 export const useAllResponse = {
   /**
-   * 接口名：示例接口
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1376440
-   */
-  /* tslint:disable */
-  'GET/example/1574387719563': function useData() {
-    return useSelector((state: reduxLib.IState) => {
-      const selectedState =
-        (state['$$rapperResponseData'] &&
-          state['$$rapperResponseData']['GET/example/1574387719563']) ||
-        [];
-      type TReturnItem = reduxLib.IInterfaceInfo & {
-        request?: IModels['GET/example/1574387719563']['Req'];
-        response?: IResponseTypes['GET/example/1574387719563'];
-      };
-      return selectedState as Array<TReturnItem>;
-    });
-  },
-
-  /**
    * 接口名：GET请求
    * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
    */
@@ -430,17 +358,6 @@ export const useAllResponse = {
 /** 重置接口数据 */
 export const clearResponseCache = {
   /**
-   * 接口名：示例接口
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1376440
-   */
-  'GET/example/1574387719563': (): void => {
-    reduxLib.dispatchAction({
-      type: '$$RAPPER_CLEAR_STORE',
-      payload: { 'GET/example/1574387719563': undefined },
-    });
-  },
-
-  /**
    * 接口名：GET请求
    * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
    */
@@ -497,21 +414,6 @@ export const clearResponseCache = {
 };
 
 export const rapperBaseSelector = {
-  'GET/example/1574387719563': (
-    state: reduxLib.IState,
-    filter?:
-      | { request?: IModels['GET/example/1574387719563']['Req'] }
-      | { (storeData: IRapperStore['GET/example/1574387719563'][0]): boolean },
-  ) => {
-    type Req = IModels['GET/example/1574387719563']['Req'];
-    type Res = IResponseTypes['GET/example/1574387719563'];
-    type Item = IRapperStore['GET/example/1574387719563'][0];
-    return reduxLib.getResponseData<TRapperStoreKey, Req, Res, Item>(
-      state,
-      'GET/example/1574387719563',
-      filter,
-    );
-  },
   'GET/testGet': (
     state: reduxLib.IState,
     filter?:
@@ -582,10 +484,6 @@ export const rapperBaseSelector = {
 };
 
 export const rapperDataSelector = {
-  'GET/example/1574387719563': (state: reduxLib.IState) => {
-    type Res = IResponseTypes['GET/example/1574387719563'];
-    return reduxLib.getRapperDataSelector<TRapperStoreKey, Res>(state, 'GET/example/1574387719563');
-  },
   'GET/testGet': (state: reduxLib.IState) => {
     type Res = IResponseTypes['GET/testGet'];
     return reduxLib.getRapperDataSelector<TRapperStoreKey, Res>(state, 'GET/testGet');

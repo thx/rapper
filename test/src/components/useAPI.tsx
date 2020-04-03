@@ -18,7 +18,7 @@ export default () => {
   return (
     <div>
       <div>
-        <span style={{ color: 'red' }}>useAPI</span>
+        <span style={{ color: 'red' }}>useAPI 自动发送</span>
         <Button type="primary" style={{ marginLeft: '20px' }} onClick={doRequest}>
           点击发送请求
         </Button>

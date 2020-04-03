@@ -1,6 +1,6 @@
-/* md5: c8bad2b56fd16746625c18f24c23b4ad */
+/* md5: 20c784c9a22dba7de30a99c1714832ca */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.0.0-beta.21 */
+/* Rapper版本: 1.0.1-beta.0 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -14,75 +14,6 @@ import * as reduxLib from '@ali/mc-rap/runtime/reduxLib';
 import { RequestTypes } from './redux';
 
 export interface IModels {
-  /**
-   * 接口名：示例接口
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1376440
-   */
-  'GET/example/1574387719563': {
-    Req: {
-      /**
-       * 请求属性示例
-       */
-      foo?: string;
-    };
-    Res: {
-      /**
-       * 字符串属性示例
-       */
-      string: string;
-      /**
-       * 数字属性示例
-       */
-      number: number;
-      /**
-       * 布尔属性示例
-       */
-      boolean: boolean;
-      /**
-       * 正则属性示例
-       */
-      regexp: string;
-      /**
-       * 函数属性示例
-       */
-      function: string;
-      /**
-       * 数组属性示例
-       */
-      array: {
-        /**
-         * 数组元素示例
-         */
-        foo: number;
-        /**
-         * 数组元素示例
-         */
-        bar: string;
-      }[];
-      /**
-       * 自定义数组元素示例
-       */
-      items: any[];
-      /**
-       * 对象属性示例
-       */
-      object: {
-        /**
-         * 对象属性示例
-         */
-        foo: number;
-        /**
-         * 对象属性示例
-         */
-        bar: string;
-      };
-      /**
-       * 占位符示例
-       */
-      placeholder: string;
-    };
-  };
-
   /**
    * 接口名：GET请求
    * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
@@ -177,7 +108,6 @@ export interface IModels {
 type ResSelector<T> = T;
 
 export interface IResponseTypes {
-  'GET/example/1574387719563': ResSelector<IModels['GET/example/1574387719563']['Res']>;
   'GET/testGet': ResSelector<IModels['GET/testGet']['Res']>;
   'POST/testPost': ResSelector<IModels['POST/testPost']['Res']>;
   'POST/testFormData': ResSelector<IModels['POST/testFormData']['Res']>;
@@ -206,24 +136,6 @@ export function createFetch(fetchConfig: commonLib.RequesterOption) {
   };
 
   return {
-    /**
-     * 接口名：示例接口
-     * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1376440
-     * @param req 请求参数
-     * @param extra 请求配置项
-     */
-    'GET/example/1574387719563': (
-      req?: IModels['GET/example/1574387719563']['Req'],
-      extra?: commonLib.IExtra,
-    ) => {
-      return sendRapperFetch('GET/example/1574387719563', {
-        url: '/example/1574387719563',
-        method: 'GET',
-        params: req,
-        extra,
-      }) as Promise<IResponseTypes['GET/example/1574387719563']>;
-    },
-
     /**
      * 接口名：GET请求
      * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102

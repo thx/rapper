@@ -269,7 +269,7 @@ export function useAPICommon<
   });
   const initData = getFilteredData<Req, { request: Req }>(
     reduxData,
-    mode === 'notMatch' ? undefined : requestParams,
+    mode === 'notMatch' ? undefined : { request: requestParams },
   );
   const [filteredData, setFilteredData] = useState(initData.response || undefined);
   const [isPending, setIsPending] = useState(initData.isPending || false);
@@ -279,7 +279,7 @@ export function useAPICommon<
     /** 过滤出一条最新的符合条件的数据 */
     const result = getFilteredData<Req, { request: Req }>(
       reduxData,
-      mode === 'notMatch' ? undefined : requestParams,
+      mode === 'notMatch' ? undefined : { request: requestParams },
     );
     !looseEqual(result.response, filteredData) && setFilteredData(result.response || undefined);
     setIsPending(result.isPending || false);
