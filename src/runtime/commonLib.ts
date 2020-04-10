@@ -160,7 +160,7 @@ export const defaultFetch = async ({
     const formdata = new FormData();
     params &&
       Object.keys(params).forEach(key => {
-        params[key] !== undefined && formdata.append(key, params[key]);
+        formdata.append(key, params[key]);
       });
     init.body = formdata;
   } else {
