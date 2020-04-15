@@ -1,4 +1,9 @@
+## 2020.04.05 v1.0.2
+
+- 修复 fetch 的 content-type 是 multipart/form-data 的情况下，请求参数的值为`0`、`undefined`、`null`时，可能会被自动过滤的 bug
+
 ## 2020.04.09 v1.0.1
+
 - 修复 useAPI 默认 mode 在请求参数变化的情况下不发送请求的 bug
 
 ## 2020.03.20 v1.0.0
