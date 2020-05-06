@@ -104,14 +104,18 @@ function processRestfulUrl(url: string, params: any) {
   const newParams = { ...params };
   for (let i = 0; i < urlSplit.length; ++i) {
     const part = urlSplit[i];
-    if (part[0] === ':') {
-      const key = part.slice(1);
-      if (params.hasOwnProperty(key)) {
-        urlSplit[i] = params[key];
-        delete newParams[key];
-      }
+    // 兼容 oneApi 与 egg 两种 模式的 params 传参 例： :appId / {appId}
+    const matchKeys = part.match(/(?:\{(.*)\}|\:(.*))/);
+    if (!matchKeys) continue;
+    const key = matchKeys[1] || matchKeys[2];
+    if (!params.hasOwnProperty(key)) {
+      console.warn('Please set value for template key: ', key);
+      continue;
     }
+    urlSplit[i] = params[key];
+    delete newParams[key];
   }
+
   return { url: urlSplit.join('/'), params: newParams };
 }
 
