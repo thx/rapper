@@ -5,14 +5,14 @@ import fetch from '../models/fetcher';
 
 const RequestFormdata = () => {
   const [data, setData] = useState<
-    ResponseTypes['GET/group/:groupId/member/:memberId'] | undefined
+    ResponseTypes['GET/group/:groupId/member/{memberId}'] | undefined
   >(undefined);
 
   const [isPending, setIsPending] = useState(false);
 
   const doRequest = () => {
     setIsPending(true);
-    fetch['GET/group/:groupId/member/:memberId'](
+    fetch['GET/group/:groupId/member/{memberId}'](
       { groupId: '1', memberId: '2' },
       { type: 'normal' },
     )
@@ -29,7 +29,7 @@ const RequestFormdata = () => {
   };
 
   const code = `
-  fetch['GET/group/:groupId/member/:memberId'](
+  fetch['GET/group/:groupId/member/{memberId}'](
     { groupId: '1', memberId: '2' },
     { type: 'normal' },
   )`;
