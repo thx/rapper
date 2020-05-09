@@ -1,6 +1,6 @@
-/* md5: c2a34f0121960fa926d43ded6ae144c0 */
+/* md5: 3209d05e4cb6dc23c22b3134f1a82b7b */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.0.1-beta.0 */
+/* Rapper版本: 1.0.3-beta.0 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -11,7 +11,7 @@
 
 import { useSelector } from 'react-redux';
 import { IModels, IResponseTypes, createFetch } from './request';
-import * as reduxLib from '@ali/mc-rap/runtime/reduxLib';
+import * as reduxLib from '@ali/rap/runtime/reduxLib';
 import { fetch } from './index';
 
 /** 请求types */
@@ -26,10 +26,10 @@ export const RequestTypes = {
     'POST/testFormData_FAILURE',
   ],
 
-  'GET/group/:groupId/member/:memberId': [
-    'GET/group/:groupId/member/:memberId_REQUEST',
-    'GET/group/:groupId/member/:memberId_SUCCESS',
-    'GET/group/:groupId/member/:memberId_FAILURE',
+  'GET/group/:groupId/member/{memberId}': [
+    'GET/group/:groupId/member/{memberId}_REQUEST',
+    'GET/group/:groupId/member/{memberId}_SUCCESS',
+    'GET/group/:groupId/member/{memberId}_FAILURE',
   ],
 
   'GET/useAPI': ['GET/useAPI_REQUEST', 'GET/useAPI_SUCCESS', 'GET/useAPI_FAILURE'],
@@ -58,10 +58,10 @@ interface IRapperStore {
     }
   >;
 
-  'GET/group/:groupId/member/:memberId': Array<
+  'GET/group/:groupId/member/{memberId}': Array<
     reduxLib.IInterfaceInfo & {
-      request: IModels['GET/group/:groupId/member/:memberId']['Req'];
-      response: IResponseTypes['GET/group/:groupId/member/:memberId'];
+      request: IModels['GET/group/:groupId/member/{memberId}']['Req'];
+      response: IResponseTypes['GET/group/:groupId/member/{memberId}'];
     }
   >;
 
@@ -128,16 +128,16 @@ export const useResponse = {
    * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
    */
   /* tslint:disable */
-  'GET/group/:groupId/member/:memberId': function useData(
+  'GET/group/:groupId/member/{memberId}': function useData(
     filter?:
-      | { request?: IModels['GET/group/:groupId/member/:memberId']['Req'] }
-      | { (storeData: IRapperStore['GET/group/:groupId/member/:memberId'][0]): boolean },
+      | { request?: IModels['GET/group/:groupId/member/{memberId}']['Req'] }
+      | { (storeData: IRapperStore['GET/group/:groupId/member/{memberId}'][0]): boolean },
   ) {
-    type Req = IModels['GET/group/:groupId/member/:memberId']['Req'];
-    type Item = IRapperStore['GET/group/:groupId/member/:memberId'][0];
-    type Res = IResponseTypes['GET/group/:groupId/member/:memberId'];
+    type Req = IModels['GET/group/:groupId/member/{memberId}']['Req'];
+    type Item = IRapperStore['GET/group/:groupId/member/{memberId}'][0];
+    type Res = IResponseTypes['GET/group/:groupId/member/{memberId}'];
     return reduxLib.useResponseData<TRapperStoreKey, Req, Res, Item>(
-      'GET/group/:groupId/member/:memberId',
+      'GET/group/:groupId/member/{memberId}',
       filter,
     );
   },
@@ -228,17 +228,17 @@ export const useAPI = {
    * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
    */
   /* tslint:disable */
-  'GET/group/:groupId/member/:memberId': function useData(
-    requestParams?: IModels['GET/group/:groupId/member/:memberId']['Req'],
+  'GET/group/:groupId/member/{memberId}': function useData(
+    requestParams?: IModels['GET/group/:groupId/member/{memberId}']['Req'],
     extra?: reduxLib.IUseAPIExtra & { fetch?: ReturnType<typeof createFetch> },
   ) {
-    type Req = IModels['GET/group/:groupId/member/:memberId']['Req'];
-    type Res = IResponseTypes['GET/group/:groupId/member/:memberId'];
+    type Req = IModels['GET/group/:groupId/member/{memberId}']['Req'];
+    type Res = IResponseTypes['GET/group/:groupId/member/{memberId}'];
     const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
-    type IFetcher = typeof rapperFetch['GET/group/:groupId/member/:memberId'];
+    type IFetcher = typeof rapperFetch['GET/group/:groupId/member/{memberId}'];
     return reduxLib.useAPICommon<TRapperStoreKey, Req, Res, IFetcher>({
-      modelName: 'GET/group/:groupId/member/:memberId',
-      fetcher: rapperFetch['GET/group/:groupId/member/:memberId'],
+      modelName: 'GET/group/:groupId/member/{memberId}',
+      fetcher: rapperFetch['GET/group/:groupId/member/{memberId}'],
       requestParams,
       extra,
     });
@@ -323,15 +323,15 @@ export const useAllResponse = {
    * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
    */
   /* tslint:disable */
-  'GET/group/:groupId/member/:memberId': function useData() {
+  'GET/group/:groupId/member/{memberId}': function useData() {
     return useSelector((state: reduxLib.IState) => {
       const selectedState =
         (state['$$rapperResponseData'] &&
-          state['$$rapperResponseData']['GET/group/:groupId/member/:memberId']) ||
+          state['$$rapperResponseData']['GET/group/:groupId/member/{memberId}']) ||
         [];
       type TReturnItem = reduxLib.IInterfaceInfo & {
-        request?: IModels['GET/group/:groupId/member/:memberId']['Req'];
-        response?: IResponseTypes['GET/group/:groupId/member/:memberId'];
+        request?: IModels['GET/group/:groupId/member/{memberId}']['Req'];
+        response?: IResponseTypes['GET/group/:groupId/member/{memberId}'];
       };
       return selectedState as Array<TReturnItem>;
     });
@@ -394,10 +394,10 @@ export const clearResponseCache = {
    * 接口名：RESTful 接口
    * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
    */
-  'GET/group/:groupId/member/:memberId': (): void => {
+  'GET/group/:groupId/member/{memberId}': (): void => {
     reduxLib.dispatchAction({
       type: '$$RAPPER_CLEAR_STORE',
-      payload: { 'GET/group/:groupId/member/:memberId': undefined },
+      payload: { 'GET/group/:groupId/member/{memberId}': undefined },
     });
   },
 
@@ -455,18 +455,18 @@ export const rapperBaseSelector = {
       filter,
     );
   },
-  'GET/group/:groupId/member/:memberId': (
+  'GET/group/:groupId/member/{memberId}': (
     state: reduxLib.IState,
     filter?:
-      | { request?: IModels['GET/group/:groupId/member/:memberId']['Req'] }
-      | { (storeData: IRapperStore['GET/group/:groupId/member/:memberId'][0]): boolean },
+      | { request?: IModels['GET/group/:groupId/member/{memberId}']['Req'] }
+      | { (storeData: IRapperStore['GET/group/:groupId/member/{memberId}'][0]): boolean },
   ) => {
-    type Req = IModels['GET/group/:groupId/member/:memberId']['Req'];
-    type Res = IResponseTypes['GET/group/:groupId/member/:memberId'];
-    type Item = IRapperStore['GET/group/:groupId/member/:memberId'][0];
+    type Req = IModels['GET/group/:groupId/member/{memberId}']['Req'];
+    type Res = IResponseTypes['GET/group/:groupId/member/{memberId}'];
+    type Item = IRapperStore['GET/group/:groupId/member/{memberId}'][0];
     return reduxLib.getResponseData<TRapperStoreKey, Req, Res, Item>(
       state,
-      'GET/group/:groupId/member/:memberId',
+      'GET/group/:groupId/member/{memberId}',
       filter,
     );
   },
@@ -496,11 +496,11 @@ export const rapperDataSelector = {
     type Res = IResponseTypes['POST/testFormData'];
     return reduxLib.getRapperDataSelector<TRapperStoreKey, Res>(state, 'POST/testFormData');
   },
-  'GET/group/:groupId/member/:memberId': (state: reduxLib.IState) => {
-    type Res = IResponseTypes['GET/group/:groupId/member/:memberId'];
+  'GET/group/:groupId/member/{memberId}': (state: reduxLib.IState) => {
+    type Res = IResponseTypes['GET/group/:groupId/member/{memberId}'];
     return reduxLib.getRapperDataSelector<TRapperStoreKey, Res>(
       state,
-      'GET/group/:groupId/member/:memberId',
+      'GET/group/:groupId/member/{memberId}',
     );
   },
   'GET/useAPI': (state: reduxLib.IState) => {

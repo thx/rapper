@@ -1,6 +1,6 @@
-/* md5: 20c784c9a22dba7de30a99c1714832ca */
+/* md5: 729948968a65ca17e24866d408372ad0 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.0.1-beta.0 */
+/* Rapper版本: 1.0.3-beta.0 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -9,8 +9,8 @@
  * Rap仓库 地址: https://rap2.taobao.org/repository/editor?id=237514
  */
 
-import * as commonLib from '@ali/mc-rap/runtime/commonLib';
-import * as reduxLib from '@ali/mc-rap/runtime/reduxLib';
+import * as commonLib from '@ali/rap/runtime/commonLib';
+import * as reduxLib from '@ali/rap/runtime/reduxLib';
 import { RequestTypes } from './redux';
 
 export interface IModels {
@@ -77,7 +77,7 @@ export interface IModels {
    * 接口名：RESTful 接口
    * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
    */
-  'GET/group/:groupId/member/:memberId': {
+  'GET/group/:groupId/member/{memberId}': {
     Req: {
       groupId?: string;
       memberId?: string;
@@ -111,8 +111,8 @@ export interface IResponseTypes {
   'GET/testGet': ResSelector<IModels['GET/testGet']['Res']>;
   'POST/testPost': ResSelector<IModels['POST/testPost']['Res']>;
   'POST/testFormData': ResSelector<IModels['POST/testFormData']['Res']>;
-  'GET/group/:groupId/member/:memberId': ResSelector<
-    IModels['GET/group/:groupId/member/:memberId']['Res']
+  'GET/group/:groupId/member/{memberId}': ResSelector<
+    IModels['GET/group/:groupId/member/{memberId}']['Res']
   >;
   'GET/useAPI': ResSelector<IModels['GET/useAPI']['Res']>;
 }
@@ -187,16 +187,16 @@ export function createFetch(fetchConfig: commonLib.RequesterOption) {
      * @param req 请求参数
      * @param extra 请求配置项
      */
-    'GET/group/:groupId/member/:memberId': (
-      req?: IModels['GET/group/:groupId/member/:memberId']['Req'],
+    'GET/group/:groupId/member/{memberId}': (
+      req?: IModels['GET/group/:groupId/member/{memberId}']['Req'],
       extra?: commonLib.IExtra,
     ) => {
-      return sendRapperFetch('GET/group/:groupId/member/:memberId', {
-        url: '/group/:groupId/member/:memberId',
+      return sendRapperFetch('GET/group/:groupId/member/{memberId}', {
+        url: '/group/:groupId/member/{memberId}',
         method: 'GET',
         params: req,
         extra,
-      }) as Promise<IResponseTypes['GET/group/:groupId/member/:memberId']>;
+      }) as Promise<IResponseTypes['GET/group/:groupId/member/{memberId}']>;
     },
 
     /**
