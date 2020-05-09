@@ -142,9 +142,10 @@ function getRestfulPlaceHolders(itf: Interface.IRoot) {
   const restfulPlaceHolders: string[] = [];
   for (let i = 0; i < urlSplit.length; ++i) {
     const part = urlSplit[i];
-    if (part[0] === ':') {
-      restfulPlaceHolders.push(part.slice(1));
-    }
+    const matchKeys = part.match(/(?:\{(.*)\}|\:(.*))/);
+    if (!matchKeys) continue;
+    const key = matchKeys[1] || matchKeys[2];
+    restfulPlaceHolders.push(key);
   }
   return restfulPlaceHolders;
 }
