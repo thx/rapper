@@ -1,3 +1,7 @@
+## 2020.05.13 v1.0.3
+
+- 支持 user/{id} 类型的 restful API
+
 ## 2020.04.05 v1.0.2
 
 - 修复 fetch 的 content-type 是 multipart/form-data 的情况下，请求参数的值为`0`、`undefined`、`null`时，可能会被自动过滤的 bug
