@@ -78,7 +78,7 @@ function scanAllfiles(interfaces: Array<Intf>, fileList: string[]): TScanResult 
       return;
     }
     /** 读取文件的内容 */
-    const content = fs.readFileSync(filePath, 'UTF-8') || '';
+    const content = fs.readFileSync(filePath, 'utf-8') || '';
     /** 每一行比对 */
     content.split('\n').forEach((rowText, i) => {
       const regResult = rowText.match(strReg);
@@ -127,7 +127,7 @@ export function findChangeFiles(rapperPath: string): string[] {
   const changeList: string[] = [];
   fileList.forEach(filePath => {
     /** 读取文件的内容 */
-    const content = fs.readFileSync(filePath, 'UTF-8') || '';
+    const content = fs.readFileSync(filePath, 'utf-8') || '';
     /** 校验文件 MD5，是否被改动 */
     if (isFileChange(content.split(/\r|\n|\r\n/))) {
       changeList.push(resolve(process.cwd(), filePath));
@@ -142,7 +142,7 @@ export function findChangeFiles(rapperPath: string): string[] {
 export function findRapperVersion(rapperPath: string): string {
   let version = '';
   try {
-    const content = fs.readFileSync(`${rapperPath}/index.ts`, 'UTF-8') || '';
+    const content = fs.readFileSync(`${rapperPath}/index.ts`, 'utf-8') || '';
     const contentArr = content.split(/\r|\n|\r\n/);
     if (contentArr.length) {
       const matchMD5 =
