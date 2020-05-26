@@ -192,9 +192,9 @@ export const defaultFetch = async ({
 
   const res = await fetch(urlWithParams, init);
   if (res.ok) {
-    return Promise.resolve(res.json());
+    return res.json();
   } else {
-    return Promise.reject(new Error(res.statusText))
+    throw new Error(res.statusText);
   }
 };
 
