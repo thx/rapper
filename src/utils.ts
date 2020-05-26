@@ -123,7 +123,7 @@ export async function latestVersion(packageName: string, isBeta?: boolean) {
     if (isBeta) {
       return versionsList[i]
     }
-    if (versionsList[i].indexOf('beta') === -1 && versionsList[i].indexOf('alpha') === -1) {
+    if (versionsList[i].indexOf('beta') === -1) {
       return versionsList[i]
     }
   }
