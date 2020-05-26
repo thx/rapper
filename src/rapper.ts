@@ -18,11 +18,11 @@ import {
   getOldProjectId,
   templateFilesOverwriteConfirm,
   templateFilesRelyConfirm,
+  latestVersion,
 } from './utils';
 import { getInterfaces, getIntfWithModelName, uniqueItfs, creatHeadHelpStr } from './core/tools';
 import { findDeleteFiles, findChangeFiles, findRapperVersion } from './core/scanFile';
 import url = require('url');
-import latestVersion from 'latest-version';
 import * as semver from 'semver';
 import * as ora from 'ora';
 const packageJson = require('../package.json');
@@ -57,8 +57,8 @@ export default async function({
   spinner.start();
   /** 检查版本，给出升级提示 */
   try {
-    const newVersion = await latestVersion('rap');
-    if (semver.lt(rapperVersion, newVersion) && newVersion.indexOf('beta') === -1) {
+    const newVersion = await latestVersion('rap', rapperVersion.indexOf('beta') > -1);
+    if (semver.lt(rapperVersion, newVersion)) {
       spinner.warn(chalk.yellow('rapper 升级提示: '));
       console.log(`  当前版本: ${chalk.grey(rapperVersion)}`);
       console.log(`  最新版本: ${chalk.cyan(newVersion)}`);

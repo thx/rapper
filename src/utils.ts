@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as crypto from 'crypto';
 import * as inquirer from 'inquirer';
 import chalk from 'chalk';
+import axios from 'axios';
 import { IGeneratedCode } from './types';
 const packageJson = require('../package.json');
 
@@ -112,4 +113,18 @@ export async function templateFilesRelyConfirm() {
 /** 获取当前包名 */
 export function getPackageName() {
   return packageJson.name;
+}
+
+/** 最新的正式版 */
+export async function latestVersion(packageName: string, isBeta?: boolean) {
+  const response = await axios.get(`https://registry.npmjs.org/${packageName}`, { timeout: 1000 * 20 });
+  const versionsList = Object.keys(response.data.versions)
+  for (let i = versionsList.length - 1; i >=0; i--) {
+    if (isBeta) {
+      return versionsList[i]
+    }
+    if (versionsList[i].indexOf('beta') === -1 && versionsList[i].indexOf('alpha') === -1) {
+      return versionsList[i]
+    }
+  }
 }
