@@ -115,7 +115,7 @@ export function getPackageName() {
   return packageJson.name;
 }
 
-/** 最新的正式版 */
+/** 获取最新的版本 */
 export async function latestVersion(packageName: string, isBeta?: boolean) {
   const response = await axios.get(`https://registry.npmjs.org/${packageName}`, { timeout: 1000 * 20 });
   const versionsList = Object.keys(response.data.versions)
