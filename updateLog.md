@@ -2,6 +2,7 @@
 
 - 支持 user/{id} 类型的 restful API
 - 更正 encoding 符合 ts 枚举：UTF-8 to utf-8
+- 不露出 beta 版本的升级提示
 
 ## 2020.04.05 v1.0.2
 

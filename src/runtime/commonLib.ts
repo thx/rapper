@@ -191,7 +191,11 @@ export const defaultFetch = async ({
   }
 
   const res = await fetch(urlWithParams, init);
-  return Promise.resolve(res.json());
+  if (res.ok) {
+    return Promise.resolve(res.json());
+  } else {
+    return Promise.reject(new Error(res.statusText))
+  }
 };
 
 export const getRapperRequest = (fetchConfig: RequesterOption) => {

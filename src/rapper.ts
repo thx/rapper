@@ -58,15 +58,13 @@ export default async function({
   /** 检查版本，给出升级提示 */
   try {
     const newVersion = await latestVersion('rap');
-    if (semver.lt(rapperVersion, newVersion)) {
+    if (semver.lt(rapperVersion, newVersion) && newVersion.indexOf('beta') === -1) {
       spinner.warn(chalk.yellow('rapper 升级提示: '));
-      console.log(`  当前版本: ${chalk.grey(packageJson.version)}`);
+      console.log(`  当前版本: ${chalk.grey(rapperVersion)}`);
       console.log(`  最新版本: ${chalk.cyan(newVersion)}`);
       // console.log(
       //   `  运行 ${chalk.green(`npm i -D ${packageJson.name}@latest && npm run rapper`)} 即可升级`,
       // );
-    } else {
-      spinner.succeed(chalk.grey('rapper: 当前是最新版'));
     }
   } catch (err) {
     spinner.warn(`rapper 版本检查失败，${err.message}`);
