@@ -173,9 +173,11 @@ export const defaultFetch = async ({
 
   /** 请求 url，增加 query 参数 */
   if (typeof extra.query === 'object') {
-    const qs = stringifyQueryString(extra.query, extra.queryStringFn) || '';
-    const connectStr = urlWithParams.indexOf('?') > -1 ? '&' : '?';
-    urlWithParams += connectStr + qs;
+    const qs = stringifyQueryString(extra.query, extra.queryStringFn);
+    if (qs) {
+      const connectStr = urlWithParams.indexOf('?') > -1 ? '&' : '?';
+      urlWithParams += connectStr + qs;
+    }
   }
 
   /** 用户自定义 Content-Type */
