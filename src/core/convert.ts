@@ -19,10 +19,12 @@ function inferArraySchema(
         items: {
           type: 'object',
           properties: childProperties,
-          required: Object.keys(childProperties),
+          // 把 child 的 required 挪到 items 下面
+          required: common.required,
           additionalProperties: false,
         },
         ...common,
+        required: [],
       },
     ];
   } else if (['+1', '1'].includes(rule) && p.value) {
@@ -238,8 +240,20 @@ function interfaceToJSONSchema(itf: Interface.IRoot, scope: Scope): JSONSchema4 
   }
 
   const propertyChildren = findChildProperties(-2);
+  const root = propertyChildren['dummyroot'];
 
-  return propertyChildren['dummyroot'];
+  // 只有一个 key 为 _root_ 或者 __root__ 的数组时，代表想表达根节点是个数组
+  if (
+    Object.keys(root.properties).length === 1 &&
+    (root.properties._root_ || root.properties.__root__)
+  ) {
+    const _root_ = root.properties._root_ || root.properties.__root__;
+    if (_root_.type === 'array') {
+      return _root_;
+    }
+  }
+
+  return root;
 }
 
 export default function convert(itf: Interface.IRoot): Promise<string[]> {

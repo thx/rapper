@@ -180,60 +180,65 @@ export default async function({
       Creator = {};
   }
 
-  /** 生成 index.ts */
-  const indexCodeArr: Array<IGeneratedCode> = [createBaseIndexCode()];
-  if (Creator.createIndexStr) {
-    indexCodeArr.push(Creator.createIndexStr());
-  }
-  const indexStr = `
-    ${creatHeadHelpStr(rapUrl, projectId, rapperVersion)}
-    ${mixGeneratedCode(indexCodeArr)}
-  `;
-  outputFiles.push({
-    path: `${rapperPath}/index.ts`,
-    content: format(indexStr, DEFAULT_OPTIONS),
-  });
-
-  /** 生成基础的 request.ts 请求函数和类型声明 */
-  let requestStr = '';
-  if (Creator.createBaseRequestStr) {
-    requestStr = await Creator.createBaseRequestStr(interfaces, {
-      rapUrl,
-      resSelector,
-    });
-  } else {
-    requestStr = await createBaseRequestStr(interfaces, {
-      rapUrl,
-      resSelector,
-    });
-  }
-  requestStr = `
-    ${creatHeadHelpStr(rapUrl, projectId, rapperVersion)}
-    ${requestStr}
-  `;
-  outputFiles.push({
-    path: `${rapperPath}/request.ts`,
-    content: format(requestStr, DEFAULT_OPTIONS),
-  });
-
-  /** 生成 ${type}.ts 动态的 */
-  Creator.createDynamicStr &&
+  try {
+    /** 生成 index.ts */
+    const indexCodeArr: Array<IGeneratedCode> = [createBaseIndexCode()];
+    if (Creator.createIndexStr) {
+      indexCodeArr.push(Creator.createIndexStr());
+    }
+    const indexStr = `
+      ${creatHeadHelpStr(rapUrl, projectId, rapperVersion)}
+      ${mixGeneratedCode(indexCodeArr)}
+    `;
     outputFiles.push({
-      path: `${rapperPath}/${type}.ts`,
-      content: format(
-        `
-          ${creatHeadHelpStr(rapUrl, projectId, rapperVersion)}
-          ${Creator.createDynamicStr(interfaces, { rapUrl, resSelector })}
-        `,
-        DEFAULT_OPTIONS,
-      ),
+      path: `${rapperPath}/index.ts`,
+      content: format(indexStr, DEFAULT_OPTIONS),
     });
 
-  /** 生成的模板文件第一行增加MD5 */
-  outputFiles = outputFiles.map(item => ({
-    ...item,
-    content: `/* md5: ${getMd5(item.content)} */\n${item.content}`,
-  }));
+    /** 生成基础的 request.ts 请求函数和类型声明 */
+    let requestStr = '';
+    if (Creator.createBaseRequestStr) {
+      requestStr = await Creator.createBaseRequestStr(interfaces, {
+        rapUrl,
+        resSelector,
+      });
+    } else {
+      requestStr = await createBaseRequestStr(interfaces, {
+        rapUrl,
+        resSelector,
+      });
+    }
+    requestStr = `
+      ${creatHeadHelpStr(rapUrl, projectId, rapperVersion)}
+      ${requestStr}
+    `;
+    outputFiles.push({
+      path: `${rapperPath}/request.ts`,
+      content: format(requestStr, DEFAULT_OPTIONS),
+    });
+
+    /** 生成 ${type}.ts 动态的 */
+    Creator.createDynamicStr &&
+      outputFiles.push({
+        path: `${rapperPath}/${type}.ts`,
+        content: format(
+          `
+            ${creatHeadHelpStr(rapUrl, projectId, rapperVersion)}
+            ${Creator.createDynamicStr(interfaces, { rapUrl, resSelector })}
+          `,
+          DEFAULT_OPTIONS,
+        ),
+      });
+
+    /** 生成的模板文件第一行增加MD5 */
+    outputFiles = outputFiles.map(item => ({
+      ...item,
+      content: `/* md5: ${getMd5(item.content)} */\n${item.content}`,
+    }));
+  } catch (err) {
+    spinner.fail(chalk.red(`rapper: 失败！${err.message}`));
+    return;
+  }
 
   return Promise.all(outputFiles.map(({ path, content }) => writeFile(path, content)))
     .then(() => {

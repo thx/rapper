@@ -15,8 +15,8 @@ export async function createModel(interfaces: Array<Intf>, extr: ICreatorExtr) {
         return `
             ${creatInterfaceHelpStr(extr.rapUrl, itf)}
             '${itf.modelName}': {
-              Req: ${reqItf.replace('export interface Req', '')};
-              Res: ${resItf.replace('export interface Res', '')};
+              Req: ${reqItf.replace(/export (type|interface) Req =?/, '').replace(/;/g, '')};
+              Res: ${resItf.replace(/export (type|interface) Res =?/, '').replace(/;/g, '')};
             }
           `;
       } catch (error) {

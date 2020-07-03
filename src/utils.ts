@@ -115,16 +115,22 @@ export function getPackageName() {
   return packageJson.name;
 }
 
+export function getPackageRegistry() {
+  return packageJson.publishConfig.registry;
+}
+
 /** 获取最新的版本 */
 export async function latestVersion(packageName: string, isBeta?: boolean) {
-  const response = await axios.get(`https://registry.npmjs.org/${packageName}`, { timeout: 1000 * 20 });
-  const versionsList = Object.keys(response.data.versions)
-  for (let i = versionsList.length - 1; i >=0; i--) {
+  const response = await axios.get(`${getPackageRegistry()}/${packageName}`, {
+    timeout: 1000 * 10,
+  });
+  const versionsList = Object.keys(response.data.versions);
+  for (let i = versionsList.length - 1; i >= 0; i--) {
     if (isBeta) {
-      return versionsList[i]
+      return versionsList[i];
     }
     if (versionsList[i].indexOf('beta') === -1) {
-      return versionsList[i]
+      return versionsList[i];
     }
   }
 }
