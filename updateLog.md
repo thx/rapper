@@ -4,6 +4,7 @@
 - 从不同的 registry 获取最新版本
 - 修正数组参数中必填项无法正确标注的问题
 - 修正 **root** 标记的根数组无法正确生成类型的问题
+- 新增 overrideFetch API 用户自定义 fetch，即将废弃 createFetch API
 
 ## 2020.05.13 v1.0.3
 

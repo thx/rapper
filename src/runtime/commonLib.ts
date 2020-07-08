@@ -240,3 +240,11 @@ export const getRapperRequest = (fetchConfig: RequesterOption) => {
   }
   return wrapPreProcessRestfulUrl(rapperFetch);
 };
+
+/** fetch 的类型 */
+export enum FetchType {
+  /** 基础类型 */
+  BASE = 1,
+  /** 自定义覆盖类型 */
+  AUTO = 2,
+}

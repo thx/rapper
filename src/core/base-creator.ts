@@ -58,7 +58,10 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
   
     ${createResponseTypes(interfaces)}
 
-    export function createFetch(fetchConfig: commonLib.RequesterOption) {
+    export function createFetch(fetchConfig: commonLib.RequesterOption, extraConfig?: { fetchType?: commonLib.FetchType }) {
+      if (!extraConfig?.fetchType) {
+        console.warn('Rapper Warning: createFetch API will deprecate, if you If you want to customize fetch, please use overrideFetch API, you will be surprised. See detail https://www.yuque.com/rap/rapper/overridefetch')
+      }
       const rapperFetch = commonLib.getRapperRequest(fetchConfig)
 
       return {
@@ -92,9 +95,12 @@ export function createBaseIndexCode(): IGeneratedCode {
     `,
     body: `
       const { defaultFetch } = commonLib
-      const fetch = createFetch({})
+      let fetch = createFetch({}, { fetchType: commonLib.FetchType.BASE })
     `,
     export: `
+      export const overrideFetch = (fetchConfig: commonLib.RequesterOption) => {
+        fetch = createFetch(fetchConfig, { fetchType: commonLib.FetchType.AUTO })
+      }
       export { fetch, createFetch, defaultFetch }
       export type Models = IModels
     `,

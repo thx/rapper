@@ -1,13 +1,13 @@
 import React from 'react';
 import { Button, Spin } from 'antd';
-import { useResponse, useAllResponse, clearResponseCache } from '../models/rapper';
-import fetch from '../models/fetcher';
+import { useResponse, useAllResponse, clearResponseCache, fetch } from '../models/rapper';
+// import fetch from '../models/fetcher';
 
 const Request = () => {
   const [data, { isPending }] = useResponse['GET/testGet']();
   const allData = useAllResponse['GET/testGet']();
   if (allData.length) {
-    const { id, request, response } = allData[0];
+    // const { id, request, response } = allData[0];
   }
   const doRequest = () => {
     fetch['GET/testGet']({ id: 1 }, { query: { testQuery: [1, 2] } });

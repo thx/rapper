@@ -1,6 +1,6 @@
-/* md5: ce8ba1d9de97d43244fd678413823129 */
+/* md5: 8271ec593855d1cdec19700cdcf71ac3 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.0.3-beta.1 */
+/* Rapper版本: 1.0.4-beta.1 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -25,10 +25,13 @@ import { IResponseTypes } from './request';
 import * as reduxLib from '@ali/rap/runtime/reduxLib';
 
 const { defaultFetch } = commonLib;
-const fetch = createFetch({});
+let fetch = createFetch({}, { fetchType: commonLib.FetchType.BASE });
 
 const { rapperReducers, rapperEnhancer } = reduxLib;
 
+export const overrideFetch = (fetchConfig: commonLib.RequesterOption) => {
+  fetch = createFetch(fetchConfig, { fetchType: commonLib.FetchType.AUTO });
+};
 export { fetch, createFetch, defaultFetch };
 export type Models = IModels;
 

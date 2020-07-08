@@ -215,17 +215,9 @@ export function useResponseData<M, Req, Res, Item extends { request: Req }>(
     setErrorMessage(result.errorMessage);
   }, [reduxData, filter, filteredData]);
 
-  return [filteredData, { id, isPending, errorMessage }] as [
-    Res | undefined,
-    {
-      /** 本次请求的唯一id */
-      id: number;
-      /** 是否正在请求中 */
-      isPending: boolean;
-      /** 请求错误信息 */
-      errorMessage?: string;
-    },
-  ];
+  return [filteredData, { id, isPending, errorMessage }] as
+    | [Res, Pick<IInterfaceInfo, 'id' | 'isPending' | 'errorMessage'>]
+    | [undefined, Pick<IInterfaceInfo, 'id' | 'isPending' | 'errorMessage'>];
 }
 
 /** class component获取response数据 */
@@ -238,8 +230,14 @@ export function getResponseData<M, Req, Res, Item extends { request: Req }>(
   const result = getFilteredData<Req, Item>(reduxData, filter);
   return [
     result.response || undefined,
-    { id: result.id, isPending: result.isPending || false, errorMessage: result.errorMessage },
-  ] as [Res | undefined, { id: number; isPending: boolean; errorMessage?: string }];
+    {
+      id: result.id,
+      isPending: result.isPending || false,
+      errorMessage: result.errorMessage,
+    },
+  ] as
+    | [Res, Pick<IInterfaceInfo, 'id' | 'isPending' | 'errorMessage'>]
+    | [undefined, Pick<IInterfaceInfo, 'id' | 'isPending' | 'errorMessage'>];
 }
 
 /** class component获取response数据 */
@@ -292,17 +290,23 @@ export function useAPICommon<
     }
   }, [initData.id]);
 
-  return [filteredData, { isPending, errorMessage, request: fetcher }] as [
-    Res | undefined,
-    {
-      /** 是否正在请求中 */
-      isPending: boolean;
-      /** 请求错误信息 */
-      errorMessage?: string;
-      /** 请求函数 */
-      request: IFetcher;
-    },
-  ];
+  return [filteredData, { isPending, errorMessage, request: fetcher }] as
+    | [
+        Res,
+        {
+          isPending: IInterfaceInfo['isPending'];
+          errorMessage?: IInterfaceInfo['errorMessage'];
+          request: IFetcher;
+        },
+      ]
+    | [
+        undefined,
+        {
+          isPending: IInterfaceInfo['isPending'];
+          errorMessage?: IInterfaceInfo['errorMessage'];
+          request: IFetcher;
+        },
+      ];
 }
 
 type dispatch = <Res>(action: TAction) => Promise<IAnyAction | Res>;

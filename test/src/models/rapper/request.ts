@@ -1,6 +1,6 @@
-/* md5: 76864e075b8879dca62904d3a9514455 */
+/* md5: 065d6f00870bae592162ecd59c4f55e4 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.0.3-beta.1 */
+/* Rapper版本: 1.0.4-beta.1 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -117,7 +117,15 @@ export interface IResponseTypes {
   'GET/useAPI': ResSelector<IModels['GET/useAPI']['Res']>;
 }
 
-export function createFetch(fetchConfig: commonLib.RequesterOption) {
+export function createFetch(
+  fetchConfig: commonLib.RequesterOption,
+  extraConfig?: { fetchType?: commonLib.FetchType },
+) {
+  if (!extraConfig?.fetchType) {
+    console.warn(
+      'Rapper Warning: createFetch API will deprecate, if you If you want to customize fetch, please use overrideFetch API, you will be surprised. See detail https://www.yuque.com/rap/rapper/overridefetch',
+    );
+  }
   const rapperFetch = commonLib.getRapperRequest(fetchConfig);
   const sendRapperFetch = (
     modelName: keyof typeof RequestTypes,
