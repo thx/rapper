@@ -228,15 +228,13 @@ export function getResponseData<M, Req, Res, Item extends { request: Req }>(
   const reduxData = (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
   const result = getFilteredData<Req, Item>(reduxData, filter);
   return [
-    result.response || undefined,
+    result.response as Res,
     {
-      id: result.id,
-      isPending: result.isPending || false,
-      errorMessage: result.errorMessage,
+      id: result.id as number,
+      isPending: (result.isPending || false) as boolean,
+      errorMessage: result.errorMessage as string,
     },
-  ] as
-    | [Res, Pick<IInterfaceInfo, 'id' | 'isPending' | 'errorMessage'>]
-    | [undefined, Pick<IInterfaceInfo, 'id' | 'isPending' | 'errorMessage'>];
+  ] as const;
 }
 
 /** class component获取response数据 */
@@ -269,8 +267,8 @@ export function useAPICommon<
     mode === 'notMatch' ? undefined : { request: requestParams },
   );
   const [filteredData, setFilteredData] = useState(initData.response || undefined);
-  const [isPending, setIsPending] = useState(initData.isPending || false);
-  const [errorMessage, setErrorMessage] = useState(initData.errorMessage || undefined);
+  const [isPending, setIsPending] = useState<boolean>(initData.isPending || false);
+  const [errorMessage, setErrorMessage] = useState<string>(initData.errorMessage);
 
   useEffect(() => {
     /** 过滤出一条最新的符合条件的数据 */
@@ -289,23 +287,7 @@ export function useAPICommon<
     }
   }, [initData.id]);
 
-  return [filteredData, { isPending, errorMessage, request: fetcher }] as
-    | [
-        Res,
-        {
-          isPending: IInterfaceInfo['isPending'];
-          errorMessage?: IInterfaceInfo['errorMessage'];
-          request: IFetcher;
-        },
-      ]
-    | [
-        undefined,
-        {
-          isPending: IInterfaceInfo['isPending'];
-          errorMessage?: IInterfaceInfo['errorMessage'];
-          request: IFetcher;
-        },
-      ];
+  return [filteredData as Res, { isPending, errorMessage, request: fetcher }] as const;
 }
 
 type dispatch = <Res>(action: TAction) => Promise<IAnyAction | Res>;

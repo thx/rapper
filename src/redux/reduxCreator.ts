@@ -78,7 +78,7 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
         type Res = IResponseTypes['${itf.modelName}']
         const rapperFetch = (extra && extra.fetch) ? extra.fetch : fetch
         type IFetcher = typeof rapperFetch['${itf.modelName}']
-        return reduxLib.useAPICommon<TRapperStoreKey, Req, Res, IFetcher>({
+        return reduxLib.useAPICommon<TRapperStoreKey, Req, Res | undefined, IFetcher>({
           modelName: '${itf.modelName}',
           fetcher: rapperFetch['${itf.modelName}'],
           requestParams,
@@ -139,7 +139,7 @@ export function createBaseSelectorStr(interfaces: Array<Intf>): string {
         type Req = IModels['${modelName}']['Req'];
         type Res = IResponseTypes['${modelName}'];
         type Item = IRapperStore['${modelName}'][0];
-        return reduxLib.getResponseData<TRapperStoreKey, Req, Res, Item>(state, '${modelName}', filter);
+        return reduxLib.getResponseData<TRapperStoreKey, Req, Res | undefined, Item>(state, '${modelName}', filter);
       }
     `,
       )
