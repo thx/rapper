@@ -1,6 +1,6 @@
-/* md5: c411a3934db38ab0e350de6a779ea6cf */
+/* md5: 5fe943d30d7985e7501cbab2cce19aba */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.0.4-beta.4 */
+/* Rapper版本: 1.0.4-beta.1 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -11,7 +11,7 @@
 
 import { useSelector } from 'react-redux';
 import { IModels, IResponseTypes, createFetch } from './request';
-import * as reduxLib from '@ali/mc-rap/runtime/reduxLib';
+import * as reduxLib from '@ali/rap/runtime/reduxLib';
 import { fetch } from './index';
 
 /** 请求types */
@@ -185,7 +185,7 @@ export const useAPI = {
     type Res = IResponseTypes['GET/testGet'];
     const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
     type IFetcher = typeof rapperFetch['GET/testGet'];
-    return reduxLib.useAPICommon<TRapperStoreKey, Req, Res, IFetcher>({
+    return reduxLib.useAPICommon<TRapperStoreKey, Req, Res | undefined, IFetcher>({
       modelName: 'GET/testGet',
       fetcher: rapperFetch['GET/testGet'],
       requestParams,
@@ -206,7 +206,7 @@ export const useAPI = {
     type Res = IResponseTypes['POST/testPost'];
     const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
     type IFetcher = typeof rapperFetch['POST/testPost'];
-    return reduxLib.useAPICommon<TRapperStoreKey, Req, Res, IFetcher>({
+    return reduxLib.useAPICommon<TRapperStoreKey, Req, Res | undefined, IFetcher>({
       modelName: 'POST/testPost',
       fetcher: rapperFetch['POST/testPost'],
       requestParams,
@@ -227,7 +227,7 @@ export const useAPI = {
     type Res = IResponseTypes['POST/testFormData'];
     const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
     type IFetcher = typeof rapperFetch['POST/testFormData'];
-    return reduxLib.useAPICommon<TRapperStoreKey, Req, Res, IFetcher>({
+    return reduxLib.useAPICommon<TRapperStoreKey, Req, Res | undefined, IFetcher>({
       modelName: 'POST/testFormData',
       fetcher: rapperFetch['POST/testFormData'],
       requestParams,
@@ -248,7 +248,7 @@ export const useAPI = {
     type Res = IResponseTypes['GET/group/:groupId/member/{memberId}'];
     const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
     type IFetcher = typeof rapperFetch['GET/group/:groupId/member/{memberId}'];
-    return reduxLib.useAPICommon<TRapperStoreKey, Req, Res, IFetcher>({
+    return reduxLib.useAPICommon<TRapperStoreKey, Req, Res | undefined, IFetcher>({
       modelName: 'GET/group/:groupId/member/{memberId}',
       fetcher: rapperFetch['GET/group/:groupId/member/{memberId}'],
       requestParams,
@@ -269,7 +269,7 @@ export const useAPI = {
     type Res = IResponseTypes['GET/useAPI'];
     const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
     type IFetcher = typeof rapperFetch['GET/useAPI'];
-    return reduxLib.useAPICommon<TRapperStoreKey, Req, Res, IFetcher>({
+    return reduxLib.useAPICommon<TRapperStoreKey, Req, Res | undefined, IFetcher>({
       modelName: 'GET/useAPI',
       fetcher: rapperFetch['GET/useAPI'],
       requestParams,
@@ -435,7 +435,11 @@ export const rapperBaseSelector = {
     type Req = IModels['GET/testGet']['Req'];
     type Res = IResponseTypes['GET/testGet'];
     type Item = IRapperStore['GET/testGet'][0];
-    return reduxLib.getResponseData<TRapperStoreKey, Req, Res, Item>(state, 'GET/testGet', filter);
+    return reduxLib.getResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
+      state,
+      'GET/testGet',
+      filter,
+    );
   },
   'POST/testPost': (
     state: reduxLib.IState,
@@ -446,7 +450,7 @@ export const rapperBaseSelector = {
     type Req = IModels['POST/testPost']['Req'];
     type Res = IResponseTypes['POST/testPost'];
     type Item = IRapperStore['POST/testPost'][0];
-    return reduxLib.getResponseData<TRapperStoreKey, Req, Res, Item>(
+    return reduxLib.getResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
       state,
       'POST/testPost',
       filter,
@@ -461,7 +465,7 @@ export const rapperBaseSelector = {
     type Req = IModels['POST/testFormData']['Req'];
     type Res = IResponseTypes['POST/testFormData'];
     type Item = IRapperStore['POST/testFormData'][0];
-    return reduxLib.getResponseData<TRapperStoreKey, Req, Res, Item>(
+    return reduxLib.getResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
       state,
       'POST/testFormData',
       filter,
@@ -476,7 +480,7 @@ export const rapperBaseSelector = {
     type Req = IModels['GET/group/:groupId/member/{memberId}']['Req'];
     type Res = IResponseTypes['GET/group/:groupId/member/{memberId}'];
     type Item = IRapperStore['GET/group/:groupId/member/{memberId}'][0];
-    return reduxLib.getResponseData<TRapperStoreKey, Req, Res, Item>(
+    return reduxLib.getResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
       state,
       'GET/group/:groupId/member/{memberId}',
       filter,
@@ -491,7 +495,11 @@ export const rapperBaseSelector = {
     type Req = IModels['GET/useAPI']['Req'];
     type Res = IResponseTypes['GET/useAPI'];
     type Item = IRapperStore['GET/useAPI'][0];
-    return reduxLib.getResponseData<TRapperStoreKey, Req, Res, Item>(state, 'GET/useAPI', filter);
+    return reduxLib.getResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
+      state,
+      'GET/useAPI',
+      filter,
+    );
   },
 };
 
