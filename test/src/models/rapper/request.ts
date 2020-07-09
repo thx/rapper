@@ -1,4 +1,4 @@
-/* md5: 065d6f00870bae592162ecd59c4f55e4 */
+/* md5: 3a46ecd786b7ee569d0f64902dec6d1f */
 /* Rap仓库id: 237514 */
 /* Rapper版本: 1.0.4-beta.1 */
 /* eslint-disable */
@@ -123,7 +123,7 @@ export function createFetch(
 ) {
   if (!extraConfig?.fetchType) {
     console.warn(
-      'Rapper Warning: createFetch API will deprecate, if you If you want to customize fetch, please use overrideFetch API, you will be surprised. See detail https://www.yuque.com/rap/rapper/overridefetch',
+      'Rapper Warning: createFetch API will be deprecated, if you want to customize fetch, please use overrideFetch instead, since new API guarantees better type consistency during frontend lifespan. See detail https://www.yuque.com/rap/rapper/overridefetch',
     );
   }
   const rapperFetch = commonLib.getRapperRequest(fetchConfig);

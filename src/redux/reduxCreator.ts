@@ -57,7 +57,7 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
         type Req = IModels['${itf.modelName}']['Req']
         type Item = IRapperStore['${itf.modelName}'][0]
         type Res = IResponseTypes['${itf.modelName}']
-        return reduxLib.useResponseData<TRapperStoreKey, Req, Res, Item>(
+        return reduxLib.useResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
           '${itf.modelName}', filter)
       }`,
         )

@@ -200,10 +200,11 @@ export function useResponseData<M, Req, Res, Item extends { request: Req }>(
     return (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
   });
   const initData = getFilteredData<Req, Item>(reduxData, filter);
-  const [id, setId] = useState(initData.id || undefined);
+
+  const [id, setId] = useState<number | undefined>(initData.id);
   const [filteredData, setFilteredData] = useState(initData.response || undefined);
-  const [isPending, setIsPending] = useState(initData.isPending || false);
-  const [errorMessage, setErrorMessage] = useState(initData.errorMessage || undefined);
+  const [isPending, setIsPending] = useState<boolean>(initData.isPending || false);
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(initData.errorMessage);
 
   useEffect(() => {
     /** 过滤出一条最新的符合条件的数据 */
@@ -215,9 +216,7 @@ export function useResponseData<M, Req, Res, Item extends { request: Req }>(
     setErrorMessage(result.errorMessage);
   }, [reduxData, filter, filteredData]);
 
-  return [filteredData, { id, isPending, errorMessage }] as
-    | [Res, Pick<IInterfaceInfo, 'id' | 'isPending' | 'errorMessage'>]
-    | [undefined, Pick<IInterfaceInfo, 'id' | 'isPending' | 'errorMessage'>];
+  return [filteredData as Res, { id, isPending, errorMessage }] as const;
 }
 
 /** class component获取response数据 */

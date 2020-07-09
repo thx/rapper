@@ -60,7 +60,7 @@ export async function createBaseRequestStr(interfaces: Array<Intf>, extr: ICreat
 
     export function createFetch(fetchConfig: commonLib.RequesterOption, extraConfig?: { fetchType?: commonLib.FetchType }) {
       if (!extraConfig?.fetchType) {
-        console.warn('Rapper Warning: createFetch API will deprecate, if you If you want to customize fetch, please use overrideFetch API, you will be surprised. See detail https://www.yuque.com/rap/rapper/overridefetch')
+        console.warn('Rapper Warning: createFetch API will be deprecated, if you want to customize fetch, please use overrideFetch instead, since new API guarantees better type consistency during frontend lifespan. See detail https://www.yuque.com/rap/rapper/overridefetch')
       }
       const rapperFetch = commonLib.getRapperRequest(fetchConfig)
 

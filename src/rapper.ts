@@ -105,11 +105,6 @@ export default async function({
       );
       console.log(`  当前版本: ${chalk.grey(rapperVersion)}`);
       console.log(`  当前模板文件版本: ${chalk.cyan(oldFilesRapperVersion)}`);
-      console.log(
-        `  运行 ${chalk.green(
-          `npm i -D ${packageJson.name}@${oldFilesRapperVersion} && npm run rapper`,
-        )} 即可升级到相同版本`,
-      );
     });
   }
 

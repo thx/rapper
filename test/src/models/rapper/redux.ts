@@ -1,4 +1,4 @@
-/* md5: 774b691cc8f30557a25094dd81105a6b */
+/* md5: 2c4103a27acfb61b20334050f8510746 */
 /* Rap仓库id: 237514 */
 /* Rapper版本: 1.0.4-beta.1 */
 /* eslint-disable */
@@ -88,7 +88,10 @@ export const useResponse = {
     type Req = IModels['GET/testGet']['Req'];
     type Item = IRapperStore['GET/testGet'][0];
     type Res = IResponseTypes['GET/testGet'];
-    return reduxLib.useResponseData<TRapperStoreKey, Req, Res, Item>('GET/testGet', filter);
+    return reduxLib.useResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
+      'GET/testGet',
+      filter,
+    );
   },
 
   /**
@@ -104,7 +107,10 @@ export const useResponse = {
     type Req = IModels['POST/testPost']['Req'];
     type Item = IRapperStore['POST/testPost'][0];
     type Res = IResponseTypes['POST/testPost'];
-    return reduxLib.useResponseData<TRapperStoreKey, Req, Res, Item>('POST/testPost', filter);
+    return reduxLib.useResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
+      'POST/testPost',
+      filter,
+    );
   },
 
   /**
@@ -120,7 +126,10 @@ export const useResponse = {
     type Req = IModels['POST/testFormData']['Req'];
     type Item = IRapperStore['POST/testFormData'][0];
     type Res = IResponseTypes['POST/testFormData'];
-    return reduxLib.useResponseData<TRapperStoreKey, Req, Res, Item>('POST/testFormData', filter);
+    return reduxLib.useResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
+      'POST/testFormData',
+      filter,
+    );
   },
 
   /**
@@ -136,7 +145,7 @@ export const useResponse = {
     type Req = IModels['GET/group/:groupId/member/{memberId}']['Req'];
     type Item = IRapperStore['GET/group/:groupId/member/{memberId}'][0];
     type Res = IResponseTypes['GET/group/:groupId/member/{memberId}'];
-    return reduxLib.useResponseData<TRapperStoreKey, Req, Res, Item>(
+    return reduxLib.useResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
       'GET/group/:groupId/member/{memberId}',
       filter,
     );
@@ -155,7 +164,10 @@ export const useResponse = {
     type Req = IModels['GET/useAPI']['Req'];
     type Item = IRapperStore['GET/useAPI'][0];
     type Res = IResponseTypes['GET/useAPI'];
-    return reduxLib.useResponseData<TRapperStoreKey, Req, Res, Item>('GET/useAPI', filter);
+    return reduxLib.useResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
+      'GET/useAPI',
+      filter,
+    );
   },
 };
 
