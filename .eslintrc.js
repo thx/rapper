@@ -16,5 +16,7 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': 'off',
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/no-var-requires': 'off',
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
   },
 };

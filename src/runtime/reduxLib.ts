@@ -160,6 +160,9 @@ function paramsFilter<
     const filterRequest = filter.request; // 这一行是解决 ts2532 报错
     if (Object.prototype.toString.call(filter.request) === '[object Object]') {
       const reqResult = Object.keys(filter.request).every((key): boolean => {
+        if (isNaN(item.request[key]) && isNaN(filterRequest[key])) {
+          return true;
+        }
         return item.request[key] === filterRequest[key];
       });
       if (!reqResult) {
@@ -262,13 +265,9 @@ export function useAPICommon<
   const reduxData = useSelector((state: IState) => {
     return (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
   });
-  const initData = getFilteredData<Req, { request: Req }>(
-    reduxData,
-    mode === 'notMatch' ? undefined : { request: requestParams },
-  );
-  const [filteredData, setFilteredData] = useState(initData.response || undefined);
-  const [isPending, setIsPending] = useState<boolean>(initData.isPending || false);
-  const [errorMessage, setErrorMessage] = useState<string>(initData.errorMessage);
+  const [filteredData, setFilteredData] = useState(undefined);
+  const [isPending, setIsPending] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>(undefined);
 
   useEffect(() => {
     /** 过滤出一条最新的符合条件的数据 */
@@ -276,16 +275,15 @@ export function useAPICommon<
       reduxData,
       mode === 'notMatch' ? undefined : { request: requestParams },
     );
-    !looseEqual(result.response, filteredData) && setFilteredData(result.response || undefined);
-    setIsPending(result.isPending || false);
-    setErrorMessage(result.errorMessage);
-  }, [reduxData, filteredData]);
-
-  useEffect(() => {
-    if (mode !== 'manual' && !initData.id) {
+    if (mode !== 'manual' && !result.id) {
       fetcher(requestParams, otherExtra);
     }
-  }, [initData.id]);
+    setFilteredData(pre => {
+      return looseEqual(result.response, pre) ? pre : result.response;
+    });
+    setIsPending(result.isPending || false);
+    setErrorMessage(result.errorMessage);
+  }, [mode, reduxData, filteredData, requestParams]);
 
   return [filteredData as Res, { isPending, errorMessage, request: fetcher }] as const;
 }
