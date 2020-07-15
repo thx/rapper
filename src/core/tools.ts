@@ -57,7 +57,7 @@ export function rap2name(itf: Interface.IRoot, urlMapper: IUrlMapper = t => t) {
   if (!regExpExec) {
     console.log(
       chalk.red(
-        `\n  ✘ 您的rap接口url设置格式不正确，参考格式：/api/test.json (接口url:${apiUrl}, 项目id:${projectId}, 接口id:${id})\n`,
+        `✘ 您的rap接口url设置格式不正确，参考格式：/api/test.json (接口url:${apiUrl}, 项目id:${projectId}, 接口id:${id}`,
       ),
     );
     return;

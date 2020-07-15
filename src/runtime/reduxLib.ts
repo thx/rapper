@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { IExtra } from './commonLib';
 
@@ -270,12 +270,16 @@ export function useAPICommon<
   const [errorMessage, setErrorMessage] = useState<string>(undefined);
 
   useEffect(() => {
+    /** manual模式不走全局，只返回自己fetch的数据 */
+    if (mode === 'manual') {
+      return;
+    }
     /** 过滤出一条最新的符合条件的数据 */
     const result = getFilteredData<Req, { request: Req }>(
       reduxData,
       mode === 'paramsMatch' ? { request: requestParams } : undefined,
     );
-    if (mode !== 'manual' && !result.id) {
+    if (!result.id) {
       fetcher(requestParams, otherExtra);
     }
     setFilteredData(pre => {
@@ -285,7 +289,19 @@ export function useAPICommon<
     setErrorMessage(result.errorMessage);
   }, [mode, reduxData, filteredData, requestParams]);
 
-  return [filteredData as Res, { isPending, errorMessage, request: fetcher }] as const;
+  const request = useCallback(async (...rest) => {
+    setIsPending(true);
+    try {
+      const response = await fetcher(...rest);
+      setFilteredData(response);
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsPending(false);
+    }
+  }, []);
+
+  return [filteredData as Res, { isPending, errorMessage, request }] as const;
 }
 
 type dispatch = <Res>(action: TAction) => Promise<IAnyAction | Res>;
