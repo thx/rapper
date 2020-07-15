@@ -37,9 +37,27 @@ export async function getInterfaces(rapApiUrl: string) {
 
   if (collaborators.length) {
     const collaboratorsInterfaces = await Promise.all(
-      collaborators.map(e => getInterfaces(updateURLParameter(rapApiUrl, 'id', e.id.toString()))),
+      collaborators.map(e =>
+        getInterfaces(
+          updateURLParameter(
+            updateURLParameter(rapApiUrl, 'id', e.id.toString()),
+            'token',
+            e.token,
+          ),
+        ),
+      ),
     );
-    interfaces = interfaces.concat(_.flatten(collaboratorsInterfaces));
+    // 协作仓库有重复接口，将被主仓库覆盖
+    interfaces = _.unionBy(interfaces, _.flatten(collaboratorsInterfaces), item => {
+      // 描述中如果存在唯一标示定义，优先使用
+      const matches = item.description.match(/\${union:\s?(.*)}/);
+      if (matches) {
+        const [__, unionID] = matches;
+        return unionID;
+      }
+      // 使用 method-url 作为 key
+      return `${item.method}-${item.url}`;
+    });
   }
 
   return interfaces;
