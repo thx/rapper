@@ -36,7 +36,7 @@ interface IDefaultFetchParams {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD';
   params?: any;
   extra?: IExtra;
-  fetchOption: Omit<RequestInit, 'body' | 'method'>;
+  fetchOption?: Omit<RequestInit, 'body' | 'method'>;
 }
 /** defaultFetch 参数 */
 export interface IUserFetchParams {
@@ -148,7 +148,7 @@ export const defaultFetch = async ({
 }: IDefaultFetchParams) => {
   extra = extra || {};
   let urlWithParams = url;
-  const init: RequestInit = { ...fetchOption, method };
+  const init: RequestInit = { ...(fetchOption || {}), method };
   if (method === 'GET') {
     const qs = stringifyQueryString(params, extra.queryStringFn);
     urlWithParams = qs ? url + '?' + qs : url;
