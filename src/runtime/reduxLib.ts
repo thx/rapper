@@ -289,17 +289,20 @@ export function useAPICommon<
     setErrorMessage(result.errorMessage);
   }, [mode, reduxData, filteredData, requestParams]);
 
-  const request = useCallback(async (...rest) => {
-    setIsPending(true);
-    try {
-      const response = await fetcher(...rest);
-      setFilteredData(response);
-    } catch (error) {
-      setErrorMessage(error.message);
-    } finally {
-      setIsPending(false);
-    }
-  }, []);
+  const request = useCallback(
+    async (...rest) => {
+      setIsPending(true);
+      try {
+        const response = await fetcher(...rest);
+        setFilteredData(response);
+      } catch (error) {
+        setErrorMessage(error.message);
+      } finally {
+        setIsPending(false);
+      }
+    },
+    [fetcher],
+  );
 
   return [filteredData as Res, { isPending, errorMessage, request }] as const;
 }
