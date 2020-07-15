@@ -273,7 +273,7 @@ export function useAPICommon<
     /** 过滤出一条最新的符合条件的数据 */
     const result = getFilteredData<Req, { request: Req }>(
       reduxData,
-      mode === 'notMatch' ? undefined : { request: requestParams },
+      mode === 'paramsMatch' ? { request: requestParams } : undefined,
     );
     if (mode !== 'manual' && !result.id) {
       fetcher(requestParams, otherExtra);
