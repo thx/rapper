@@ -137,7 +137,7 @@ export default async function({
   } catch (e) {
     return new Promise(() => spinner.fail(chalk.red(`rapper: 获取接口信息失败，${e}`)));
   }
-  interfaces = uniqueItfs(getIntfWithModelName(interfaces, urlMapper));
+  interfaces = uniqueItfs(getIntfWithModelName(rapUrl, interfaces, urlMapper));
 
   /** Rap 接口引用扫描，如果 projectId 更改了就不再扫描，避免过多的报错信息展现在Terminal */
   spinner.start(chalk.grey('rapper: 正在扫描接口依赖'));

@@ -47,8 +47,8 @@ export async function getInterfaces(rapApiUrl: string) {
 /**
  * 转换rap接口名称
  */
-export function rap2name(itf: Interface.IRoot, urlMapper: IUrlMapper = t => t) {
-  const { method, url, repositoryId: projectId, id } = itf;
+export function rap2name(rapUrl: string, itf: Interface.IRoot, urlMapper: IUrlMapper = t => t) {
+  const { method, url, repositoryId, id, moduleId } = itf;
   const apiUrl = urlMapper(url);
 
   const regExp = /^(?:https?:\/\/[^\/]+)?(\/?.+?\/?)(?:\.[^./]+)?$/;
@@ -57,13 +57,13 @@ export function rap2name(itf: Interface.IRoot, urlMapper: IUrlMapper = t => t) {
   if (!regExpExec) {
     console.log(
       chalk.red(
-        `✘ 您的rap接口url设置格式不正确，参考格式：/api/test.json (接口url:${apiUrl}, 项目id:${projectId}, 接口id:${id}`,
+        `✘ 您的rap接口url设置格式不正确, 接口地址: ${rapUrl}/repository/editor?id=${repositoryId}&mod=${moduleId}&itf=${id}`,
       ),
     );
     return;
   }
 
-  const urlSplit = apiUrl.split('/');
+  const urlSplit = apiUrl.trim().split('/');
 
   //只去除第一个为空的值，最后一个为空保留
   //有可能情况是接口 /api/login 以及 /api/login/ 需要同时存在
@@ -77,12 +77,13 @@ export function rap2name(itf: Interface.IRoot, urlMapper: IUrlMapper = t => t) {
 
 /** 给接口增加 modelName */
 export function getIntfWithModelName(
+  rapUrl: string,
   intfs: Array<Interface.IRoot>,
   urlMapper: IUrlMapper = t => t,
 ): Array<Intf> {
   return intfs.map(itf => ({
     ...itf,
-    modelName: rap2name(itf, urlMapper),
+    modelName: rap2name(rapUrl, itf, urlMapper),
   }));
 }
 
@@ -98,16 +99,19 @@ export function uniqueItfs(itfs: Array<Intf>) {
     }
   });
   const newItfs: Array<Intf> = [];
-  let hasDuplicate = false;
+  const duplicateItfs: string[] = [];
   itfMap.forEach(dupItfs => {
     // 后更改的在前面
     dupItfs.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
     newItfs.push(dupItfs[0]);
-    if (!hasDuplicate && dupItfs.length > 1) {
-      hasDuplicate = true;
+    if (dupItfs.length > 1) {
+      duplicateItfs.push(dupItfs[0].modelName);
     }
   });
-  hasDuplicate && console.log(chalk.yellow('    发现重复接口，修改时间最晚的被采纳：'));
+  if (duplicateItfs.length) {
+    console.log(chalk.yellow('    发现重复接口，修改时间最晚的被采纳：'));
+    duplicateItfs.forEach(item => console.log(chalk.yellow(`        ${item}`)));
+  }
   return newItfs;
 }
 
