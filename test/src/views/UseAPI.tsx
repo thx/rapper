@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Tabs } from 'antd';
 import Mode from '../components/useAPI/Mode'
 import TestRepeat from '../components/useAPI/TestRepeat'
-import UpdateWhen from '../components/useAPI/UpdateWhen'
+import UpdateTiming from '../components/useAPI/UpdateTiming'
 const { TabPane } = Tabs;
 
 export default () => {
@@ -16,8 +16,8 @@ export default () => {
       <TabPane tab="repeat" key="2">
         <TestRepeat />
       </TabPane>
-      <TabPane tab="updateWhen" key="3">
-        <UpdateWhen />
+      <TabPane tab="updateTiming" key="3">
+        <UpdateTiming />
       </TabPane>
     </Tabs>
   );

@@ -22,7 +22,7 @@ export interface IUseAPIExtra extends Omit<IExtra, 'type'> {
    * initial，请求发送后就立即更新 response data
    * complete，请求完成后才更新 response data
    */
-  updateWhen?: 'initial' | 'complete';
+  updateTiming?: 'initial' | 'complete';
 }
 
 /** 请求类型 */
@@ -267,7 +267,7 @@ export function useAPICommon<
   Res,
   IFetcher extends (requestParams?: Req, extra?: IExtra) => any
 >({ modelName, fetcher, requestParams, extra }: IRapperCommonParams<M, Req, {}, IFetcher>) {
-  const { mode = 'paramsMatch', updateWhen = 'initial', ...otherExtra } = extra || {};
+  const { mode = 'paramsMatch', updateTiming = 'initial', ...otherExtra } = extra || {};
   const reduxData = useSelector((state: IState) => {
     return (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
   });
@@ -288,7 +288,7 @@ export function useAPICommon<
     if (!result.id) {
       fetcher(requestParams, otherExtra);
     }
-    if (updateWhen === 'initial' || (result.id && !result.isPending)) {
+    if (updateTiming === 'initial' || (result.id && !result.isPending)) {
       setFilteredData(pre => {
         return looseEqual(result.response, pre) ? pre : result.response;
       });
