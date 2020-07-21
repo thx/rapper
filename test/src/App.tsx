@@ -1,45 +1,24 @@
 import React from 'react';
 import { Provider } from 'react-redux';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
+import UseAPI from './views/UseAPI'
 import store from './models/store';
-import Request from './components/request';
-import UseAPI from './components/useAPI';
-import UseAPIRepeat from './components/useAPIRepeat';
-import RequestPost from './components/request-post';
-import RequestForm from './components/request-form';
-import ClassComponent from './components/class-component';
-import RequestNormal from './components/request-normal';
-import RequestRestful from './components/request-restful';
+import Index from './views/index'
 import './App.css';
 
 const App: React.FC = () => {
   return (
     <Provider store={store}>
-      <div className="App">
-        <div className="card">
-          <Request />
+      <Router>
+        <div style={{ padding: '50px' }}>
+          <Link to='/' style={{ marginRight: '30px' }}>Home</Link>
+          <Link to='/useAPI'>useAPI</Link>
         </div>
-        <div className="card">
-          <UseAPI />
-        </div>
-        <div className="card">
-          <UseAPIRepeat />
-        </div>
-        <div className="card">
-          <RequestPost />
-        </div>
-        <div className="card">
-          <RequestForm />
-        </div>
-        <div className="card">
-          <ClassComponent />
-        </div>
-        <div className="card">
-          <RequestNormal />
-        </div>
-        <div className="card">
-          <RequestRestful />
-        </div>
-      </div>
+        <Switch>
+          <Route path='/' exact component={Index} />
+          <Route path='/useAPI' component={UseAPI} />
+        </Switch>
+      </Router>
     </Provider>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'antd';
-import { useAPI } from '../models/rapper';
-import fetch from '../models/fetcher';
+import { useAPI } from '../../models/rapper';
+import fetch from '../../models/fetcher';
 
 export default () => {
   const [isModalVisible, setModalVisible] = useState(false)

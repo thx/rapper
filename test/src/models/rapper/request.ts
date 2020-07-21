@@ -1,6 +1,6 @@
-/* md5: 3a46ecd786b7ee569d0f64902dec6d1f */
+/* md5: b5e16c061e58135cb9751e5882f8de41 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.0.4-beta.1 */
+/* Rapper版本: 1.1.1-beta.0 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -9,8 +9,8 @@
  * Rap仓库 地址: https://rap2.taobao.org/repository/editor?id=237514
  */
 
-import * as commonLib from '@ali/rap/runtime/commonLib';
-import * as reduxLib from '@ali/rap/runtime/reduxLib';
+import * as commonLib from '@ali/mc-rap/runtime/commonLib';
+import * as reduxLib from '@ali/mc-rap/runtime/reduxLib';
 import { RequestTypes } from './redux';
 
 export interface IModels {

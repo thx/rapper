@@ -1,6 +1,6 @@
-/* md5: 5fe943d30d7985e7501cbab2cce19aba */
+/* md5: d454ac6e04fd6028ff8c15e2025cc9c0 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.0.4-beta.1 */
+/* Rapper版本: 1.1.1-beta.0 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -11,7 +11,7 @@
 
 import { useSelector } from 'react-redux';
 import { IModels, IResponseTypes, createFetch } from './request';
-import * as reduxLib from '@ali/rap/runtime/reduxLib';
+import * as reduxLib from '@ali/mc-rap/runtime/reduxLib';
 import { fetch } from './index';
 
 /** 请求types */
