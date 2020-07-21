@@ -42,6 +42,9 @@ export async function getInterfaces(rapApiUrl: string) {
     interfaces = interfaces.concat(_.flatten(collaboratorsInterfaces));
   }
 
+  // 去除字段中的空格
+  interfaces = interfaces.map(item => ({ ...item, name: item.name.trim() }));
+
   return interfaces;
 }
 /**

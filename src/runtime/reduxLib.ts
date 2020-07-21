@@ -11,12 +11,18 @@ export const RAPPER_STATE_KEY = '$$rapperResponseData';
 /** useAPI 的 extra */
 export interface IUseAPIExtra extends Omit<IExtra, 'type'> {
   /**
-   * 支持三种模式
+   * 支持三种模式，默认 paramsMatch
    * paramsMatch，参数匹配模式（默认模式），判断缓存中是否有请求参数相同的数据，有就返回，没有就自动发送请求
    * notMatch，不进行参数匹配模式，判断缓存是否有接口数据，有就返回，没有就自动发送请求
    * manual，手动模式，不自动发送请求，返回数据是通过 request 请求得到的最新数据
    */
   mode?: 'paramsMatch' | 'notMatch' | 'manual';
+  /**
+   * response data 更新时机，默认 inital
+   * initial，请求发送后就立即更新 response data
+   * complete，请求完成后才更新 response data
+   */
+  whenUpdate?: 'initial' | 'complete';
 }
 
 /** 请求类型 */
@@ -261,7 +267,7 @@ export function useAPICommon<
   Res,
   IFetcher extends (requestParams?: Req, extra?: IExtra) => any
 >({ modelName, fetcher, requestParams, extra }: IRapperCommonParams<M, Req, {}, IFetcher>) {
-  const { mode = 'paramsMatch', ...otherExtra } = extra || {};
+  const { mode = 'paramsMatch', whenUpdate = 'initial', ...otherExtra } = extra || {};
   const reduxData = useSelector((state: IState) => {
     return (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
   });
@@ -282,9 +288,11 @@ export function useAPICommon<
     if (!result.id) {
       fetcher(requestParams, otherExtra);
     }
-    setFilteredData(pre => {
-      return looseEqual(result.response, pre) ? pre : result.response;
-    });
+    if (whenUpdate === 'initial' || (result.id && !result.isPending)) {
+      setFilteredData(pre => {
+        return looseEqual(result.response, pre) ? pre : result.response;
+      });
+    }
     setIsPending(result.isPending || false);
     setErrorMessage(result.errorMessage);
   }, [mode, reduxData, filteredData, requestParams]);
