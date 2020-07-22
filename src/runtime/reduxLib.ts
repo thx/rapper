@@ -166,7 +166,9 @@ function paramsFilter<
     const filterRequest = filter.request; // 这一行是解决 ts2532 报错
     if (Object.prototype.toString.call(filter.request) === '[object Object]') {
       const reqResult = Object.keys(filter.request).every((key): boolean => {
-        if (isNaN(item.request[key]) && isNaN(filterRequest[key])) {
+        const isCacheNaN = typeof item.request[key] === 'number' && isNaN(item.request[key]);
+        const isRequestNaN = typeof filterRequest[key] === 'number' && isNaN(filterRequest[key]);
+        if (isCacheNaN && isRequestNaN) {
           return true;
         }
         return item.request[key] === filterRequest[key];
