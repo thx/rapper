@@ -307,6 +307,7 @@ export function useAPICommon<
         setFilteredData(response);
       } catch (error) {
         setErrorMessage(error.message);
+        throw Error(error);
       } finally {
         setIsPending(false);
       }
