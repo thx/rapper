@@ -1,22 +1,22 @@
-/* md5: b5e16c061e58135cb9751e5882f8de41 */
+/* md5: c329fca94ad064b6df4477da49b83297 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.1.1-beta.0 */
+/* Rapper版本: 1.1.0-beta.3 */
 /* eslint-disable */
 /* tslint:disable */
 
 /**
  * 本文件由 Rapper 同步 Rap 平台接口，自动生成，请勿修改
- * Rap仓库 地址: https://rap2.taobao.org/repository/editor?id=237514
+ * Rap仓库 地址: http://rap2.taobao.org/repository/editor?id=237514
  */
 
-import * as commonLib from '@ali/mc-rap/runtime/commonLib';
-import * as reduxLib from '@ali/mc-rap/runtime/reduxLib';
+import * as commonLib from '@ali/rap/runtime/commonLib';
+import * as reduxLib from '@ali/rap/runtime/reduxLib';
 import { RequestTypes } from './redux';
 
 export interface IModels {
   /**
    * 接口名：GET请求
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
    */
   'GET/testGet': {
     Req: {
@@ -35,7 +35,7 @@ export interface IModels {
 
   /**
    * 接口名：POST 请求
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
    */
   'POST/testPost': {
     Req: {
@@ -59,7 +59,7 @@ export interface IModels {
 
   /**
    * 接口名：form表单提交请求
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377106
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377106
    */
   'POST/testFormData': {
     Req: {
@@ -75,7 +75,7 @@ export interface IModels {
 
   /**
    * 接口名：RESTful 接口
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
    */
   'GET/group/:groupId/member/{memberId}': {
     Req: {
@@ -89,7 +89,7 @@ export interface IModels {
 
   /**
    * 接口名：useAPI测试接口
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1482796
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1482796
    */
   'GET/useAPI': {
     Req: {
@@ -101,6 +101,10 @@ export interface IModels {
     Res: {
       errcode: number;
       useAPI: string;
+      data: {
+        id: string;
+        name: string;
+      }[];
     };
   };
 }
@@ -146,7 +150,7 @@ export function createFetch(
   return {
     /**
      * 接口名：GET请求
-     * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
+     * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
      * @param req 请求参数
      * @param extra 请求配置项
      */
@@ -161,7 +165,7 @@ export function createFetch(
 
     /**
      * 接口名：POST 请求
-     * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
+     * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
      * @param req 请求参数
      * @param extra 请求配置项
      */
@@ -176,7 +180,7 @@ export function createFetch(
 
     /**
      * 接口名：form表单提交请求
-     * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377106
+     * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377106
      * @param req 请求参数
      * @param extra 请求配置项
      */
@@ -191,7 +195,7 @@ export function createFetch(
 
     /**
      * 接口名：RESTful 接口
-     * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
+     * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
      * @param req 请求参数
      * @param extra 请求配置项
      */
@@ -209,7 +213,7 @@ export function createFetch(
 
     /**
      * 接口名：useAPI测试接口
-     * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1482796
+     * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1482796
      * @param req 请求参数
      * @param extra 请求配置项
      */

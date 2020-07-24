@@ -72,15 +72,14 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
       /* tslint:disable */
       '${itf.modelName}': function useData(
         requestParams?: IModels['${itf.modelName}']['Req'],
-        extra?: reduxLib.IUseAPIExtra & { fetch?: ReturnType<typeof createFetch> }
+        extra?: reduxLib.IUseAPIExtra
       ) {
         type Req = IModels['${itf.modelName}']['Req']
         type Res = IResponseTypes['${itf.modelName}']
-        const rapperFetch = (extra && extra.fetch) ? extra.fetch : fetch
-        type IFetcher = typeof rapperFetch['${itf.modelName}']
+        type IFetcher = typeof fetch['${itf.modelName}']
         return reduxLib.useAPICommon<TRapperStoreKey, Req, Res | undefined, IFetcher>({
           modelName: '${itf.modelName}',
-          fetcher: rapperFetch['${itf.modelName}'],
+          fetcher: fetch['${itf.modelName}'],
           requestParams,
           extra,
         })

@@ -1,17 +1,17 @@
-/* md5: d454ac6e04fd6028ff8c15e2025cc9c0 */
+/* md5: 40f78ed896ac6e65b27064f3c7a50aa0 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.1.1-beta.0 */
+/* Rapper版本: 1.1.0-beta.3 */
 /* eslint-disable */
 /* tslint:disable */
 
 /**
  * 本文件由 Rapper 同步 Rap 平台接口，自动生成，请勿修改
- * Rap仓库 地址: https://rap2.taobao.org/repository/editor?id=237514
+ * Rap仓库 地址: http://rap2.taobao.org/repository/editor?id=237514
  */
 
 import { useSelector } from 'react-redux';
 import { IModels, IResponseTypes, createFetch } from './request';
-import * as reduxLib from '@ali/mc-rap/runtime/reduxLib';
+import * as reduxLib from '@ali/rap/runtime/reduxLib';
 import { fetch } from './index';
 
 /** 请求types */
@@ -77,7 +77,7 @@ export type TRapperStoreKey = keyof IRapperStore;
 export const useResponse = {
   /**
    * 接口名：GET请求
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
    */
   /* tslint:disable */
   'GET/testGet': function useData(
@@ -96,7 +96,7 @@ export const useResponse = {
 
   /**
    * 接口名：POST 请求
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
    */
   /* tslint:disable */
   'POST/testPost': function useData(
@@ -115,7 +115,7 @@ export const useResponse = {
 
   /**
    * 接口名：form表单提交请求
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377106
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377106
    */
   /* tslint:disable */
   'POST/testFormData': function useData(
@@ -134,7 +134,7 @@ export const useResponse = {
 
   /**
    * 接口名：RESTful 接口
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
    */
   /* tslint:disable */
   'GET/group/:groupId/member/{memberId}': function useData(
@@ -153,7 +153,7 @@ export const useResponse = {
 
   /**
    * 接口名：useAPI测试接口
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1482796
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1482796
    */
   /* tslint:disable */
   'GET/useAPI': function useData(
@@ -174,20 +174,19 @@ export const useResponse = {
 export const useAPI = {
   /**
    * 接口名：GET请求
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
    */
   /* tslint:disable */
   'GET/testGet': function useData(
     requestParams?: IModels['GET/testGet']['Req'],
-    extra?: reduxLib.IUseAPIExtra & { fetch?: ReturnType<typeof createFetch> },
+    extra?: reduxLib.IUseAPIExtra,
   ) {
     type Req = IModels['GET/testGet']['Req'];
     type Res = IResponseTypes['GET/testGet'];
-    const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
-    type IFetcher = typeof rapperFetch['GET/testGet'];
+    type IFetcher = typeof fetch['GET/testGet'];
     return reduxLib.useAPICommon<TRapperStoreKey, Req, Res | undefined, IFetcher>({
       modelName: 'GET/testGet',
-      fetcher: rapperFetch['GET/testGet'],
+      fetcher: fetch['GET/testGet'],
       requestParams,
       extra,
     });
@@ -195,20 +194,19 @@ export const useAPI = {
 
   /**
    * 接口名：POST 请求
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
    */
   /* tslint:disable */
   'POST/testPost': function useData(
     requestParams?: IModels['POST/testPost']['Req'],
-    extra?: reduxLib.IUseAPIExtra & { fetch?: ReturnType<typeof createFetch> },
+    extra?: reduxLib.IUseAPIExtra,
   ) {
     type Req = IModels['POST/testPost']['Req'];
     type Res = IResponseTypes['POST/testPost'];
-    const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
-    type IFetcher = typeof rapperFetch['POST/testPost'];
+    type IFetcher = typeof fetch['POST/testPost'];
     return reduxLib.useAPICommon<TRapperStoreKey, Req, Res | undefined, IFetcher>({
       modelName: 'POST/testPost',
-      fetcher: rapperFetch['POST/testPost'],
+      fetcher: fetch['POST/testPost'],
       requestParams,
       extra,
     });
@@ -216,20 +214,19 @@ export const useAPI = {
 
   /**
    * 接口名：form表单提交请求
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377106
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377106
    */
   /* tslint:disable */
   'POST/testFormData': function useData(
     requestParams?: IModels['POST/testFormData']['Req'],
-    extra?: reduxLib.IUseAPIExtra & { fetch?: ReturnType<typeof createFetch> },
+    extra?: reduxLib.IUseAPIExtra,
   ) {
     type Req = IModels['POST/testFormData']['Req'];
     type Res = IResponseTypes['POST/testFormData'];
-    const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
-    type IFetcher = typeof rapperFetch['POST/testFormData'];
+    type IFetcher = typeof fetch['POST/testFormData'];
     return reduxLib.useAPICommon<TRapperStoreKey, Req, Res | undefined, IFetcher>({
       modelName: 'POST/testFormData',
-      fetcher: rapperFetch['POST/testFormData'],
+      fetcher: fetch['POST/testFormData'],
       requestParams,
       extra,
     });
@@ -237,20 +234,19 @@ export const useAPI = {
 
   /**
    * 接口名：RESTful 接口
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
    */
   /* tslint:disable */
   'GET/group/:groupId/member/{memberId}': function useData(
     requestParams?: IModels['GET/group/:groupId/member/{memberId}']['Req'],
-    extra?: reduxLib.IUseAPIExtra & { fetch?: ReturnType<typeof createFetch> },
+    extra?: reduxLib.IUseAPIExtra,
   ) {
     type Req = IModels['GET/group/:groupId/member/{memberId}']['Req'];
     type Res = IResponseTypes['GET/group/:groupId/member/{memberId}'];
-    const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
-    type IFetcher = typeof rapperFetch['GET/group/:groupId/member/{memberId}'];
+    type IFetcher = typeof fetch['GET/group/:groupId/member/{memberId}'];
     return reduxLib.useAPICommon<TRapperStoreKey, Req, Res | undefined, IFetcher>({
       modelName: 'GET/group/:groupId/member/{memberId}',
-      fetcher: rapperFetch['GET/group/:groupId/member/{memberId}'],
+      fetcher: fetch['GET/group/:groupId/member/{memberId}'],
       requestParams,
       extra,
     });
@@ -258,20 +254,19 @@ export const useAPI = {
 
   /**
    * 接口名：useAPI测试接口
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1482796
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1482796
    */
   /* tslint:disable */
   'GET/useAPI': function useData(
     requestParams?: IModels['GET/useAPI']['Req'],
-    extra?: reduxLib.IUseAPIExtra & { fetch?: ReturnType<typeof createFetch> },
+    extra?: reduxLib.IUseAPIExtra,
   ) {
     type Req = IModels['GET/useAPI']['Req'];
     type Res = IResponseTypes['GET/useAPI'];
-    const rapperFetch = extra && extra.fetch ? extra.fetch : fetch;
-    type IFetcher = typeof rapperFetch['GET/useAPI'];
+    type IFetcher = typeof fetch['GET/useAPI'];
     return reduxLib.useAPICommon<TRapperStoreKey, Req, Res | undefined, IFetcher>({
       modelName: 'GET/useAPI',
-      fetcher: rapperFetch['GET/useAPI'],
+      fetcher: fetch['GET/useAPI'],
       requestParams,
       extra,
     });
@@ -281,7 +276,7 @@ export const useAPI = {
 export const useAllResponse = {
   /**
    * 接口名：GET请求
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
    */
   /* tslint:disable */
   'GET/testGet': function useData() {
@@ -298,7 +293,7 @@ export const useAllResponse = {
 
   /**
    * 接口名：POST 请求
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
    */
   /* tslint:disable */
   'POST/testPost': function useData() {
@@ -315,7 +310,7 @@ export const useAllResponse = {
 
   /**
    * 接口名：form表单提交请求
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377106
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377106
    */
   /* tslint:disable */
   'POST/testFormData': function useData() {
@@ -332,7 +327,7 @@ export const useAllResponse = {
 
   /**
    * 接口名：RESTful 接口
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
    */
   /* tslint:disable */
   'GET/group/:groupId/member/{memberId}': function useData() {
@@ -351,7 +346,7 @@ export const useAllResponse = {
 
   /**
    * 接口名：useAPI测试接口
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1482796
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1482796
    */
   /* tslint:disable */
   'GET/useAPI': function useData() {
@@ -371,7 +366,7 @@ export const useAllResponse = {
 export const clearResponseCache = {
   /**
    * 接口名：GET请求
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
    */
   'GET/testGet': (): void => {
     reduxLib.dispatchAction({
@@ -382,7 +377,7 @@ export const clearResponseCache = {
 
   /**
    * 接口名：POST 请求
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
    */
   'POST/testPost': (): void => {
     reduxLib.dispatchAction({
@@ -393,7 +388,7 @@ export const clearResponseCache = {
 
   /**
    * 接口名：form表单提交请求
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377106
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377106
    */
   'POST/testFormData': (): void => {
     reduxLib.dispatchAction({
@@ -404,7 +399,7 @@ export const clearResponseCache = {
 
   /**
    * 接口名：RESTful 接口
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
    */
   'GET/group/:groupId/member/{memberId}': (): void => {
     reduxLib.dispatchAction({
@@ -415,7 +410,7 @@ export const clearResponseCache = {
 
   /**
    * 接口名：useAPI测试接口
-   * Rap 地址: https://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1482796
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1482796
    */
   'GET/useAPI': (): void => {
     reduxLib.dispatchAction({
