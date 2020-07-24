@@ -288,7 +288,7 @@ export function useAPICommon<
       mode === 'paramsMatch' ? { request: requestParams } : undefined,
     );
     if (!result.id) {
-      fetcher(requestParams, otherExtra).catch();
+      fetcher(requestParams, otherExtra).catch(() => undefined);
     }
     if (updateTiming === 'initial' || (result.id && !result.isPending)) {
       setFilteredData(pre => {
