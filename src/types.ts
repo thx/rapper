@@ -58,6 +58,7 @@ export interface IModules {
 export interface ICollaborator {
   id: number;
   name: string;
+  token: string;
   description: string;
   logo?: any;
   visibility: boolean;
