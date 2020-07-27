@@ -1,14 +1,17 @@
+/** request 参数测试 */
 import React from 'react';
 import { Button, Spin } from 'antd';
 import { useAPI, clearResponseCache } from '../../models/rapper';
 
 export default () => {
   const [data, { isPending, request, errorMessage }] = useAPI['GET/useAPI'](
-    {},
-    { mode: 'manual' },
+    { id: 1 },
+    { isSendFetch: (requestParams) => {
+        return false
+    } }
   );
   const doRequest = () => {
-    request({ id: 1 }, { query: { testQuery: [1, 2] } });
+    request();
   };
   const clearData = () => {
     clearResponseCache['GET/useAPI']();

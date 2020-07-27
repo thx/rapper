@@ -9,7 +9,7 @@ export const RAPPER_UPDATE_STORE = '$$RAPPER_UPDATE_STORE';
 export const RAPPER_STATE_KEY = '$$rapperResponseData';
 
 /** useAPI 的 extra */
-export interface IUseAPIExtra<Req> extends Omit<IExtra, 'type'> {
+export interface IUseAPIExtra<Req> extends Pick<IExtra, 'contentType' | 'query' | 'queryStringFn'> {
   /**
    * 支持三种模式，默认 paramsMatch
    * paramsMatch，参数匹配模式（默认模式），判断缓存中是否有请求参数相同的数据，有就返回，没有就自动发送请求
@@ -27,6 +27,8 @@ export interface IUseAPIExtra<Req> extends Omit<IExtra, 'type'> {
    * 是否发送请求
    */
   isSendFetch?: (requestParams: Req) => boolean;
+  /** 扩展字段 */
+  [key: string]: any;
 }
 
 /** 请求类型 */

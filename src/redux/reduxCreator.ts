@@ -72,7 +72,7 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
       /* tslint:disable */
       '${itf.modelName}': function useData(
         requestParams?: IModels['${itf.modelName}']['Req'],
-        extra?: reduxLib.IUseAPIExtra
+        extra?: reduxLib.IUseAPIExtra<IModels['${itf.modelName}']['Req']>
       ) {
         type Req = IModels['${itf.modelName}']['Req']
         type Res = IResponseTypes['${itf.modelName}']

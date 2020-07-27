@@ -14,10 +14,12 @@ const App: React.FC = () => {
           <Link to='/' style={{ marginRight: '30px' }}>Home</Link>
           <Link to='/useAPI'>useAPI</Link>
         </div>
-        <Switch>
-          <Route path='/' exact component={Index} />
-          <Route path='/useAPI' component={UseAPI} />
-        </Switch>
+        <div style={{ padding: '20px' }}>
+          <Switch>
+            <Route path='/' exact component={Index} />
+            <Route path='/useAPI' component={UseAPI} />
+          </Switch>
+        </div>
       </Router>
     </Provider>
   );

@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { Button, Spin } from 'antd';
 import { useAPI, clearResponseCache } from '../../models/rapper';
-import fetch from '../../models/fetcher';
 
 export default () => {
   const [id, setId] = useState(1)
   const [data, { isPending, errorMessage }] = useAPI['GET/useAPI'](
     { id },
-    { fetch },
   );
   const clearData = () => {
     clearResponseCache['GET/useAPI']();

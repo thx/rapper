@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'antd';
 import { useAPI } from '../../models/rapper';
-import fetch from '../../models/fetcher';
 
 export default () => {
   const [isModalVisible, setModalVisible] = useState(false)
@@ -12,7 +11,7 @@ export default () => {
     console.log('mode', mode)
     const [data2] = useAPI['GET/useAPI'](
       { id },
-      { fetch, mode },
+      { mode },
     );
     return <Modal
         title="Basic Modal"
