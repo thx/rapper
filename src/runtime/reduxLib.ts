@@ -9,7 +9,7 @@ export const RAPPER_UPDATE_STORE = '$$RAPPER_UPDATE_STORE';
 export const RAPPER_STATE_KEY = '$$rapperResponseData';
 
 /** useAPI 的 extra */
-export interface IUseAPIExtra extends Omit<IExtra, 'type'> {
+export interface IUseAPIExtra<Req> extends Omit<IExtra, 'type'> {
   /**
    * 支持三种模式，默认 paramsMatch
    * paramsMatch，参数匹配模式（默认模式），判断缓存中是否有请求参数相同的数据，有就返回，没有就自动发送请求
@@ -23,6 +23,10 @@ export interface IUseAPIExtra extends Omit<IExtra, 'type'> {
    * complete，请求完成后才更新 response data
    */
   updateTiming?: 'initial' | 'complete';
+  /**
+   * 是否发送请求
+   */
+  isSendFetch?: (requestParams: Req) => boolean;
 }
 
 /** 请求类型 */
@@ -259,7 +263,7 @@ interface IRapperCommonParams<M, Req, Item, IFetcher> {
   modelName: M;
   fetcher: IFetcher;
   requestParams?: Req;
-  extra?: IUseAPIExtra;
+  extra?: IUseAPIExtra<Req>;
   filter?: IFilterObj<Req> | FilterFunc<Item>;
 }
 /** useAPI */
@@ -269,7 +273,8 @@ export function useAPICommon<
   Res,
   IFetcher extends (requestParams?: Req, extra?: IExtra) => any
 >({ modelName, fetcher, requestParams, extra }: IRapperCommonParams<M, Req, {}, IFetcher>) {
-  const { mode = 'paramsMatch', updateTiming = 'initial', ...otherExtra } = extra || {};
+  const { mode = 'paramsMatch', updateTiming = 'initial', isSendFetch, ...otherExtra } =
+    extra || {};
   const reduxData = useSelector((state: IState) => {
     return (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
   });
@@ -287,7 +292,7 @@ export function useAPICommon<
       reduxData,
       mode === 'paramsMatch' ? { request: requestParams } : undefined,
     );
-    if (!result.id) {
+    if (!result.id && (!isSendFetch || isSendFetch(requestParams))) {
       fetcher(requestParams, otherExtra).catch(() => undefined);
     }
     if (updateTiming === 'initial' || (result.id && !result.isPending)) {
@@ -300,10 +305,10 @@ export function useAPICommon<
   }, [mode, reduxData, filteredData, requestParams]);
 
   const request = useCallback(
-    async (...rest) => {
+    async (req?: Req, extra?: typeof otherExtra) => {
       setIsPending(true);
       try {
-        const response = await fetcher(...rest);
+        const response = await fetcher(req || requestParams, extra);
         setFilteredData(response);
       } catch (error) {
         setErrorMessage(error.message);
