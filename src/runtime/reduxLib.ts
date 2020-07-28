@@ -26,7 +26,7 @@ export interface IUseAPIExtra<Req> extends Pick<IExtra, 'contentType' | 'query' 
   /**
    * 是否发送请求
    */
-  isSendFetch?: (requestParams: Req) => boolean;
+  shouldAutoRequest?: (requestParams: Req) => boolean;
   /** 扩展字段 */
   [key: string]: any;
 }
@@ -275,7 +275,7 @@ export function useAPICommon<
   Res,
   IFetcher extends (requestParams?: Req, extra?: IExtra) => any
 >({ modelName, fetcher, requestParams, extra }: IRapperCommonParams<M, Req, {}, IFetcher>) {
-  const { mode = 'paramsMatch', updateTiming = 'initial', isSendFetch, ...otherExtra } =
+  const { mode = 'paramsMatch', updateTiming = 'initial', shouldAutoRequest, ...otherExtra } =
     extra || {};
   const reduxData = useSelector((state: IState) => {
     return (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
@@ -294,7 +294,7 @@ export function useAPICommon<
       reduxData,
       mode === 'paramsMatch' ? { request: requestParams } : undefined,
     );
-    if (!result.id && (!isSendFetch || isSendFetch(requestParams))) {
+    if (!result.id && (!shouldAutoRequest || shouldAutoRequest(requestParams))) {
       fetcher(requestParams, otherExtra).catch(() => undefined);
     }
     if (updateTiming === 'initial' || (result.id && !result.isPending)) {

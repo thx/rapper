@@ -1,7 +1,7 @@
 ## 2020.07.27 v.1.1.1
 - 修复协同仓库拉取失败
 - useAPI 手动发送请求时，默认带上请求参数
-- useAPI 第二参新增 isSendRequest，用于给自动发送请求场景加过滤器
+- useAPI 第二参新增 shouldAutoRequest，用于给自动发送请求场景加过滤器
 
 ## 2020.07.21 v.1.1.0
 - useAPI 新增 updateTiming 参数，可用于配置响应数据更新时机（防止table数据更新时视觉抖动）
