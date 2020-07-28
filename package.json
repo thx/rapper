@@ -21,13 +21,17 @@
   "keywords": [
     "api",
     "rap",
-    "rapper"
+    "rapper",
+    "typescript",
+    "redux"
   ],
   "author": "chibing.fy",
   "license": "ISC",
   "files": [
     "dist",
-    "runtime"
+    "runtime",
+    "README.md",
+    "CHANGELOG.md"
   ],
   "publishConfig": {
     "registry": "http://registry.npm.alibaba-inc.com"
