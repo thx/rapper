@@ -1,4 +1,6 @@
 [![MIT License][license-shield]][license-url]
+[![npm version](https://img.shields.io/npm/v/rap.svg)](https://www.npmjs.com/package/rap)
+[![npm downloads](https://img.shields.io/npm/dt/rap.svg)](https://www.npmjs.com/package/rap)
 
 <p align="center">
   <a href="https://github.com/thx/rapper">
@@ -65,30 +67,20 @@ import { fetch } from './rapper';
 
 如果你使用 React 和 Redux，在以上基础的请求函数之外，Rapper 还为你提供精心设计过的全局数据管理方案。
 
-以往发送一个请求要写繁杂的 interface/action/reducer/effect，现在这些都会为你准备好，你只需要使用即可：
+以往发送一个请求要写繁杂的 interface/action/reducer/effect，现在这些都会为你准备好，你只需要一行代码即可：
 
 ```javascript
-const [result, { id, isPending }] = useResponse['GET/duck/fetchColor'];
-
-useEffect(() => {
-  if (!result && !id) {
-    fetch['GET/duck/fetchColor'](params);
-  }
-}, [result, id, params]);
+const [responseData, { isPending, errorMessage }] = useAPI['GET/duck/fetchColor'](requestParams);
 ```
 
 ## 文档
 
 想要在生产中深度使用 Rapper，你可能还需要自定义请求函数、对返回的数据做统一的类型转换
 
-具体请参考我们的文档：https://www.yuque.com/rap/rapper
+具体请参考我们的文档：[https://www.yuque.com/rap/rapper](https://www.yuque.com/rap/rapper)
 
 ## 联系我们
 
 - [Github Issue](https://github.com/thx/rapper/issues)
 - 钉钉群：11789704
 
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=flat-square
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=flat-square
-[license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
-[product-screenshot]: images/screenshot.png

@@ -47,7 +47,7 @@ function createIndexStr(): IGeneratedCode {
 function createDynamicStr(interfaces: Array<Intf>, extr: ICreatorExtr): string {
   return `
     import { useSelector } from 'react-redux'
-    import { IModels, IResponseTypes, createFetch } from './request'
+    import { IModels, IResponseTypes } from './request'
     import * as reduxLib from '${packageName}/runtime/reduxLib'
     import { fetch } from './index'
 
