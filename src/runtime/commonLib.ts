@@ -196,7 +196,7 @@ export const defaultFetch = async ({
   if (res.ok) {
     return res.json();
   } else {
-    throw new Error(res.statusText);
+    throw { name: 'Error', message: res.statusText, response: res };
   }
 };
 
