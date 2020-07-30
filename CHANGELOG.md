@@ -1,4 +1,4 @@
-## 2020.07.30 v.1.1.1-beta.2
+## 2020.07.30 v.1.1.1-beta.3
 - 变更 defaultFetch 行为：当 fetch 的 response.ok 为 false 时，抛出的异常中添加 response，以便获取响应码 ```{ message, response }```
 ## 2020.07.27 v.1.1.1-beta.2
 - 修复协同仓库拉取失败
