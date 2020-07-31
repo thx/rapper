@@ -308,18 +308,23 @@ export function useAPICommon<
 
   const request = useCallback(
     async (req?: Req, extra?: typeof otherExtra) => {
-      setIsPending(true);
-      try {
-        const response = await fetcher(req || requestParams, extra);
-        setFilteredData(response);
-      } catch (error) {
-        setErrorMessage(error.message);
-        throw Error(error);
-      } finally {
-        setIsPending(false);
+      /** manual模式不走全局，只返回自己fetch的数据 */
+      if (mode === 'manual') {
+        setIsPending(true);
+        try {
+          const response = await fetcher(req || requestParams, extra);
+          setFilteredData(response);
+          return response;
+        } catch (error) {
+          setErrorMessage(error.message);
+          throw Error(error);
+        } finally {
+          setIsPending(false);
+        }
       }
+      return await fetcher(req || requestParams, extra);
     },
-    [fetcher],
+    [mode, fetcher],
   );
 
   return [filteredData as Res, { isPending, errorMessage, request }] as const;
