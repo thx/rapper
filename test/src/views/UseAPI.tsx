@@ -4,6 +4,7 @@ import Mode from '../components/useAPI/Mode'
 import TestRepeat from '../components/useAPI/TestRepeat'
 import UpdateTiming from '../components/useAPI/UpdateTiming'
 import Request from '../components/useAPI/Request'
+import MultipleTab from '../components/useAPI/MultipleTab'
 const { TabPane } = Tabs;
 
 export default () => {
@@ -22,6 +23,9 @@ export default () => {
       </TabPane>
       <TabPane tab="request" key="request">
         <Request />
+      </TabPane>
+      <TabPane tab="多tab" key="multipleTab">
+        <MultipleTab />
       </TabPane>
     </Tabs>
   );

@@ -1,6 +1,6 @@
-/* md5: c9fa8ffb81693d68c9e2d9f89a661292 */
+/* md5: 0b9e320dc2338778879fbf0a00d6c092 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.2.1-beta.2 */
+/* Rapper版本: 1.3.1 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -130,6 +130,27 @@ export interface IModels {
   };
 
   /**
+   * 接口名：useAPI-多tab
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1681938
+   */
+  'GET/useAPI/multiple-tab': {
+    Req: {
+      /**
+       * id
+       */
+      type?: number;
+    };
+    Res: {
+      data: {
+        id: string;
+        name: string;
+      }[];
+      errcode: number;
+      useAPI: string;
+    };
+  };
+
+  /**
    * 接口名：示例接口
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=239096&mod=344548&itf=1399160
    */
@@ -210,6 +231,7 @@ export interface IResponseTypes {
   >;
   'GET/useAPI': ResSelector<IModels['GET/useAPI']['Res']>;
   'GET/useAPI/request': ResSelector<IModels['GET/useAPI/request']['Res']>;
+  'GET/useAPI/multiple-tab': ResSelector<IModels['GET/useAPI/multiple-tab']['Res']>;
   'GET/example/1575626712231': ResSelector<IModels['GET/example/1575626712231']['Res']>;
 }
 
@@ -334,6 +356,24 @@ export function createFetch(
         params: req,
         extra,
       }) as Promise<IResponseTypes['GET/useAPI/request']>;
+    },
+
+    /**
+     * 接口名：useAPI-多tab
+     * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1681938
+     * @param req 请求参数
+     * @param extra 请求配置项
+     */
+    'GET/useAPI/multiple-tab': (
+      req?: IModels['GET/useAPI/multiple-tab']['Req'],
+      extra?: commonLib.IExtra,
+    ) => {
+      return sendRapperFetch('GET/useAPI/multiple-tab', {
+        url: '/useAPI/multiple-tab',
+        method: 'GET',
+        params: req,
+        extra,
+      }) as Promise<IResponseTypes['GET/useAPI/multiple-tab']>;
     },
 
     /**

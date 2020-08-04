@@ -1,5 +1,9 @@
+## 2020.07.30 v.1.1.1-beta.4
+- 修复 useAPI 返回的 request 方法不随请求参数更新的bug
+
 ## 2020.07.30 v.1.1.1-beta.3
 - 变更 defaultFetch 行为：当 fetch 的 response.ok 为 false 时，抛出的异常中添加 response，以便获取响应码 ```{ message, response }```
+
 ## 2020.07.27 v.1.1.1-beta.2
 - 修复协同仓库拉取失败
 - useAPI 手动发送请求时，默认带上请求参数

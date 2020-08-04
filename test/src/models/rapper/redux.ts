@@ -1,6 +1,6 @@
-/* md5: 50fa7538da082d795c55052e8a7065ed */
+/* md5: 8eee7f1d91c541e708ddd8c6c793f1e9 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.2.1-beta.2 */
+/* Rapper版本: 1.3.1 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -10,7 +10,7 @@
  */
 
 import { useSelector } from 'react-redux';
-import { IModels, IResponseTypes, createFetch } from './request';
+import { IModels, IResponseTypes } from './request';
 import * as reduxLib from '@ali/mc-rap/runtime/reduxLib';
 import { fetch } from './index';
 
@@ -38,6 +38,12 @@ export const RequestTypes = {
     'GET/useAPI/request_REQUEST',
     'GET/useAPI/request_SUCCESS',
     'GET/useAPI/request_FAILURE',
+  ],
+
+  'GET/useAPI/multiple-tab': [
+    'GET/useAPI/multiple-tab_REQUEST',
+    'GET/useAPI/multiple-tab_SUCCESS',
+    'GET/useAPI/multiple-tab_FAILURE',
   ],
 
   'GET/example/1575626712231': [
@@ -88,6 +94,13 @@ interface IRapperStore {
     reduxLib.IInterfaceInfo & {
       request: IModels['GET/useAPI/request']['Req'];
       response: IResponseTypes['GET/useAPI/request'];
+    }
+  >;
+
+  'GET/useAPI/multiple-tab': Array<
+    reduxLib.IInterfaceInfo & {
+      request: IModels['GET/useAPI/multiple-tab']['Req'];
+      response: IResponseTypes['GET/useAPI/multiple-tab'];
     }
   >;
 
@@ -211,6 +224,25 @@ export const useResponse = {
     type Res = IResponseTypes['GET/useAPI/request'];
     return reduxLib.useResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
       'GET/useAPI/request',
+      filter,
+    );
+  },
+
+  /**
+   * 接口名：useAPI-多tab
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1681938
+   */
+  /* tslint:disable */
+  'GET/useAPI/multiple-tab': function useData(
+    filter?:
+      | { request?: IModels['GET/useAPI/multiple-tab']['Req'] }
+      | { (storeData: IRapperStore['GET/useAPI/multiple-tab'][0]): boolean },
+  ) {
+    type Req = IModels['GET/useAPI/multiple-tab']['Req'];
+    type Item = IRapperStore['GET/useAPI/multiple-tab'][0];
+    type Res = IResponseTypes['GET/useAPI/multiple-tab'];
+    return reduxLib.useResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
+      'GET/useAPI/multiple-tab',
       filter,
     );
   },
@@ -357,6 +389,26 @@ export const useAPI = {
   },
 
   /**
+   * 接口名：useAPI-多tab
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1681938
+   */
+  /* tslint:disable */
+  'GET/useAPI/multiple-tab': function useData(
+    requestParams?: IModels['GET/useAPI/multiple-tab']['Req'],
+    extra?: reduxLib.IUseAPIExtra<IModels['GET/useAPI/multiple-tab']['Req']>,
+  ) {
+    type Req = IModels['GET/useAPI/multiple-tab']['Req'];
+    type Res = IResponseTypes['GET/useAPI/multiple-tab'];
+    type IFetcher = typeof fetch['GET/useAPI/multiple-tab'];
+    return reduxLib.useAPICommon<TRapperStoreKey, Req, Res | undefined, IFetcher>({
+      modelName: 'GET/useAPI/multiple-tab',
+      fetcher: fetch['GET/useAPI/multiple-tab'],
+      requestParams,
+      extra,
+    });
+  },
+
+  /**
    * 接口名：示例接口
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=239096&mod=344548&itf=1399160
    */
@@ -484,6 +536,25 @@ export const useAllResponse = {
   },
 
   /**
+   * 接口名：useAPI-多tab
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1681938
+   */
+  /* tslint:disable */
+  'GET/useAPI/multiple-tab': function useData() {
+    return useSelector((state: reduxLib.IState) => {
+      const selectedState =
+        (state['$$rapperResponseData'] &&
+          state['$$rapperResponseData']['GET/useAPI/multiple-tab']) ||
+        [];
+      type TReturnItem = reduxLib.IInterfaceInfo & {
+        request?: IModels['GET/useAPI/multiple-tab']['Req'];
+        response?: IResponseTypes['GET/useAPI/multiple-tab'];
+      };
+      return selectedState as Array<TReturnItem>;
+    });
+  },
+
+  /**
    * 接口名：示例接口
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=239096&mod=344548&itf=1399160
    */
@@ -568,6 +639,17 @@ export const clearResponseCache = {
     reduxLib.dispatchAction({
       type: '$$RAPPER_CLEAR_STORE',
       payload: { 'GET/useAPI/request': undefined },
+    });
+  },
+
+  /**
+   * 接口名：useAPI-多tab
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1681938
+   */
+  'GET/useAPI/multiple-tab': (): void => {
+    reduxLib.dispatchAction({
+      type: '$$RAPPER_CLEAR_STORE',
+      payload: { 'GET/useAPI/multiple-tab': undefined },
     });
   },
 
@@ -674,6 +756,21 @@ export const rapperBaseSelector = {
       filter,
     );
   },
+  'GET/useAPI/multiple-tab': (
+    state: reduxLib.IState,
+    filter?:
+      | { request?: IModels['GET/useAPI/multiple-tab']['Req'] }
+      | { (storeData: IRapperStore['GET/useAPI/multiple-tab'][0]): boolean },
+  ) => {
+    type Req = IModels['GET/useAPI/multiple-tab']['Req'];
+    type Res = IResponseTypes['GET/useAPI/multiple-tab'];
+    type Item = IRapperStore['GET/useAPI/multiple-tab'][0];
+    return reduxLib.getResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
+      state,
+      'GET/useAPI/multiple-tab',
+      filter,
+    );
+  },
   'GET/example/1575626712231': (
     state: reduxLib.IState,
     filter?:
@@ -718,6 +815,10 @@ export const rapperDataSelector = {
   'GET/useAPI/request': (state: reduxLib.IState) => {
     type Res = IResponseTypes['GET/useAPI/request'];
     return reduxLib.getRapperDataSelector<TRapperStoreKey, Res>(state, 'GET/useAPI/request');
+  },
+  'GET/useAPI/multiple-tab': (state: reduxLib.IState) => {
+    type Res = IResponseTypes['GET/useAPI/multiple-tab'];
+    return reduxLib.getRapperDataSelector<TRapperStoreKey, Res>(state, 'GET/useAPI/multiple-tab');
   },
   'GET/example/1575626712231': (state: reduxLib.IState) => {
     type Res = IResponseTypes['GET/example/1575626712231'];

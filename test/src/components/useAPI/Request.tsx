@@ -6,9 +6,9 @@ import { useAPI, clearResponseCache } from '../../models/rapper';
 export default () => {
   const [data, { isPending, request, errorMessage }] = useAPI['GET/useAPI'](
     { id: 1 },
-    { isSendFetch: (requestParams) => {
+    { shouldAutoRequest: (_requestParams) => {
         return false
-    } }
+    }, updateTiming: 'complete' }
   );
   const doRequest = () => {
     request();
