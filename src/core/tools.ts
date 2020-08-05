@@ -42,7 +42,7 @@ export async function getInterfaces(rapApiUrl: string) {
           updateURLParameter(
             updateURLParameter(rapApiUrl, 'id', e.id.toString()),
             'token',
-            e.token,
+            e.token || '',
           ),
         ),
       ),

@@ -53,6 +53,7 @@ export default async function({
   resSelector = 'type ResSelector<T> = T',
 }: IRapper) {
   const rapperVersion: string = packageJson.version;
+  console.log(`当前rapper版本: ${chalk.grey(rapperVersion)}`);
   const spinner = ora(chalk.grey('rapper: 开始检查版本'));
   spinner.start();
   /** 检查版本，给出升级提示 */

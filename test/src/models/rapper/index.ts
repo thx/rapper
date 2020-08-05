@@ -1,6 +1,6 @@
-/* md5: 7b57b87236cb8ca9622e1abd1b265914 */
+/* md5: 8ce65358799a160b339f5ae6b0262da7 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.3.1 */
+/* Rapper版本: 1.1.1-beta.5 */
 /* eslint-disable */
 /* tslint:disable */
 
@@ -10,7 +10,7 @@
  */
 
 import { createFetch, IModels } from './request';
-import * as commonLib from '@ali/mc-rap/runtime/commonLib';
+import * as commonLib from '@ali/rap/runtime/commonLib';
 
 import {
   useResponse,
@@ -22,7 +22,7 @@ import {
   rapperDataSelector,
 } from './redux';
 import { IResponseTypes } from './request';
-import * as reduxLib from '@ali/mc-rap/runtime/reduxLib';
+import * as reduxLib from '@ali/rap/runtime/reduxLib';
 
 const { defaultFetch } = commonLib;
 let fetch = createFetch({}, { fetchType: commonLib.FetchType.BASE });
