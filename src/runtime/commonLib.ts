@@ -189,7 +189,7 @@ export const defaultFetch = async ({
       };
     }
   } else {
-    init.headers = { ...init.headers, 'Content-Type': 'application/json' };
+    init.headers = { 'Content-Type': 'application/json', ...init.headers };
   }
 
   const res = await fetch(urlWithParams, init);

@@ -1,3 +1,6 @@
+## 2020.08.05 v.1.1.1-beta.6
+- 修复 overrideFetch headers 设置不生效的bug [#7](https://github.com/thx/rapper/issues/7)
+
 ## 2020.08.05 v.1.1.1-beta.5
 - 修复协同仓库拉取失败的bug
 - 增加 `npm run rapper` 时的版本提示

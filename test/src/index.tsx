@@ -11,6 +11,11 @@ overrideFetch({
     //   return { a: 1, b: [], c: { a: [] } };
     // },
     query: { token: '34213' },
+    fetchOption: {
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+    },
 })
 ReactDOM.render(<App />, document.getElementById('root'));
 
