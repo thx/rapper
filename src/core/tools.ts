@@ -143,6 +143,7 @@ export function creatHeadHelpStr(rapUrl: string, projectId: number, rapperVersio
   /* Rapper版本: ${rapperVersion} */
   /* eslint-disable */
   /* tslint:disable */
+  // @ts-nocheck
   
   /**
    * 本文件由 Rapper 同步 Rap 平台接口，自动生成，请勿修改
