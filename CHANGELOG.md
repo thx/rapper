@@ -1,3 +1,6 @@
+## 2020.08.05 v.1.1.1-beta.8
+- 添加 @ts-nocheck 避免 tsc 检查问题
+
 ## 2020.08.05 v.1.1.1-beta.7
 - 修复 useAPI request 可能导致的死循环
 
