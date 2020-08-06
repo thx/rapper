@@ -1,3 +1,6 @@
+## 2020.08.05 v.1.1.1-beta.7
+- 修复 useAPI request 可能导致的死循环
+
 ## 2020.08.05 v.1.1.1-beta.6
 - 修复 overrideFetch headers 设置不生效的bug [#7](https://github.com/thx/rapper/issues/7)
 
