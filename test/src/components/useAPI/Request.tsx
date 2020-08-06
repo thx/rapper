@@ -1,15 +1,18 @@
 /** request 参数测试 */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button, Spin } from 'antd';
 import { useAPI, clearResponseCache } from '../../models/rapper';
 
 export default () => {
   const [data, { isPending, request, errorMessage }] = useAPI['GET/useAPI'](
     { id: 1 },
-    { shouldAutoRequest: (_requestParams) => {
-        return false
-    }, updateTiming: 'complete' }
+    { updateTiming: 'complete' }
   );
+
+  useEffect(() => {
+    request()
+  }, [request])
+
   const doRequest = () => {
     request();
   };
@@ -30,14 +33,11 @@ export default () => {
       </div>
       <Spin spinning={isPending}>
         <div>
-          <div style={{ margin: '20px 0' }}>fetch['GET/testGet']();</div>
-          <div>
-            {errorMessage ? (
-              `错误信息: ${errorMessage}`
-            ) : (
-              <pre>{JSON.stringify(data, null, '  ')}</pre>
-            )}
-          </div>
+          {errorMessage ? (
+            `错误信息: ${errorMessage}`
+          ) : (
+            <pre>{JSON.stringify(data, null, '  ')}</pre>
+          )}
         </div>
       </Spin>
     </div>
