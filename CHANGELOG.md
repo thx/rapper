@@ -1,24 +1,12 @@
-## 2020.08.06 v.1.1.1-beta.8
+## 2020.08.07 v.1.1.1
 - 添加 @ts-nocheck 避免 tsc 检查问题
-
-## 2020.08.05 v.1.1.1-beta.7
-- 修复 useAPI request 可能导致的死循环
-
-## 2020.08.05 v.1.1.1-beta.6
 - 修复 overrideFetch headers 设置不生效的bug [#7](https://github.com/thx/rapper/issues/7)
-
-## 2020.08.05 v.1.1.1-beta.5
 - 修复协同仓库拉取失败的bug
 - 增加 `npm run rapper` 时的版本提示
-
-## 2020.07.30 v.1.1.1-beta.4
-- 修复 useAPI 返回的 request 方法不随请求参数更新的bug
-
-## 2020.07.30 v.1.1.1-beta.3
 - 变更 defaultFetch 行为：当 fetch 的 response.ok 为 false 时，抛出的异常中添加 response，以便获取响应码 ```{ message, response }```
-
-## 2020.07.27 v.1.1.1-beta.2
 - 修复协同仓库拉取失败
+- 修复 useAPI request 可能导致的死循环
+- 修复 useAPI request 不随请求参数更新的bug
 - useAPI 手动发送请求时，默认带上请求参数
 - useAPI 第二参新增 shouldAutoRequest，用于给自动发送请求场景加过滤器
 
