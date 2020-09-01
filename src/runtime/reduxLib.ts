@@ -314,8 +314,10 @@ export function useAPICommon<
         try {
           const response = await fetcher(req || requestParams, extra);
           setFilteredData(response);
+          setErrorMessage(undefined);
           return response;
         } catch (error) {
+          setFilteredData(undefined);
           setErrorMessage(error.message);
           throw Error(error);
         } finally {

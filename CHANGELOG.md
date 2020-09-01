@@ -1,3 +1,6 @@
+## 2020.09.01 v1.1.2-beta.0
+- 修复 useAPI manual 模式时，errorMessage 可能无法清除的bug
+
 ## 2020.08.07 v.1.1.1
 - 添加 @ts-nocheck 避免 tsc 检查问题
 - 修复 overrideFetch headers 设置不生效的bug [#7](https://github.com/thx/rapper/issues/7)

@@ -48,7 +48,6 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
         .map(
           itf => `
       ${creatInterfaceHelpStr(extr.rapUrl, itf)}
-      /* tslint:disable */
       '${itf.modelName}': function useData(
           filter?: { request?: IModels['${itf.modelName}']['Req'] } | { (
               storeData: IRapperStore['${itf.modelName}'][0]
@@ -69,7 +68,6 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
         .map(
           itf => `
       ${creatInterfaceHelpStr(extr.rapUrl, itf)}
-      /* tslint:disable */
       '${itf.modelName}': function useData(
         requestParams?: IModels['${itf.modelName}']['Req'],
         extra?: reduxLib.IUseAPIExtra<IModels['${itf.modelName}']['Req']>
@@ -92,8 +90,7 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
       ${interfaces
         .map(
           itf => `
-      ${creatInterfaceHelpStr(extr.rapUrl, itf)}
-      /* tslint:disable */
+      ${creatInterfaceHelpStr(extr.rapUrl, itf)}      
       '${itf.modelName}': function useData() {
         return useSelector((state: reduxLib.IState) => {
           const selectedState = (state['$$rapperResponseData'] && state['$$rapperResponseData']['${
