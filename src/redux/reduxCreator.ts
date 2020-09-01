@@ -90,7 +90,7 @@ export function createUseRapStr(interfaces: Array<Intf>, extr: ICreatorExtr): st
       ${interfaces
         .map(
           itf => `
-      ${creatInterfaceHelpStr(extr.rapUrl, itf)}      
+      ${creatInterfaceHelpStr(extr.rapUrl, itf)}
       '${itf.modelName}': function useData() {
         return useSelector((state: reduxLib.IState) => {
           const selectedState = (state['$$rapperResponseData'] && state['$$rapperResponseData']['${
