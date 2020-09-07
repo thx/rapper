@@ -177,7 +177,7 @@ function paramsFilter<
         if (isCacheNaN && isRequestNaN) {
           return true;
         }
-        return item.request[key] === filterRequest[key];
+        return looseEqual(item.request[key], filterRequest[key]);
       });
       if (!reqResult) {
         return false;

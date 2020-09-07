@@ -5,8 +5,7 @@ import { useAPI, clearResponseCache } from '../../models/rapper';
 
 export default () => {
   const [data, { isPending, request, errorMessage }] = useAPI['GET/useAPI'](
-    { id: 1 },
-    { updateTiming: 'complete' }
+    { id: 1, test: [1] }
   );
 
   useEffect(() => {

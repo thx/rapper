@@ -1,8 +1,9 @@
-/* md5: 95167a62c981107269527936885d3cc4 */
+/* md5: 57a8a63c610bb2f7a6f5290e789d0046 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.1.1-beta.6 */
+/* Rapper版本: 1.1.2-beta.1 */
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 
 /**
  * 本文件由 Rapper 同步 Rap 平台接口，自动生成，请勿修改

@@ -1,3 +1,6 @@
+## 2020.09.01 v1.1.2-beta.1
+- 修复 useAPI 请求参数为 objet 或 array 时，死循环的问题
+
 ## 2020.09.01 v1.1.2-beta.0
 - 修复 useAPI manual 模式时，errorMessage 可能无法清除的bug
 

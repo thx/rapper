@@ -1,8 +1,9 @@
-/* md5: 8aa22917aba4bfbc4f845d1bf5e6ce26 */
+/* md5: 609fbd29a0629e32ed87259182b5f24d */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.1.1-beta.6 */
+/* Rapper版本: 1.1.2-beta.1 */
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 
 /**
  * 本文件由 Rapper 同步 Rap 平台接口，自动生成，请勿修改
@@ -97,6 +98,7 @@ export interface IModels {
        * id
        */
       id?: number;
+      test?: number[];
     };
     Res: {
       errcode: number;

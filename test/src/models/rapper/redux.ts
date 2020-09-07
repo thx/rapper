@@ -1,8 +1,9 @@
-/* md5: 4b84e00837cb9fe2b39213df32aabe26 */
+/* md5: 093c2b46a222568089853bba54747439 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.1.1-beta.6 */
+/* Rapper版本: 1.1.2-beta.1 */
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 
 /**
  * 本文件由 Rapper 同步 Rap 平台接口，自动生成，请勿修改
@@ -118,7 +119,6 @@ export const useResponse = {
    * 接口名：GET请求
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
    */
-  /* tslint:disable */
   'GET/testGet': function useData(
     filter?:
       | { request?: IModels['GET/testGet']['Req'] }
@@ -137,7 +137,6 @@ export const useResponse = {
    * 接口名：POST 请求
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
    */
-  /* tslint:disable */
   'POST/testPost': function useData(
     filter?:
       | { request?: IModels['POST/testPost']['Req'] }
@@ -156,7 +155,6 @@ export const useResponse = {
    * 接口名：form表单提交请求
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377106
    */
-  /* tslint:disable */
   'POST/testFormData': function useData(
     filter?:
       | { request?: IModels['POST/testFormData']['Req'] }
@@ -175,7 +173,6 @@ export const useResponse = {
    * 接口名：RESTful 接口
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
    */
-  /* tslint:disable */
   'GET/group/:groupId/member/{memberId}': function useData(
     filter?:
       | { request?: IModels['GET/group/:groupId/member/{memberId}']['Req'] }
@@ -194,7 +191,6 @@ export const useResponse = {
    * 接口名：useAPI测试接口
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1482796
    */
-  /* tslint:disable */
   'GET/useAPI': function useData(
     filter?:
       | { request?: IModels['GET/useAPI']['Req'] }
@@ -213,7 +209,6 @@ export const useResponse = {
    * 接口名：useAPI-request
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1670435
    */
-  /* tslint:disable */
   'GET/useAPI/request': function useData(
     filter?:
       | { request?: IModels['GET/useAPI/request']['Req'] }
@@ -232,7 +227,6 @@ export const useResponse = {
    * 接口名：useAPI-多tab
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1681938
    */
-  /* tslint:disable */
   'GET/useAPI/multiple-tab': function useData(
     filter?:
       | { request?: IModels['GET/useAPI/multiple-tab']['Req'] }
@@ -251,7 +245,6 @@ export const useResponse = {
    * 接口名：示例接口
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=239096&mod=344548&itf=1399160
    */
-  /* tslint:disable */
   'GET/example/1575626712231': function useData(
     filter?:
       | { request?: IModels['GET/example/1575626712231']['Req'] }
@@ -272,7 +265,6 @@ export const useAPI = {
    * 接口名：GET请求
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
    */
-  /* tslint:disable */
   'GET/testGet': function useData(
     requestParams?: IModels['GET/testGet']['Req'],
     extra?: reduxLib.IUseAPIExtra<IModels['GET/testGet']['Req']>,
@@ -292,7 +284,6 @@ export const useAPI = {
    * 接口名：POST 请求
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
    */
-  /* tslint:disable */
   'POST/testPost': function useData(
     requestParams?: IModels['POST/testPost']['Req'],
     extra?: reduxLib.IUseAPIExtra<IModels['POST/testPost']['Req']>,
@@ -312,7 +303,6 @@ export const useAPI = {
    * 接口名：form表单提交请求
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377106
    */
-  /* tslint:disable */
   'POST/testFormData': function useData(
     requestParams?: IModels['POST/testFormData']['Req'],
     extra?: reduxLib.IUseAPIExtra<IModels['POST/testFormData']['Req']>,
@@ -332,7 +322,6 @@ export const useAPI = {
    * 接口名：RESTful 接口
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
    */
-  /* tslint:disable */
   'GET/group/:groupId/member/{memberId}': function useData(
     requestParams?: IModels['GET/group/:groupId/member/{memberId}']['Req'],
     extra?: reduxLib.IUseAPIExtra<IModels['GET/group/:groupId/member/{memberId}']['Req']>,
@@ -352,7 +341,6 @@ export const useAPI = {
    * 接口名：useAPI测试接口
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1482796
    */
-  /* tslint:disable */
   'GET/useAPI': function useData(
     requestParams?: IModels['GET/useAPI']['Req'],
     extra?: reduxLib.IUseAPIExtra<IModels['GET/useAPI']['Req']>,
@@ -372,7 +360,6 @@ export const useAPI = {
    * 接口名：useAPI-request
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1670435
    */
-  /* tslint:disable */
   'GET/useAPI/request': function useData(
     requestParams?: IModels['GET/useAPI/request']['Req'],
     extra?: reduxLib.IUseAPIExtra<IModels['GET/useAPI/request']['Req']>,
@@ -392,7 +379,6 @@ export const useAPI = {
    * 接口名：useAPI-多tab
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1681938
    */
-  /* tslint:disable */
   'GET/useAPI/multiple-tab': function useData(
     requestParams?: IModels['GET/useAPI/multiple-tab']['Req'],
     extra?: reduxLib.IUseAPIExtra<IModels['GET/useAPI/multiple-tab']['Req']>,
@@ -412,7 +398,6 @@ export const useAPI = {
    * 接口名：示例接口
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=239096&mod=344548&itf=1399160
    */
-  /* tslint:disable */
   'GET/example/1575626712231': function useData(
     requestParams?: IModels['GET/example/1575626712231']['Req'],
     extra?: reduxLib.IUseAPIExtra<IModels['GET/example/1575626712231']['Req']>,
@@ -434,7 +419,6 @@ export const useAllResponse = {
    * 接口名：GET请求
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377102
    */
-  /* tslint:disable */
   'GET/testGet': function useData() {
     return useSelector((state: reduxLib.IState) => {
       const selectedState =
@@ -451,7 +435,6 @@ export const useAllResponse = {
    * 接口名：POST 请求
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
    */
-  /* tslint:disable */
   'POST/testPost': function useData() {
     return useSelector((state: reduxLib.IState) => {
       const selectedState =
@@ -468,7 +451,6 @@ export const useAllResponse = {
    * 接口名：form表单提交请求
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377106
    */
-  /* tslint:disable */
   'POST/testFormData': function useData() {
     return useSelector((state: reduxLib.IState) => {
       const selectedState =
@@ -485,7 +467,6 @@ export const useAllResponse = {
    * 接口名：RESTful 接口
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1380746
    */
-  /* tslint:disable */
   'GET/group/:groupId/member/{memberId}': function useData() {
     return useSelector((state: reduxLib.IState) => {
       const selectedState =
@@ -504,7 +485,6 @@ export const useAllResponse = {
    * 接口名：useAPI测试接口
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1482796
    */
-  /* tslint:disable */
   'GET/useAPI': function useData() {
     return useSelector((state: reduxLib.IState) => {
       const selectedState =
@@ -521,7 +501,6 @@ export const useAllResponse = {
    * 接口名：useAPI-request
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1670435
    */
-  /* tslint:disable */
   'GET/useAPI/request': function useData() {
     return useSelector((state: reduxLib.IState) => {
       const selectedState =
@@ -539,7 +518,6 @@ export const useAllResponse = {
    * 接口名：useAPI-多tab
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1681938
    */
-  /* tslint:disable */
   'GET/useAPI/multiple-tab': function useData() {
     return useSelector((state: reduxLib.IState) => {
       const selectedState =
@@ -558,7 +536,6 @@ export const useAllResponse = {
    * 接口名：示例接口
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=239096&mod=344548&itf=1399160
    */
-  /* tslint:disable */
   'GET/example/1575626712231': function useData() {
     return useSelector((state: reduxLib.IState) => {
       const selectedState =
