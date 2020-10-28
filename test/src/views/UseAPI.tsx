@@ -5,6 +5,7 @@ import TestRepeat from '../components/useAPI/TestRepeat'
 import UpdateTiming from '../components/useAPI/UpdateTiming'
 import Request from '../components/useAPI/Request'
 import MultipleTab from '../components/useAPI/MultipleTab'
+import TestRoot from '../components/useAPI/TestRoot'
 const { TabPane } = Tabs;
 
 export default () => {
@@ -26,6 +27,9 @@ export default () => {
       </TabPane>
       <TabPane tab="多tab" key="multipleTab">
         <MultipleTab />
+      </TabPane>
+      <TabPane tab="测试root" key="root">
+        <TestRoot />
       </TabPane>
     </Tabs>
   );

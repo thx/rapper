@@ -1,6 +1,6 @@
-/* md5: 093c2b46a222568089853bba54747439 */
+/* md5: 718cffbcf7437e87221e5bf84618ccbc */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.1.2-beta.1 */
+/* Rapper版本: 1.1.4-beta.0 */
 /* eslint-disable */
 /* tslint:disable */
 // @ts-nocheck
@@ -46,6 +46,8 @@ export const RequestTypes = {
     'GET/useAPI/multiple-tab_SUCCESS',
     'GET/useAPI/multiple-tab_FAILURE',
   ],
+
+  'POST/test/root': ['POST/test/root_REQUEST', 'POST/test/root_SUCCESS', 'POST/test/root_FAILURE'],
 
   'GET/example/1575626712231': [
     'GET/example/1575626712231_REQUEST',
@@ -102,6 +104,13 @@ interface IRapperStore {
     reduxLib.IInterfaceInfo & {
       request: IModels['GET/useAPI/multiple-tab']['Req'];
       response: IResponseTypes['GET/useAPI/multiple-tab'];
+    }
+  >;
+
+  'POST/test/root': Array<
+    reduxLib.IInterfaceInfo & {
+      request: IModels['POST/test/root']['Req'];
+      response: IResponseTypes['POST/test/root'];
     }
   >;
 
@@ -237,6 +246,24 @@ export const useResponse = {
     type Res = IResponseTypes['GET/useAPI/multiple-tab'];
     return reduxLib.useResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
       'GET/useAPI/multiple-tab',
+      filter,
+    );
+  },
+
+  /**
+   * 接口名：测试root
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1775969
+   */
+  'POST/test/root': function useData(
+    filter?:
+      | { request?: IModels['POST/test/root']['Req'] }
+      | { (storeData: IRapperStore['POST/test/root'][0]): boolean },
+  ) {
+    type Req = IModels['POST/test/root']['Req'];
+    type Item = IRapperStore['POST/test/root'][0];
+    type Res = IResponseTypes['POST/test/root'];
+    return reduxLib.useResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
+      'POST/test/root',
       filter,
     );
   },
@@ -395,6 +422,25 @@ export const useAPI = {
   },
 
   /**
+   * 接口名：测试root
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1775969
+   */
+  'POST/test/root': function useData(
+    requestParams?: IModels['POST/test/root']['Req'],
+    extra?: reduxLib.IUseAPIExtra<IModels['POST/test/root']['Req']>,
+  ) {
+    type Req = IModels['POST/test/root']['Req'];
+    type Res = IResponseTypes['POST/test/root'];
+    type IFetcher = typeof fetch['POST/test/root'];
+    return reduxLib.useAPICommon<TRapperStoreKey, Req, Res | undefined, IFetcher>({
+      modelName: 'POST/test/root',
+      fetcher: fetch['POST/test/root'],
+      requestParams,
+      extra,
+    });
+  },
+
+  /**
    * 接口名：示例接口
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=239096&mod=344548&itf=1399160
    */
@@ -533,6 +579,22 @@ export const useAllResponse = {
   },
 
   /**
+   * 接口名：测试root
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1775969
+   */
+  'POST/test/root': function useData() {
+    return useSelector((state: reduxLib.IState) => {
+      const selectedState =
+        (state['$$rapperResponseData'] && state['$$rapperResponseData']['POST/test/root']) || [];
+      type TReturnItem = reduxLib.IInterfaceInfo & {
+        request?: IModels['POST/test/root']['Req'];
+        response?: IResponseTypes['POST/test/root'];
+      };
+      return selectedState as Array<TReturnItem>;
+    });
+  },
+
+  /**
    * 接口名：示例接口
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=239096&mod=344548&itf=1399160
    */
@@ -627,6 +689,17 @@ export const clearResponseCache = {
     reduxLib.dispatchAction({
       type: '$$RAPPER_CLEAR_STORE',
       payload: { 'GET/useAPI/multiple-tab': undefined },
+    });
+  },
+
+  /**
+   * 接口名：测试root
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1775969
+   */
+  'POST/test/root': (): void => {
+    reduxLib.dispatchAction({
+      type: '$$RAPPER_CLEAR_STORE',
+      payload: { 'POST/test/root': undefined },
     });
   },
 
@@ -748,6 +821,21 @@ export const rapperBaseSelector = {
       filter,
     );
   },
+  'POST/test/root': (
+    state: reduxLib.IState,
+    filter?:
+      | { request?: IModels['POST/test/root']['Req'] }
+      | { (storeData: IRapperStore['POST/test/root'][0]): boolean },
+  ) => {
+    type Req = IModels['POST/test/root']['Req'];
+    type Res = IResponseTypes['POST/test/root'];
+    type Item = IRapperStore['POST/test/root'][0];
+    return reduxLib.getResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
+      state,
+      'POST/test/root',
+      filter,
+    );
+  },
   'GET/example/1575626712231': (
     state: reduxLib.IState,
     filter?:
@@ -796,6 +884,10 @@ export const rapperDataSelector = {
   'GET/useAPI/multiple-tab': (state: reduxLib.IState) => {
     type Res = IResponseTypes['GET/useAPI/multiple-tab'];
     return reduxLib.getRapperDataSelector<TRapperStoreKey, Res>(state, 'GET/useAPI/multiple-tab');
+  },
+  'POST/test/root': (state: reduxLib.IState) => {
+    type Res = IResponseTypes['POST/test/root'];
+    return reduxLib.getRapperDataSelector<TRapperStoreKey, Res>(state, 'POST/test/root');
   },
   'GET/example/1575626712231': (state: reduxLib.IState) => {
     type Res = IResponseTypes['GET/example/1575626712231'];

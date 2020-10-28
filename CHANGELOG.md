@@ -1,3 +1,6 @@
+## 2020.10.28 v1.1.4-beta.0
+- 对于 application/json 接口，如果params传入 Array，会被转成 Object，现已修复
+
 ## 2020.09.01 v1.1.2-beta.1
 - 修复 useAPI 请求参数为 objet 或 array 时，死循环的问题
 

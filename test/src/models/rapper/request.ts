@@ -1,6 +1,6 @@
-/* md5: 609fbd29a0629e32ed87259182b5f24d */
+/* md5: 33b0188c40419e4190e8b5e738a3e879 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.1.2-beta.1 */
+/* Rapper版本: 1.1.4-beta.0 */
 /* eslint-disable */
 /* tslint:disable */
 // @ts-nocheck
@@ -153,6 +153,18 @@ export interface IModels {
   };
 
   /**
+   * 接口名：测试root
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1775969
+   */
+  'POST/test/root': {
+    Req: {
+      id?: string;
+      name?: string;
+    }[];
+    Res: {};
+  };
+
+  /**
    * 接口名：示例接口
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=239096&mod=344548&itf=1399160
    */
@@ -234,6 +246,7 @@ export interface IResponseTypes {
   'GET/useAPI': ResSelector<IModels['GET/useAPI']['Res']>;
   'GET/useAPI/request': ResSelector<IModels['GET/useAPI/request']['Res']>;
   'GET/useAPI/multiple-tab': ResSelector<IModels['GET/useAPI/multiple-tab']['Res']>;
+  'POST/test/root': ResSelector<IModels['POST/test/root']['Res']>;
   'GET/example/1575626712231': ResSelector<IModels['GET/example/1575626712231']['Res']>;
 }
 
@@ -241,7 +254,7 @@ export function createFetch(
   fetchConfig: commonLib.RequesterOption,
   extraConfig?: { fetchType?: commonLib.FetchType },
 ) {
-  if (!extraConfig?.fetchType) {
+  if (!extraConfig || !extraConfig.fetchType) {
     console.warn(
       'Rapper Warning: createFetch API will be deprecated, if you want to customize fetch, please use overrideFetch instead, since new API guarantees better type consistency during frontend lifespan. See detail https://www.yuque.com/rap/rapper/overridefetch',
     );
@@ -376,6 +389,21 @@ export function createFetch(
         params: req,
         extra,
       }) as Promise<IResponseTypes['GET/useAPI/multiple-tab']>;
+    },
+
+    /**
+     * 接口名：测试root
+     * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1775969
+     * @param req 请求参数
+     * @param extra 请求配置项
+     */
+    'POST/test/root': (req?: IModels['POST/test/root']['Req'], extra?: commonLib.IExtra) => {
+      return sendRapperFetch('POST/test/root', {
+        url: '/test/root',
+        method: 'POST',
+        params: req,
+        extra,
+      }) as Promise<IResponseTypes['POST/test/root']>;
     },
 
     /**
