@@ -334,7 +334,7 @@ export function useAPICommon<
       }
       return await fetcher(req || requestParamsMemo, extra);
     },
-    [mode, fetcher, JSON.stringify(requestParamsMemo)],
+    [mode, fetcher, requestParamsMemo],
   );
 
   return [filteredData as Res, { isPending, errorMessage, request }] as const;
