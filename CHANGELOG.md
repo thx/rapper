@@ -1,3 +1,6 @@
+## 2020.10.28 v1.1.4-beta.1
+- 修复 useAPI 请求参数每次都是 new object 导致的性能问题
+
 ## 2020.10.28 v1.1.4-beta.0
 - 对于 application/json 接口，如果params传入 Array，会被转成 Object，现已修复
 

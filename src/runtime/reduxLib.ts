@@ -280,9 +280,17 @@ export function useAPICommon<
   const reduxData = useSelector((state: IState) => {
     return (state.$$rapperResponseData && state.$$rapperResponseData[modelName]) || [];
   });
+  const [requestParamsMemo, setRequestParamsMemo] = useState<Req>(requestParams);
   const [filteredData, setFilteredData] = useState(undefined);
   const [isPending, setIsPending] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>(undefined);
+
+  /** 大部分情况requestParams都是object，为了避免造成无谓的re-render，所以缓存起来 */
+  useEffect(() => {
+    if (!looseEqual(requestParams, requestParamsMemo)) {
+      setRequestParamsMemo(requestParams);
+    }
+  }, [requestParams]);
 
   useEffect(() => {
     /** manual模式不走全局，只返回自己fetch的数据 */
@@ -292,10 +300,10 @@ export function useAPICommon<
     /** 过滤出一条最新的符合条件的数据 */
     const result = getFilteredData<Req, { request: Req }>(
       reduxData,
-      mode === 'paramsMatch' ? { request: requestParams } : undefined,
+      mode === 'paramsMatch' ? { request: requestParamsMemo } : undefined,
     );
-    if (!result.id && (!shouldAutoRequest || shouldAutoRequest(requestParams))) {
-      fetcher(requestParams, otherExtra).catch(() => undefined);
+    if (!result.id && (!shouldAutoRequest || shouldAutoRequest(requestParamsMemo))) {
+      fetcher(requestParamsMemo, otherExtra).catch(() => undefined);
     }
     if (updateTiming === 'initial' || (result.id && !result.isPending)) {
       setFilteredData(pre => {
@@ -304,7 +312,7 @@ export function useAPICommon<
     }
     setIsPending(result.isPending || false);
     setErrorMessage(result.errorMessage);
-  }, [mode, reduxData, filteredData, requestParams]);
+  }, [mode, reduxData, filteredData, requestParamsMemo]);
 
   const request = useCallback(
     async (req?: Req, extra?: typeof otherExtra) => {
@@ -312,7 +320,7 @@ export function useAPICommon<
       if (mode === 'manual') {
         setIsPending(true);
         try {
-          const response = await fetcher(req || requestParams, extra);
+          const response = await fetcher(req || requestParamsMemo, extra);
           setFilteredData(response);
           setErrorMessage(undefined);
           return response;
@@ -324,9 +332,9 @@ export function useAPICommon<
           setIsPending(false);
         }
       }
-      return await fetcher(req || requestParams, extra);
+      return await fetcher(req || requestParamsMemo, extra);
     },
-    [mode, fetcher, JSON.stringify(requestParams)],
+    [mode, fetcher, JSON.stringify(requestParamsMemo)],
   );
 
   return [filteredData as Res, { isPending, errorMessage, request }] as const;
