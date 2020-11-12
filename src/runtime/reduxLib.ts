@@ -155,7 +155,12 @@ function looseEqual(newData: any, oldData: any): boolean {
         return false;
       }
     }
-  } else if (isNaN(newData) && isNaN(oldData)) {
+  } else if (
+    typeof newData === 'number' &&
+    typeof oldData === 'number' &&
+    isNaN(newData) &&
+    isNaN(oldData)
+  ) {
     return true;
   } else if (newData !== oldData) {
     return false;
