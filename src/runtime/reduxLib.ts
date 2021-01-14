@@ -172,28 +172,32 @@ function looseEqual(newData: any, oldData: any): boolean {
 /** 根据请求参数筛选，暂时只支持 request */
 function paramsFilter<
   Req extends { [key: string]: any },
-  I extends { request: Req },
+  I extends { request?: Req },
   Fil extends { request?: Req }
->(item: I, filter: Fil): boolean {
-  if (filter && filter.request) {
-    const filterRequest = filter.request; // 这一行是解决 ts2532 报错
-    if (Object.prototype.toString.call(filter.request) === '[object Object]') {
-      const reqResult = Object.keys(filter.request).every((key): boolean => {
-        const isCacheNaN = typeof item.request[key] === 'number' && isNaN(item.request[key]);
-        const isRequestNaN = typeof filterRequest[key] === 'number' && isNaN(filterRequest[key]);
-        if (isCacheNaN && isRequestNaN) {
-          return true;
-        }
-        return looseEqual(item.request[key], filterRequest[key]);
-      });
-      if (!reqResult) {
-        return false;
-      }
-    } else {
-      return false;
-    }
+>(item: I, filter: Fil) {
+  const itemRequest = item?.request;
+  const filterRequest = filter?.request; // 这一行是解决 ts2532 报错
+  if (typeof filterRequest !== 'object' && itemRequest === filterRequest) {
+    return true;
   }
-  return true;
+  if (
+    Object.prototype.toString.call(itemRequest) === '[object Object]' &&
+    Object.prototype.toString.call(filterRequest) === '[object Object]'
+  ) {
+    const requestKeys = Object.keys(filterRequest);
+    const isValueEqual = requestKeys.every((key): boolean => {
+      const isCacheNaN = typeof itemRequest[key] === 'number' && isNaN(itemRequest[key]);
+      const isRequestNaN = typeof filterRequest[key] === 'number' && isNaN(filterRequest[key]);
+      if (isCacheNaN && isRequestNaN) {
+        return true;
+      }
+      return looseEqual(itemRequest[key], filterRequest[key]);
+    });
+    const isLengthEqual = Object.keys(itemRequest).length === requestKeys.length;
+    return isValueEqual && isLengthEqual;
+  } else {
+    return false;
+  }
 }
 
 function getFilteredData<Req, Item extends { request: Req }>(
@@ -405,7 +409,7 @@ function assignData({
     id,
     requestTime,
     reponseTime,
-    request = {},
+    request,
     response,
     isPending,
     errorMessage,
