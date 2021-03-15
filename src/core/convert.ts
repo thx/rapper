@@ -191,6 +191,7 @@ function interfaceToJSONSchema(itf: Interface.IRoot, scope: Scope): JSONSchema4 
           description?: string;
           required: string[];
           additionalProperties: boolean;
+          enum?: string[];
         } = {
           // 这里默认所有的属性都有值
           additionalProperties: false,
@@ -201,6 +202,26 @@ function interfaceToJSONSchema(itf: Interface.IRoot, scope: Scope): JSONSchema4 
               : childItfs.map(e => e.name),
         };
         if (p.description) common.description = removeComment(p.description);
+
+        /**
+         * 处理枚举，支持以下形式：（目前为控制影响范围，只对 string、number 做处理）
+         * value="@pick(['p1', 'p2'])"
+         * issue地址：https://github.com/thx/rapper/issues/9
+         */
+        if (['string', 'number'].includes(type) && p.value) {
+          let enumArr: string[] = [];
+          const regResult = /^@pick\(([\s\S]+)\)$/.exec(p.value);
+          try {
+            if (regResult) {
+              const result = regResult[1];
+              enumArr = eval(result);
+            }
+          } catch (err) {}
+          if (Array.isArray(enumArr) && enumArr.length) {
+            common.enum = enumArr;
+          }
+        }
+
         if (['string', 'number', 'integer', 'boolean', 'null'].includes(type)) {
           return [
             p.name,

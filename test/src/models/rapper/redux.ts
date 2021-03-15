@@ -1,6 +1,6 @@
-/* md5: 718cffbcf7437e87221e5bf84618ccbc */
+/* md5: d7ac36823dc5e982badc457b3c28db21 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.1.4-beta.0 */
+/* Rapper版本: 1.2.0-beta.0 */
 /* eslint-disable */
 /* tslint:disable */
 // @ts-nocheck
@@ -18,6 +18,8 @@ import { fetch } from './index';
 /** 请求types */
 export const RequestTypes = {
   'GET/testGet': ['GET/testGet_REQUEST', 'GET/testGet_SUCCESS', 'GET/testGet_FAILURE'],
+
+  'GET/testGet2': ['GET/testGet2_REQUEST', 'GET/testGet2_SUCCESS', 'GET/testGet2_FAILURE'],
 
   'POST/testPost': ['POST/testPost_REQUEST', 'POST/testPost_SUCCESS', 'POST/testPost_FAILURE'],
 
@@ -62,6 +64,13 @@ interface IRapperStore {
     reduxLib.IInterfaceInfo & {
       request: IModels['GET/testGet']['Req'];
       response: IResponseTypes['GET/testGet'];
+    }
+  >;
+
+  'GET/testGet2': Array<
+    reduxLib.IInterfaceInfo & {
+      request: IModels['GET/testGet2']['Req'];
+      response: IResponseTypes['GET/testGet2'];
     }
   >;
 
@@ -138,6 +147,24 @@ export const useResponse = {
     type Res = IResponseTypes['GET/testGet'];
     return reduxLib.useResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
       'GET/testGet',
+      filter,
+    );
+  },
+
+  /**
+   * 接口名：GET请求副本
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1904966
+   */
+  'GET/testGet2': function useData(
+    filter?:
+      | { request?: IModels['GET/testGet2']['Req'] }
+      | { (storeData: IRapperStore['GET/testGet2'][0]): boolean },
+  ) {
+    type Req = IModels['GET/testGet2']['Req'];
+    type Item = IRapperStore['GET/testGet2'][0];
+    type Res = IResponseTypes['GET/testGet2'];
+    return reduxLib.useResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
+      'GET/testGet2',
       filter,
     );
   },
@@ -302,6 +329,25 @@ export const useAPI = {
     return reduxLib.useAPICommon<TRapperStoreKey, Req, Res | undefined, IFetcher>({
       modelName: 'GET/testGet',
       fetcher: fetch['GET/testGet'],
+      requestParams,
+      extra,
+    });
+  },
+
+  /**
+   * 接口名：GET请求副本
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1904966
+   */
+  'GET/testGet2': function useData(
+    requestParams?: IModels['GET/testGet2']['Req'],
+    extra?: reduxLib.IUseAPIExtra<IModels['GET/testGet2']['Req']>,
+  ) {
+    type Req = IModels['GET/testGet2']['Req'];
+    type Res = IResponseTypes['GET/testGet2'];
+    type IFetcher = typeof fetch['GET/testGet2'];
+    return reduxLib.useAPICommon<TRapperStoreKey, Req, Res | undefined, IFetcher>({
+      modelName: 'GET/testGet2',
+      fetcher: fetch['GET/testGet2'],
       requestParams,
       extra,
     });
@@ -478,6 +524,22 @@ export const useAllResponse = {
   },
 
   /**
+   * 接口名：GET请求副本
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1904966
+   */
+  'GET/testGet2': function useData() {
+    return useSelector((state: reduxLib.IState) => {
+      const selectedState =
+        (state['$$rapperResponseData'] && state['$$rapperResponseData']['GET/testGet2']) || [];
+      type TReturnItem = reduxLib.IInterfaceInfo & {
+        request?: IModels['GET/testGet2']['Req'];
+        response?: IResponseTypes['GET/testGet2'];
+      };
+      return selectedState as Array<TReturnItem>;
+    });
+  },
+
+  /**
    * 接口名：POST 请求
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
    */
@@ -627,6 +689,17 @@ export const clearResponseCache = {
   },
 
   /**
+   * 接口名：GET请求副本
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1904966
+   */
+  'GET/testGet2': (): void => {
+    reduxLib.dispatchAction({
+      type: '$$RAPPER_CLEAR_STORE',
+      payload: { 'GET/testGet2': undefined },
+    });
+  },
+
+  /**
    * 接口名：POST 请求
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1377105
    */
@@ -728,6 +801,21 @@ export const rapperBaseSelector = {
     return reduxLib.getResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
       state,
       'GET/testGet',
+      filter,
+    );
+  },
+  'GET/testGet2': (
+    state: reduxLib.IState,
+    filter?:
+      | { request?: IModels['GET/testGet2']['Req'] }
+      | { (storeData: IRapperStore['GET/testGet2'][0]): boolean },
+  ) => {
+    type Req = IModels['GET/testGet2']['Req'];
+    type Res = IResponseTypes['GET/testGet2'];
+    type Item = IRapperStore['GET/testGet2'][0];
+    return reduxLib.getResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
+      state,
+      'GET/testGet2',
       filter,
     );
   },
@@ -857,6 +945,10 @@ export const rapperDataSelector = {
   'GET/testGet': (state: reduxLib.IState) => {
     type Res = IResponseTypes['GET/testGet'];
     return reduxLib.getRapperDataSelector<TRapperStoreKey, Res>(state, 'GET/testGet');
+  },
+  'GET/testGet2': (state: reduxLib.IState) => {
+    type Res = IResponseTypes['GET/testGet2'];
+    return reduxLib.getRapperDataSelector<TRapperStoreKey, Res>(state, 'GET/testGet2');
   },
   'POST/testPost': (state: reduxLib.IState) => {
     type Res = IResponseTypes['POST/testPost'];

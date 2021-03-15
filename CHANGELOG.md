@@ -1,3 +1,6 @@
+## 2021.03.15 v1.2.0-beta.0
+- 支持 `string`、`number` 组成的联合类型 [issue](https://github.com/thx/rapper/issues/9)
+
 ## 2020.10.28 v1.1.6-beta.0
 - 修复 useAPI 请求参数匹配失败导致响应数据不更新的问题
 

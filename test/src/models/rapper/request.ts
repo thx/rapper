@@ -1,6 +1,6 @@
-/* md5: 33b0188c40419e4190e8b5e738a3e879 */
+/* md5: cc1571c67ac7049af968fbf2043450a6 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.1.4-beta.0 */
+/* Rapper版本: 1.2.0-beta.0 */
 /* eslint-disable */
 /* tslint:disable */
 // @ts-nocheck
@@ -31,6 +31,29 @@ export interface IModels {
       value: string;
       message: string;
       time: string;
+    };
+  };
+
+  /**
+   * 接口名：GET请求副本
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1904966
+   */
+  'GET/testGet2': {
+    Req: {
+      id?: number;
+      objectParams?: {
+        a?: number[];
+      };
+    };
+    Res: {
+      errcode: number;
+      value: {
+        a: string;
+      };
+      message: string;
+      time: string;
+      type: 'Set' | 'Map';
+      type2: string;
     };
   };
 
@@ -238,6 +261,7 @@ type ResSelector<T> = T;
 
 export interface IResponseTypes {
   'GET/testGet': ResSelector<IModels['GET/testGet']['Res']>;
+  'GET/testGet2': ResSelector<IModels['GET/testGet2']['Res']>;
   'POST/testPost': ResSelector<IModels['POST/testPost']['Res']>;
   'POST/testFormData': ResSelector<IModels['POST/testFormData']['Res']>;
   'GET/group/:groupId/member/{memberId}': ResSelector<
@@ -290,6 +314,21 @@ export function createFetch(
         params: req,
         extra,
       }) as Promise<IResponseTypes['GET/testGet']>;
+    },
+
+    /**
+     * 接口名：GET请求副本
+     * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1904966
+     * @param req 请求参数
+     * @param extra 请求配置项
+     */
+    'GET/testGet2': (req?: IModels['GET/testGet2']['Req'], extra?: commonLib.IExtra) => {
+      return sendRapperFetch('GET/testGet2', {
+        url: '/testGet2',
+        method: 'GET',
+        params: req,
+        extra,
+      }) as Promise<IResponseTypes['GET/testGet2']>;
     },
 
     /**
