@@ -252,3 +252,8 @@ export enum FetchType {
   /** 自定义覆盖类型 */
   AUTO = 2,
 }
+
+// polyfill for requestAnimationFrame
+export const rAF = window['requestAnimationFrame']
+  ? (f: FrameRequestCallback) => window['requestAnimationFrame'](f)
+  : (f: (...args: any[]) => void) => setTimeout(f, 1);

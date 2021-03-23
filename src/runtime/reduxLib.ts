@@ -57,6 +57,8 @@ export type TAction = IAnyAction | IRequestAction;
 export interface IEnhancerProps {
   /** 缓存数据最大长度 */
   maxCacheLength?: number;
+  /** 防抖时间间隔，默认 1000ms，如果设置为 0 ，就不防抖了 */
+  debounce?: number;
 }
 
 type Dispatch<A = IAnyAction> = <T extends A>(action: T, ...extraArgs: any[]) => T;
@@ -272,6 +274,14 @@ export function getRapperDataSelector<M, Res>(state: IState, modelName: M) {
   return result.response as Res | undefined;
 }
 
+/** 判断防抖是否发送请求 */
+const judgeDebounce = (debounce: number, requestTime?: number) => {
+  if (!requestTime || !debounce) {
+    return true;
+  }
+  return Date.now() - requestTime > debounce;
+};
+
 interface IRapperCommonParams<M, Req, Item, IFetcher> {
   modelName: M;
   fetcher: IFetcher;
@@ -439,8 +449,8 @@ export const rapperReducers = {
 
 /** store enhancer */
 export function rapperEnhancer(config?: IEnhancerProps): any {
-  config = config || {};
-  let { maxCacheLength } = config;
+  let { maxCacheLength } = config || {};
+  const { debounce = 1000 } = config || {};
   if (typeof maxCacheLength !== 'number' || maxCacheLength < 1) {
     maxCacheLength = 6;
   }
@@ -512,8 +522,12 @@ export function rapperEnhancer(config?: IEnhancerProps): any {
         return Promise.reject(errorMessage);
       }
 
+      /** 防抖处理 */
+      if (cacheData.some(item => !judgeDebounce(debounce, item.requestTime))) {
+        return;
+      }
+
       const requestTime = new Date().getTime();
-      store.dispatch({ type: REQUEST });
       store.dispatch({
         type: RAPPER_UPDATE_STORE,
         payload: {
@@ -524,6 +538,8 @@ export function rapperEnhancer(config?: IEnhancerProps): any {
           isPending: true,
         },
       });
+      store.dispatch({ type: REQUEST });
+
       try {
         const responseData = await fetchFunc({ url, method, params, extra });
         const reponseTime = new Date().getTime();
