@@ -1,6 +1,6 @@
-/* md5: 2e1aff9ba453c5e553f745d0b3ca0056 */
+/* md5: 3ccf55761ad1976795bbf426c3c71e03 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.2.0-beta.0 */
+/* Rapper版本: 1.2.0-beta.2 */
 /* eslint-disable */
 /* tslint:disable */
 // @ts-nocheck

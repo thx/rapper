@@ -1,6 +1,6 @@
-/* md5: d7ac36823dc5e982badc457b3c28db21 */
+/* md5: 871e205cd0f0a34d3d2d3342a848ee90 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.2.0-beta.0 */
+/* Rapper版本: 1.2.0-beta.2 */
 /* eslint-disable */
 /* tslint:disable */
 // @ts-nocheck
@@ -50,6 +50,12 @@ export const RequestTypes = {
   ],
 
   'POST/test/root': ['POST/test/root_REQUEST', 'POST/test/root_SUCCESS', 'POST/test/root_FAILURE'],
+
+  'POST/test/debounce': [
+    'POST/test/debounce_REQUEST',
+    'POST/test/debounce_SUCCESS',
+    'POST/test/debounce_FAILURE',
+  ],
 
   'GET/example/1575626712231': [
     'GET/example/1575626712231_REQUEST',
@@ -120,6 +126,13 @@ interface IRapperStore {
     reduxLib.IInterfaceInfo & {
       request: IModels['POST/test/root']['Req'];
       response: IResponseTypes['POST/test/root'];
+    }
+  >;
+
+  'POST/test/debounce': Array<
+    reduxLib.IInterfaceInfo & {
+      request: IModels['POST/test/debounce']['Req'];
+      response: IResponseTypes['POST/test/debounce'];
     }
   >;
 
@@ -291,6 +304,24 @@ export const useResponse = {
     type Res = IResponseTypes['POST/test/root'];
     return reduxLib.useResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
       'POST/test/root',
+      filter,
+    );
+  },
+
+  /**
+   * 接口名：测试debounce
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1921502
+   */
+  'POST/test/debounce': function useData(
+    filter?:
+      | { request?: IModels['POST/test/debounce']['Req'] }
+      | { (storeData: IRapperStore['POST/test/debounce'][0]): boolean },
+  ) {
+    type Req = IModels['POST/test/debounce']['Req'];
+    type Item = IRapperStore['POST/test/debounce'][0];
+    type Res = IResponseTypes['POST/test/debounce'];
+    return reduxLib.useResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
+      'POST/test/debounce',
       filter,
     );
   },
@@ -487,6 +518,25 @@ export const useAPI = {
   },
 
   /**
+   * 接口名：测试debounce
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1921502
+   */
+  'POST/test/debounce': function useData(
+    requestParams?: IModels['POST/test/debounce']['Req'],
+    extra?: reduxLib.IUseAPIExtra<IModels['POST/test/debounce']['Req']>,
+  ) {
+    type Req = IModels['POST/test/debounce']['Req'];
+    type Res = IResponseTypes['POST/test/debounce'];
+    type IFetcher = typeof fetch['POST/test/debounce'];
+    return reduxLib.useAPICommon<TRapperStoreKey, Req, Res | undefined, IFetcher>({
+      modelName: 'POST/test/debounce',
+      fetcher: fetch['POST/test/debounce'],
+      requestParams,
+      extra,
+    });
+  },
+
+  /**
    * 接口名：示例接口
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=239096&mod=344548&itf=1399160
    */
@@ -657,6 +707,23 @@ export const useAllResponse = {
   },
 
   /**
+   * 接口名：测试debounce
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1921502
+   */
+  'POST/test/debounce': function useData() {
+    return useSelector((state: reduxLib.IState) => {
+      const selectedState =
+        (state['$$rapperResponseData'] && state['$$rapperResponseData']['POST/test/debounce']) ||
+        [];
+      type TReturnItem = reduxLib.IInterfaceInfo & {
+        request?: IModels['POST/test/debounce']['Req'];
+        response?: IResponseTypes['POST/test/debounce'];
+      };
+      return selectedState as Array<TReturnItem>;
+    });
+  },
+
+  /**
    * 接口名：示例接口
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=239096&mod=344548&itf=1399160
    */
@@ -773,6 +840,17 @@ export const clearResponseCache = {
     reduxLib.dispatchAction({
       type: '$$RAPPER_CLEAR_STORE',
       payload: { 'POST/test/root': undefined },
+    });
+  },
+
+  /**
+   * 接口名：测试debounce
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1921502
+   */
+  'POST/test/debounce': (): void => {
+    reduxLib.dispatchAction({
+      type: '$$RAPPER_CLEAR_STORE',
+      payload: { 'POST/test/debounce': undefined },
     });
   },
 
@@ -924,6 +1002,21 @@ export const rapperBaseSelector = {
       filter,
     );
   },
+  'POST/test/debounce': (
+    state: reduxLib.IState,
+    filter?:
+      | { request?: IModels['POST/test/debounce']['Req'] }
+      | { (storeData: IRapperStore['POST/test/debounce'][0]): boolean },
+  ) => {
+    type Req = IModels['POST/test/debounce']['Req'];
+    type Res = IResponseTypes['POST/test/debounce'];
+    type Item = IRapperStore['POST/test/debounce'][0];
+    return reduxLib.getResponseData<TRapperStoreKey, Req, Res | undefined, Item>(
+      state,
+      'POST/test/debounce',
+      filter,
+    );
+  },
   'GET/example/1575626712231': (
     state: reduxLib.IState,
     filter?:
@@ -980,6 +1073,10 @@ export const rapperDataSelector = {
   'POST/test/root': (state: reduxLib.IState) => {
     type Res = IResponseTypes['POST/test/root'];
     return reduxLib.getRapperDataSelector<TRapperStoreKey, Res>(state, 'POST/test/root');
+  },
+  'POST/test/debounce': (state: reduxLib.IState) => {
+    type Res = IResponseTypes['POST/test/debounce'];
+    return reduxLib.getRapperDataSelector<TRapperStoreKey, Res>(state, 'POST/test/debounce');
   },
   'GET/example/1575626712231': (state: reduxLib.IState) => {
     type Res = IResponseTypes['GET/example/1575626712231'];

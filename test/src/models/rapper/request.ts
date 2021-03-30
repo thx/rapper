@@ -1,6 +1,6 @@
-/* md5: cc1571c67ac7049af968fbf2043450a6 */
+/* md5: af893b3f64f7dc9e2153c0e5bad3c1f6 */
 /* Rap仓库id: 237514 */
-/* Rapper版本: 1.2.0-beta.0 */
+/* Rapper版本: 1.2.0-beta.2 */
 /* eslint-disable */
 /* tslint:disable */
 // @ts-nocheck
@@ -188,6 +188,23 @@ export interface IModels {
   };
 
   /**
+   * 接口名：测试debounce
+   * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1921502
+   */
+  'POST/test/debounce': {
+    Req: {
+      search?: {
+        name?: string;
+      };
+      id?: number;
+    };
+    Res: {
+      errcode: number;
+      data: string;
+    };
+  };
+
+  /**
    * 接口名：示例接口
    * Rap 地址: http://rap2.taobao.org/repository/editor?id=239096&mod=344548&itf=1399160
    */
@@ -271,6 +288,7 @@ export interface IResponseTypes {
   'GET/useAPI/request': ResSelector<IModels['GET/useAPI/request']['Res']>;
   'GET/useAPI/multiple-tab': ResSelector<IModels['GET/useAPI/multiple-tab']['Res']>;
   'POST/test/root': ResSelector<IModels['POST/test/root']['Res']>;
+  'POST/test/debounce': ResSelector<IModels['POST/test/debounce']['Res']>;
   'GET/example/1575626712231': ResSelector<IModels['GET/example/1575626712231']['Res']>;
 }
 
@@ -443,6 +461,24 @@ export function createFetch(
         params: req,
         extra,
       }) as Promise<IResponseTypes['POST/test/root']>;
+    },
+
+    /**
+     * 接口名：测试debounce
+     * Rap 地址: http://rap2.taobao.org/repository/editor?id=237514&mod=340613&itf=1921502
+     * @param req 请求参数
+     * @param extra 请求配置项
+     */
+    'POST/test/debounce': (
+      req?: IModels['POST/test/debounce']['Req'],
+      extra?: commonLib.IExtra,
+    ) => {
+      return sendRapperFetch('POST/test/debounce', {
+        url: '/test/debounce',
+        method: 'POST',
+        params: req,
+        extra,
+      }) as Promise<IResponseTypes['POST/test/debounce']>;
     },
 
     /**

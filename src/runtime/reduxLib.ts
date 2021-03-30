@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { IExtra } from './commonLib';
+import { isEqual } from 'lodash';
 
 /** 常量定义 */
 export const RAPPER_REQUEST = '$$RAPPER_REQUEST';
@@ -522,8 +523,16 @@ export function rapperEnhancer(config?: IEnhancerProps): any {
         return Promise.reject(errorMessage);
       }
 
-      /** 防抖处理 */
-      if (cacheData.some(item => !judgeDebounce(debounce, item.requestTime))) {
+      /**
+       * 防抖处理，两个条件：
+       * 1、请求参数相同
+       * 2、请求时间间隔小于 debounce
+       */
+      if (
+        cacheData
+          .filter(item => isEqual(item.request, params))
+          .some(item => !judgeDebounce(debounce, item.requestTime))
+      ) {
         return;
       }
 

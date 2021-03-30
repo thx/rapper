@@ -6,6 +6,7 @@ import UpdateTiming from '../components/useAPI/UpdateTiming'
 import Request from '../components/useAPI/Request'
 import MultipleTab from '../components/useAPI/MultipleTab'
 import TestRoot from '../components/useAPI/TestRoot'
+import TestDebounce from '../components/useAPI/TestDebounce'
 const { TabPane } = Tabs;
 
 export default () => {
@@ -30,6 +31,9 @@ export default () => {
       </TabPane>
       <TabPane tab="测试root" key="root">
         <TestRoot />
+      </TabPane>
+      <TabPane tab="防抖" key="debounce">
+        <TestDebounce />
       </TabPane>
     </Tabs>
   );
