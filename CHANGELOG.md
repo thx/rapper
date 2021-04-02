@@ -1,10 +1,5 @@
-## 2021.03.30 v1.2.0-beta.2
-- 仅在请求参数不相等时，才防抖
-
-## 2021.03.15 v1.2.0-beta.1
+## 2021.04.02 v1.2.0
 - 增加请求防抖，默认时间片间隔是 1000ms [issue](https://work.aone.alibaba-inc.com/issue/33518480)
-
-## 2021.03.15 v1.2.0-beta.0
 - 支持 `string`、`number` 组成的联合类型 [issue](https://github.com/thx/rapper/issues/9)
 
 ## 2020.10.28 v1.1.6-beta.0
