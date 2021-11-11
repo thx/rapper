@@ -79,6 +79,11 @@ const [responseData, { isPending, errorMessage }] = useAPI['GET/duck/fetchColor'
 
 具体请参考我们的文档：[https://www.yuque.com/rap/rapper](https://www.yuque.com/rap/rapper)
 
+
+## 社区贡献
+
+- [@antmjs/rapper](https://github.com/AntmJS/antm/tree/main/packages/rapper) 基于 Rapper 开发，使配置更灵活，同时增加本地类型同步远程文档重要功能
+
 ## 联系我们
 
 - [Github Issue](https://github.com/thx/rapper/issues)
