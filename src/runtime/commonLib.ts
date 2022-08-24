@@ -31,7 +31,7 @@ export interface IExtra {
 }
 
 /** defaultFetch 参数 */
-interface IDefaultFetchParams {
+export interface IDefaultFetchParams {
   url: string;
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'HEAD';
   params?: any;
@@ -167,7 +167,7 @@ export const defaultFetch = async ({
   ) {
     const formdata = new FormData();
     params &&
-      Object.keys(params).forEach(key => {
+      Object.keys(params).forEach((key) => {
         formdata.append(key, params[key]);
       });
     init.body = formdata;
